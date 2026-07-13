@@ -1,4 +1,5 @@
 import 'package:checkmate/core/constants/app_colors.dart';
+import 'package:checkmate/core/constants/app_text.dart';
 import 'package:checkmate/features/address/presentation/pages/address_list.dart';
 import 'package:checkmate/features/appointments/presentation/pages/appointment_list.dart';
 import 'package:checkmate/features/home/presentation/pages/homepage.dart';
@@ -51,6 +52,7 @@ class CustomBottomNavBar extends StatelessWidget {
         BottomNavigationBarItem(
           icon: Icon(Icons.science_outlined),
           label: 'Labs',
+          
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.calendar_today_outlined),

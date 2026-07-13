@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:checkmate/core/constants/app_assets.dart';
 import 'package:checkmate/features/auth/presentation/pages/login.dart';
 import 'package:flutter/material.dart';
 
@@ -32,7 +33,7 @@ class _SplashScreenState extends State<SplashScreen> {
             width: double.infinity,
             height: 300,
             decoration: BoxDecoration(
-              image: DecorationImage(image: AssetImage('assets/logo.png')),
+              image: DecorationImage(image: AssetImage(AppAssets.logoWithTexts)),
             ),
           ),
         ),

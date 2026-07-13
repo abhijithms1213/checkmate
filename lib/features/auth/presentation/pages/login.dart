@@ -1,6 +1,6 @@
+import 'package:checkmate/core/constants/app_assets.dart';
 import 'package:checkmate/features/auth/presentation/pages/otp.dart';
 import 'package:flutter/material.dart';
-
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -20,20 +20,24 @@ class LoginScreen extends StatelessWidget {
               /// Logo
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Icon(
-                    Icons.medical_services,
-                    size: 34,
-                    color: Color(0xff10243A),
+                  Container(
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage(AppAssets.logoOnly),
+                        fit: BoxFit.fill,
+                      ),
+                    ),
                   ),
-                  const SizedBox(width: 8),
                   Text(
                     "CheckMate",
-                    style: Theme.of(context).textTheme.headlineSmall
-                        ?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xff10243A),
-                        ),
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: const Color(0xff10243A),
+                    ),
                   ),
                 ],
               ),
@@ -43,19 +47,16 @@ class LoginScreen extends StatelessWidget {
               Text(
                 "Welcome",
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xff10243A),
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: const Color(0xff10243A),
+                ),
               ),
 
               const SizedBox(height: 12),
 
               Text(
                 "Login to access your diagnostics portal.",
-                style: TextStyle(
-                  color: Colors.grey.shade600,
-                  fontSize: 18,
-                ),
+                style: TextStyle(color: Colors.grey.shade600, fontSize: 18),
               ),
 
               const SizedBox(height: 50),
@@ -64,10 +65,7 @@ class LoginScreen extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Phone Number",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                 ),
               ),
 
@@ -95,9 +93,7 @@ class LoginScreen extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   "Verification code will be sent via SMS.",
-                  style: TextStyle(
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(color: Colors.grey.shade600),
                 ),
               ),
 
@@ -116,17 +112,12 @@ class LoginScreen extends StatelessWidget {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) =>  OtpScreen(),
-                      ),
+                      MaterialPageRoute(builder: (_) => OtpScreen()),
                     );
                   },
                   child: const Text(
                     "Send OTP",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 17,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 17),
                   ),
                 ),
               ),
@@ -138,17 +129,10 @@ class LoginScreen extends StatelessWidget {
                 children: [
                   Text(
                     "Privacy",
-                    style: TextStyle(
-                      color: Colors.grey.shade700,
-                    ),
+                    style: TextStyle(color: Colors.grey.shade700),
                   ),
                   const SizedBox(width: 30),
-                  Text(
-                    "Terms",
-                    style: TextStyle(
-                      color: Colors.grey.shade700,
-                    ),
-                  ),
+                  Text("Terms", style: TextStyle(color: Colors.grey.shade700)),
                 ],
               ),
 
@@ -156,10 +140,7 @@ class LoginScreen extends StatelessWidget {
 
               Text(
                 "© 2024 CHECKMATE",
-                style: TextStyle(
-                  color: Colors.grey.shade400,
-                  letterSpacing: 1,
-                ),
+                style: TextStyle(color: Colors.grey.shade400, letterSpacing: 1),
               ),
 
               const SizedBox(height: 30),
