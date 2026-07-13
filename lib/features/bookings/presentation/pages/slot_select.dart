@@ -1,3 +1,4 @@
+import 'package:checkmate/features/bookings/presentation/pages/payment.dart';
 import 'package:flutter/material.dart';
 
 class SelectSlotScreen extends StatefulWidget {
@@ -35,10 +36,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
     "07:30 PM",
   ];
 
-  final List<String> disabledSlots = [
-    "07:00 PM",
-    "07:30 PM",
-  ];
+  final List<String> disabledSlots = ["07:00 PM", "07:30 PM"];
 
   static const Color primaryColor = Color(0xFF006D67);
   static const Color darkBlue = Color(0xFF081E36);
@@ -48,27 +46,25 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
     return Scaffold(
       backgroundColor: const Color(0xffF8F9FB),
 
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: darkBlue,
-        onPressed: () {},
-        child: const Icon(
-          Icons.support_agent,
-          color: Colors.white,
-        ),
-      ),
-
       bottomNavigationBar: Container(
         height: 72,
         padding: const EdgeInsets.all(12),
         color: primaryColor,
-        child: const Center(
-          child: Text(
-            "CONFIRM APPOINTMENT",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              letterSpacing: 1,
-              fontWeight: FontWeight.w500,
+        child: Center(
+          child: InkWell(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (context) => ReviewPayScreen()),
+              );
+            },
+            child: Text(
+              "CONFIRM APPOINTMENT",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                letterSpacing: 1,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ),
         ),
@@ -83,10 +79,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
               /// Header
               Row(
                 children: [
-                  const Icon(
-                    Icons.medical_services,
-                    color: darkBlue,
-                  ),
+                  const Icon(Icons.medical_services, color: darkBlue),
                   const SizedBox(width: 10),
                   const Text(
                     "CheckMate",
@@ -99,10 +92,8 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                   const Spacer(),
                   const CircleAvatar(
                     radius: 18,
-                    backgroundImage: NetworkImage(
-                      "https://i.pravatar.cc/150",
-                    ),
-                  )
+                    backgroundImage: NetworkImage("https://i.pravatar.cc/150"),
+                  ),
                 ],
               ),
 
@@ -132,10 +123,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
 
               Text(
                 "Full Blood Count & Lipid Profile",
-                style: TextStyle(
-                  color: Colors.grey.shade700,
-                  fontSize: 18,
-                ),
+                style: TextStyle(color: Colors.grey.shade700, fontSize: 18),
               ),
 
               const SizedBox(height: 28),
@@ -177,11 +165,9 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         itemCount: dates.length,
-                        separatorBuilder: (_, __) =>
-                            const SizedBox(width: 12),
+                        separatorBuilder: (_, __) => const SizedBox(width: 12),
                         itemBuilder: (context, index) {
-                          final selected =
-                              selectedDate == index;
+                          final selected = selectedDate == index;
 
                           return GestureDetector(
                             onTap: () {
@@ -192,21 +178,12 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                             child: Container(
                               width: 72,
                               decoration: BoxDecoration(
-                                color: selected
-                                    ? darkBlue
-                                    : Colors.white,
-                                borderRadius:
-                                    BorderRadius.circular(
-                                  12,
-                                ),
-                                border: Border.all(
-                                  color:
-                                      Colors.grey.shade300,
-                                ),
+                                color: selected ? darkBlue : Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey.shade300),
                               ),
                               child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
                                     dates[index]["day"]!,
@@ -221,8 +198,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                                     dates[index]["date"]!,
                                     style: TextStyle(
                                       fontSize: 28,
-                                      fontWeight:
-                                          FontWeight.bold,
+                                      fontWeight: FontWeight.bold,
                                       color: selected
                                           ? Colors.white
                                           : Colors.black,
@@ -250,11 +226,9 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                 ),
                 child: GridView.builder(
                   shrinkWrap: true,
-                  physics:
-                      const NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   itemCount: slots.length,
-                  gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     mainAxisSpacing: 14,
                     crossAxisSpacing: 14,
@@ -263,11 +237,9 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                   itemBuilder: (context, index) {
                     final slot = slots[index];
 
-                    final disabled =
-                        disabledSlots.contains(slot);
+                    final disabled = disabledSlots.contains(slot);
 
-                    final selected =
-                        selectedTime == slot;
+                    final selected = selectedTime == slot;
 
                     return GestureDetector(
                       onTap: disabled
@@ -282,15 +254,10 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                           color: selected
                               ? primaryColor
                               : disabled
-                                  ? const Color(
-                                      0xffF3F4F6,
-                                    )
-                                  : Colors.white,
-                          borderRadius:
-                              BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Colors.grey.shade300,
-                          ),
+                              ? const Color(0xffF3F4F6)
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.grey.shade300),
                         ),
                         child: Center(
                           child: Text(
@@ -300,8 +267,8 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                               color: selected
                                   ? Colors.white
                                   : disabled
-                                      ? Colors.grey
-                                      : Colors.black87,
+                                  ? Colors.grey
+                                  : Colors.black87,
                             ),
                           ),
                         ),
@@ -342,17 +309,11 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
 
               const SizedBox(height: 8),
 
-              Text(
-                "Time: $selectedTime",
-                style: const TextStyle(fontSize: 18),
-              ),
+              Text("Time: $selectedTime", style: const TextStyle(fontSize: 18)),
 
               const SizedBox(height: 8),
 
-              const Text(
-                "Total: \$145.00",
-                style: TextStyle(fontSize: 18),
-              ),
+              const Text("Total: \$145.00", style: TextStyle(fontSize: 18)),
 
               const SizedBox(height: 100),
             ],

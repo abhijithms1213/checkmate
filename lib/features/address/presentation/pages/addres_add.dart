@@ -1,4 +1,4 @@
-import 'package:checkmate/features/home/homepage.dart';
+import 'package:checkmate/features/home/presentation/pages/homepage.dart';
 import 'package:flutter/material.dart';
 
 class AddAddressScreen extends StatefulWidget {
@@ -14,11 +14,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
   int selectedType = 0;
 
-  final addressTypes = [
-    "Home",
-    "Office",
-    "Other",
-  ];
+  final addressTypes = ["Home", "Office", "Other"];
 
   @override
   Widget build(BuildContext context) {
@@ -31,27 +27,12 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         centerTitle: true,
         title: const Text(
           "Add Address",
-          style: TextStyle(
-            color: darkText,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(color: darkText, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
           onPressed: () => Navigator.pop(context),
-          icon: const Icon(
-            Icons.arrow_back,
-            color: darkText,
-          ),
+          icon: const Icon(Icons.arrow_back_ios_new, color: darkText),
         ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(
-              Icons.more_vert,
-              color: darkText,
-            ),
-          ),
-        ],
       ),
 
       body: SafeArea(
@@ -61,8 +42,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     /// Location Placeholder
                     Container(
@@ -70,12 +50,10 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                       width: double.infinity,
                       decoration: BoxDecoration(
                         color: const Color(0xFFF1F3F5),
-                        borderRadius:
-                            BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(16),
                       ),
                       child: const Column(
-                        mainAxisAlignment:
-                            MainAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Icon(
                             Icons.location_on_outlined,
@@ -100,19 +78,14 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                     _label("Full Name"),
                     const SizedBox(height: 8),
 
-                    _textField(
-                      hint: "e.g. Johnathan Doe",
-                    ),
+                    _textField(hint: "e.g. Johnathan Doe"),
 
                     const SizedBox(height: 24),
 
                     _label("Street Address"),
                     const SizedBox(height: 8),
 
-                    _textField(
-                      hint:
-                          "House number and street name",
-                    ),
+                    _textField(hint: "House number and street name"),
 
                     const SizedBox(height: 24),
 
@@ -120,15 +93,11 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                       children: [
                         Expanded(
                           child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment
-                                    .start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _label("City"),
                               const SizedBox(height: 8),
-                              _textField(
-                                hint: "San Francisco",
-                              ),
+                              _textField(hint: "San Francisco"),
                             ],
                           ),
                         ),
@@ -137,15 +106,11 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
 
                         Expanded(
                           child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment
-                                    .start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _label("State"),
                               const SizedBox(height: 8),
-                              _textField(
-                                hint: "California",
-                              ),
+                              _textField(hint: "California"),
                             ],
                           ),
                         ),
@@ -157,9 +122,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                     _label("ZIP Code"),
                     const SizedBox(height: 8),
 
-                    _textField(
-                      hint: "94103",
-                    ),
+                    _textField(hint: "94103"),
 
                     const SizedBox(height: 36),
 
@@ -171,59 +134,42 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                       padding: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
                         color: const Color(0xFFF1F3F5),
-                        borderRadius:
-                            BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: Row(
-                        children: List.generate(
-                          addressTypes.length,
-                          (index) {
-                            final selected =
-                                selectedType == index;
+                        children: List.generate(addressTypes.length, (index) {
+                          final selected = selectedType == index;
 
-                            return Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    selectedType =
-                                        index;
-                                  });
-                                },
-                                child: Container(
-                                  height: 42,
-                                  decoration:
-                                      BoxDecoration(
-                                    color: selected
-                                        ? Colors.white
-                                        : Colors
-                                            .transparent,
-                                    borderRadius:
-                                        BorderRadius
-                                            .circular(
-                                      10,
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Text(
-                                      addressTypes[
-                                          index],
-                                      style:
-                                          TextStyle(
-                                        color: selected
-                                            ? primaryColor
-                                            : Colors
-                                                .black87,
-                                        fontWeight:
-                                            FontWeight
-                                                .w500,
-                                      ),
+                          return Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedType = index;
+                                });
+                              },
+                              child: Container(
+                                height: 42,
+                                decoration: BoxDecoration(
+                                  color: selected
+                                      ? Colors.white
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    addressTypes[index],
+                                    style: TextStyle(
+                                      color: selected
+                                          ? primaryColor
+                                          : Colors.black87,
+                                      fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ),
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                          );
+                        }),
                       ),
                     ),
                   ],
@@ -240,21 +186,14 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: primaryColor,
-                    shape:
-                        RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(
-                        12,
-                      ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   onPressed: () {
-
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => const HomeScreen(),
-                      ),
+                      MaterialPageRoute(builder: (_) => const HomeScreen()),
                     );
                   },
                   icon: const Icon(
@@ -263,10 +202,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                   ),
                   label: const Text(
                     "Save Address",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                    ),
+                    style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                 ),
               ),
@@ -277,21 +213,17 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     );
   }
 
-  Widget _textField({
-    required String hint,
-  }) {
+  Widget _textField({required String hint}) {
     return TextField(
       decoration: InputDecoration(
         hintText: hint,
         filled: true,
         fillColor: const Color(0xFFF1F3F5),
         border: OutlineInputBorder(
-          borderRadius:
-              BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
-        contentPadding:
-            const EdgeInsets.symmetric(
+        contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 18,
         ),

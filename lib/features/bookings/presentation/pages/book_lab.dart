@@ -1,3 +1,4 @@
+import 'package:checkmate/features/bookings/presentation/pages/slot_select.dart';
 import 'package:flutter/material.dart';
 
 class LabBookingScreen extends StatelessWidget {
@@ -33,25 +34,6 @@ class LabBookingScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xffF5F6F8),
 
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
-        selectedItemColor: const Color(0xff0A7A72),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today_outlined),
-            label: "Bookings",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: "Profile",
-          ),
-        ],
-      ),
-
       body: SafeArea(
         child: Column(
           children: [
@@ -78,28 +60,13 @@ class LabBookingScreen extends StatelessWidget {
                             fontWeight: FontWeight.w600,
                           ),
                         ),
-                        SizedBox(height: 2),
-                        Text(
-                          "85+ PARAMETERS",
-                          style: TextStyle(
-                            color: Color(0xff0A7A72),
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
                       ],
                     ),
-                  ),
-
-                  const CircleAvatar(
-                    radius: 20,
-                    backgroundImage: NetworkImage("https://i.pravatar.cc/100"),
                   ),
                 ],
               ),
             ),
 
-            const Divider(height: 1),
 
             Padding(
               padding: const EdgeInsets.all(16),
@@ -110,19 +77,19 @@ class LabBookingScreen extends StatelessWidget {
                     "14 Labs available near you",
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
                   ),
-                  Row(
-                    children: [
-                      Icon(Icons.tune, color: Color(0xff0A7A72)),
-                      SizedBox(width: 4),
-                      Text(
-                        "Filters",
-                        style: TextStyle(
-                          color: Color(0xff0A7A72),
-                          fontSize: 18,
-                        ),
-                      ),
-                    ],
-                  ),
+                  // Row(
+                  //   children: [
+                  //     Icon(Icons.tune, color: Color(0xff0A7A72)),
+                  //     SizedBox(width: 4),
+                  //     Text(
+                  //       "Filters",
+                  //       style: TextStyle(
+                  //         color: Color(0xff0A7A72),
+                  //         fontSize: 18,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // ),
                 ],
               ),
             ),
@@ -173,27 +140,26 @@ class LabCard extends StatelessWidget {
                 ),
               ),
 
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xffDFF7F3),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.star, size: 14, color: Color(0xff0A7A72)),
-                    const SizedBox(width: 3),
-                    Text(
-                      lab.rating,
-                      style: const TextStyle(
-                        color: Color(0xff0A7A72),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
+              // Container(
+              //   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              //   decoration: BoxDecoration(
+              //     color: const Color(0xffDFF7F3),
+              //     borderRadius: BorderRadius.circular(6),
+              //   ),
+              //   child: Row(
+              //     children: [
+              //       const Icon(Icons.star, size: 14, color: Color(0xff0A7A72)),
+              //       const SizedBox(width: 3),
+              //       Text(
+              //         lab.rating,
+              //         style: const TextStyle(
+              //           color: Color(0xff0A7A72),
+              //           fontWeight: FontWeight.w600,
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
               if (lab.trusted) ...[
                 const SizedBox(width: 8),
                 Container(
@@ -284,7 +250,10 @@ class LabCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+
+                          Navigator.of(context).push(MaterialPageRoute(builder:(context) => SelectSlotScreen(),));
+                  },
                   child: const Text(
                     "Book",
                     style: TextStyle(color: Colors.white, fontSize: 18),

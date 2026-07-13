@@ -1,6 +1,7 @@
 import 'dart:developer';
 
-import 'package:checkmate/features/bookings/book_lab.dart';
+import 'package:checkmate/core/widgets/button.dart';
+import 'package:checkmate/features/bookings/presentation/pages/book_lab.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -43,23 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xffF5F6F8),
 
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        selectedItemColor: const Color(0xff00796B),
-        unselectedItemColor: Colors.black54,
-        onTap: (value) {},
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home_filled), label: "Home"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today_outlined),
-            label: "Bookings",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: "Profile",
-          ),
-        ],
-      ),
+      bottomNavigationBar: const CustomBottomNavBar(currentIndex: 0),
 
       body: SafeArea(
         child: Padding(
@@ -71,8 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
               /// Header
               Row(
                 children: [
-                  const Icon(Icons.medical_services_outlined, size: 28),
-                  const SizedBox(width: 8),
                   const Text(
                     "CheckMate",
                     style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
@@ -80,15 +63,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   const Spacer(),
 
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.notifications_none),
-                  ),
-
-                  const CircleAvatar(
-                    radius: 18,
-                    backgroundImage: NetworkImage("https://i.pravatar.cc/100"),
-                  ),
                 ],
               ),
 
@@ -160,13 +134,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     "Popular Tests",
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
                   ),
-                  Text(
-                    "View All",
-                    style: TextStyle(
-                      color: Color(0xff00796B),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                  // Text(
+                  //   "View All",
+                  //   style: TextStyle(
+                  //     color: Color(0xff00796B),
+                  //     fontWeight: FontWeight.w600,
+                  //   ),
+                  // ),
                 ],
               ),
 

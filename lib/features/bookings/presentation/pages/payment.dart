@@ -1,3 +1,4 @@
+import 'package:checkmate/features/bookings/presentation/pages/success.dart';
 import 'package:flutter/material.dart';
 
 class ReviewPayScreen extends StatefulWidget {
@@ -69,14 +70,7 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                     ),
                   ),
 
-                  const Spacer(),
-
-                  const CircleAvatar(
-                    radius: 18,
-                    backgroundImage: NetworkImage(
-                      "https://i.pravatar.cc/150",
-                    ),
-                  ),
+                  
                 ],
               ),
             ),
@@ -298,7 +292,10 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                             ),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+
+                          Navigator.of(context).push(MaterialPageRoute(builder:(context) => BookingSuccessScreen(),));
+                        },
                         child: const Row(
                           mainAxisAlignment:
                               MainAxisAlignment.center,

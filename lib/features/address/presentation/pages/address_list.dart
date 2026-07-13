@@ -1,3 +1,5 @@
+import 'package:checkmate/core/widgets/button.dart';
+import 'package:checkmate/features/address/presentation/pages/addres_add.dart';
 import 'package:flutter/material.dart';
 
 class AddressScreen extends StatelessWidget {
@@ -11,40 +13,16 @@ class AddressScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
 
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 2,
-        selectedItemColor: primaryColor,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.science_outlined),
-            label: "Labs",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today_outlined),
-            label: "Appointments",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle_outlined),
-            label: "Profile",
-          ),
-        ],
-      ),
+      bottomNavigationBar: const CustomBottomNavBar(currentIndex: 2),
 
       body: SafeArea(
         child: Column(
           children: [
             /// Header
             Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 12,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               child: Row(
                 children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.arrow_back),
-                  ),
                   const Expanded(
                     child: Text(
                       "Lab Services",
@@ -56,22 +34,15 @@ class AddressScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.more_vert),
-                  ),
                 ],
               ),
             ),
 
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
 
@@ -98,10 +69,8 @@ class AddressScreen extends StatelessWidget {
 
                     const AddressCard(
                       title: "Home",
-                      address1:
-                          "42nd Clinical Avenue, Suite 500",
-                      address2:
-                          "Metropolis, Central District, 10101",
+                      address1: "42nd Clinical Avenue, Suite 500",
+                      address2: "Metropolis, Central District, 10101",
                       isDefault: true,
                       icon: Icons.home_outlined,
                     ),
@@ -110,10 +79,8 @@ class AddressScreen extends StatelessWidget {
 
                     const AddressCard(
                       title: "Office",
-                      address1:
-                          "Innovation Plaza, Block C",
-                      address2:
-                          "West Tech Park, Metropolis, 10102",
+                      address1: "Innovation Plaza, Block C",
+                      address2: "West Tech Park, Metropolis, 10102",
                       icon: Icons.business_center_outlined,
                     ),
 
@@ -124,27 +91,22 @@ class AddressScreen extends StatelessWidget {
                       height: 64,
                       child: ElevatedButton.icon(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              primaryColor,
-                          shape:
-                              RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(
-                              12,
-                            ),
+                          backgroundColor: primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        onPressed: () {},
-                        icon: const Icon(
-                          Icons.add,
-                          color: Colors.white,
-                        ),
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => AddAddressScreen(),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.add, color: Colors.white),
                         label: const Text(
                           "+ Add New Address",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                          ),
+                          style: TextStyle(color: Colors.white, fontSize: 18),
                         ),
                       ),
                     ),
@@ -184,20 +146,14 @@ class AddressCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: const Color(0xFFE5E7EB),
-        ),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(
-                icon,
-                color: primaryColor,
-              ),
+              Icon(icon, color: primaryColor),
               const SizedBox(width: 8),
 
               Text(
@@ -212,23 +168,17 @@ class AddressCard extends StatelessWidget {
 
               if (isDefault)
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 12,
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: const Color(
-                      0xFF82E6D8,
-                    ),
-                    borderRadius:
-                        BorderRadius.circular(20),
+                    color: const Color(0xFF82E6D8),
+                    borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Text(
                     "Default",
-                    style: TextStyle(
-                      color: primaryColor,
-                    ),
+                    style: TextStyle(color: primaryColor),
                   ),
                 ),
             ],
@@ -238,20 +188,14 @@ class AddressCard extends StatelessWidget {
 
           Text(
             address1,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey.shade800,
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey.shade800),
           ),
 
           const SizedBox(height: 6),
 
           Text(
             address2,
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey.shade700,
-            ),
+            style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
           ),
 
           const SizedBox(height: 24),
@@ -271,8 +215,7 @@ class AddressCard extends StatelessWidget {
                       "Set as Default",
                       style: TextStyle(
                         color: primaryColor,
-                        fontWeight:
-                            FontWeight.w500,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
@@ -280,23 +223,18 @@ class AddressCard extends StatelessWidget {
 
               const Spacer(),
 
-              TextButton(
-                onPressed: () {},
-                child: const Text(
-                  "Edit",
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-
+              // TextButton(
+              //   onPressed: () {},
+              //   child: const Text(
+              //     "Edit",
+              //     style: TextStyle(color: Colors.black),
+              //   ),
+              // ),
               TextButton(
                 onPressed: () {},
                 child: const Text(
                   "Delete",
-                  style: TextStyle(
-                    color: Colors.red,
-                  ),
+                  style: TextStyle(color: Colors.red),
                 ),
               ),
             ],

@@ -1,4 +1,4 @@
-import 'package:checkmate/features/auth/presentation/otp.dart';
+import 'package:checkmate/features/auth/presentation/pages/otp.dart';
 import 'package:flutter/material.dart';
 
 
@@ -117,7 +117,7 @@ class LoginScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const OtpScreen(),
+                        builder: (_) =>  OtpScreen(),
                       ),
                     );
                   },

@@ -1,3 +1,4 @@
+import 'package:checkmate/features/home/presentation/pages/homepage.dart';
 import 'package:flutter/material.dart';
 
 class BookingSuccessScreen extends StatelessWidget {
@@ -14,37 +15,18 @@ class BookingSuccessScreen extends StatelessWidget {
           children: [
             /// Header
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 14,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
               decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: Color(0xFFE5E7EB),
-                  ),
-                ),
+                border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB))),
               ),
               child: Row(
                 children: [
-                  const Icon(
-                    Icons.medical_services,
-                    color: Color(0xFF10243A),
-                  ),
-                  const SizedBox(width: 8),
                   const Text(
                     "CheckMate",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF10243A),
-                    ),
-                  ),
-                  const Spacer(),
-                  const CircleAvatar(
-                    radius: 18,
-                    backgroundImage: NetworkImage(
-                      "https://i.pravatar.cc/150",
                     ),
                   ),
                 ],
@@ -115,9 +97,7 @@ class BookingSuccessScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(18),
-                        border: Border.all(
-                          color: const Color(0xFFE5E7EB),
-                        ),
+                        border: Border.all(color: const Color(0xFFE5E7EB)),
                       ),
                       child: Column(
                         children: [
@@ -127,16 +107,10 @@ class BookingSuccessScreen extends StatelessWidget {
                           ),
                           const Divider(height: 28),
 
-                          _infoRow(
-                            "DATE",
-                            "Oct 24, 2023",
-                          ),
+                          _infoRow("DATE", "Oct 24, 2023"),
                           const Divider(height: 28),
 
-                          _infoRow(
-                            "TIME",
-                            "09:30 AM",
-                          ),
+                          _infoRow("TIME", "09:30 AM"),
                           const Divider(height: 28),
 
                           Row(
@@ -174,87 +148,25 @@ class BookingSuccessScreen extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
                           shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(14),
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => const HomeScreen(),
+                            ),
+                            (route) => false,
+                          );
+                        },
                         child: const Text(
                           "Back to Home",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 17,
-                          ),
+                          style: TextStyle(color: Colors.white, fontSize: 17),
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 14),
 
-                    /// View Bookings
-                    SizedBox(
-                      width: double.infinity,
-                      height: 56,
-                      child: OutlinedButton(
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(
-                            color: Color(0xFF10243A),
-                          ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(14),
-                          ),
-                        ),
-                        onPressed: () {},
-                        child: const Text(
-                          "View My Bookings",
-                          style: TextStyle(
-                            color: Color(0xFF10243A),
-                            fontSize: 17,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 50),
-
-                    /// Map
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(18),
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Image.network(
-                            "https://maps.googleapis.com/maps/api/staticmap?center=New+York&zoom=12&size=600x250",
-                            height: 140,
-                            width: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) {
-                              return Container(
-                                height: 140,
-                                color: Colors.grey.shade200,
-                              );
-                            },
-                          ),
-
-                          ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              foregroundColor:
-                                  const Color(0xFF6B7280),
-                              elevation: 1,
-                            ),
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.location_on_outlined,
-                            ),
-                            label: const Text(
-                              "Get Directions",
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -265,10 +177,7 @@ class BookingSuccessScreen extends StatelessWidget {
     );
   }
 
-  static Widget _infoRow(
-    String title,
-    String value,
-  ) {
+  static Widget _infoRow(String title, String value) {
     return Row(
       children: [
         Text(
@@ -280,12 +189,14 @@ class BookingSuccessScreen extends StatelessWidget {
           ),
         ),
         const Spacer(),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFF10243A),
+        Expanded(
+          child: Text(
+            value,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF10243A),
+            ),
           ),
         ),
       ],

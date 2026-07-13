@@ -17,21 +17,14 @@ class BookingDetailsScreen extends StatelessWidget {
         centerTitle: true,
         title: const Text(
           "Booking Details",
-          style: TextStyle(
-            color: darkText,
-            fontWeight: FontWeight.w600,
-          ),
+          style: TextStyle(color: darkText, fontWeight: FontWeight.w600),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: darkText),
-          onPressed: () {},
+          icon: const Icon(Icons.arrow_back_ios_new, color: darkText),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.more_vert, color: darkText),
-            onPressed: () {},
-          ),
-        ],
       ),
 
       body: SafeArea(
@@ -41,8 +34,7 @@ class BookingDetailsScreen extends StatelessWidget {
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(24),
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     /// Status
                     Container(
@@ -52,8 +44,7 @@ class BookingDetailsScreen extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF82E6D8),
-                        borderRadius:
-                            BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
@@ -68,8 +59,7 @@ class BookingDetailsScreen extends StatelessWidget {
                             "Confirmed",
                             style: TextStyle(
                               color: primaryColor,
-                              fontWeight:
-                                  FontWeight.w500,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
@@ -93,8 +83,7 @@ class BookingDetailsScreen extends StatelessWidget {
                     /// Schedule Card
                     _card(
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _sectionTitle("SCHEDULE"),
 
@@ -102,16 +91,11 @@ class BookingDetailsScreen extends StatelessWidget {
 
                           const Row(
                             children: [
-                              Icon(
-                                Icons.calendar_today,
-                                color: primaryColor,
-                              ),
+                              Icon(Icons.calendar_today, color: primaryColor),
                               SizedBox(width: 12),
                               Text(
                                 "Oct 24, 2023",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
+                                style: TextStyle(fontSize: 16),
                               ),
                             ],
                           ),
@@ -120,17 +104,9 @@ class BookingDetailsScreen extends StatelessWidget {
 
                           const Row(
                             children: [
-                              Icon(
-                                Icons.access_time,
-                                color: primaryColor,
-                              ),
+                              Icon(Icons.access_time, color: primaryColor),
                               SizedBox(width: 12),
-                              Text(
-                                "09:30 AM",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
+                              Text("09:30 AM", style: TextStyle(fontSize: 16)),
                             ],
                           ),
                         ],
@@ -142,8 +118,7 @@ class BookingDetailsScreen extends StatelessWidget {
                     /// Lab Card
                     _card(
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _sectionTitle("LABORATORY"),
 
@@ -153,8 +128,7 @@ class BookingDetailsScreen extends StatelessWidget {
                             "Boutique Diagnostics Center",
                             style: TextStyle(
                               fontSize: 18,
-                              fontWeight:
-                                  FontWeight.w600,
+                              fontWeight: FontWeight.w600,
                               color: darkText,
                             ),
                           ),
@@ -164,8 +138,7 @@ class BookingDetailsScreen extends StatelessWidget {
                           Text(
                             "122 Medical Plaza, Suite 400\nNorthpoint District, NY 10012",
                             style: TextStyle(
-                              color:
-                                  Colors.grey.shade700,
+                              color: Colors.grey.shade700,
                               height: 1.5,
                               fontSize: 15,
                             ),
@@ -185,8 +158,7 @@ class BookingDetailsScreen extends StatelessWidget {
                                 "Get Directions",
                                 style: TextStyle(
                                   color: primaryColor,
-                                  fontWeight:
-                                      FontWeight.w500,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ],
@@ -200,22 +172,17 @@ class BookingDetailsScreen extends StatelessWidget {
                     /// Instructions Card
                     _card(
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Row(
                             children: [
-                              Icon(
-                                Icons.info_outline,
-                                color: primaryColor,
-                              ),
+                              Icon(Icons.info_outline, color: primaryColor),
                               SizedBox(width: 10),
                               Text(
                                 "Pre-test Instructions",
                                 style: TextStyle(
                                   fontSize: 18,
-                                  fontWeight:
-                                      FontWeight.w600,
+                                  fontWeight: FontWeight.w600,
                                   color: darkText,
                                 ),
                               ),
@@ -242,26 +209,17 @@ class BookingDetailsScreen extends StatelessWidget {
                     /// Payment Summary
                     _card(
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _sectionTitle(
-                            "PAYMENT SUMMARY",
-                          ),
+                          _sectionTitle("PAYMENT SUMMARY"),
 
                           const SizedBox(height: 24),
 
-                          _priceRow(
-                            "Comprehensive Blood Panel",
-                            "\$185.00",
-                          ),
+                          _priceRow("Comprehensive Blood Panel", "\$185.00"),
 
                           const SizedBox(height: 14),
 
-                          _priceRow(
-                            "Collection Fee",
-                            "\$15.00",
-                          ),
+                          _priceRow("Collection Fee", "\$15.00"),
 
                           const SizedBox(height: 16),
 
@@ -275,8 +233,7 @@ class BookingDetailsScreen extends StatelessWidget {
                                 "Total Amount",
                                 style: TextStyle(
                                   fontSize: 18,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Spacer(),
@@ -284,8 +241,7 @@ class BookingDetailsScreen extends StatelessWidget {
                                 "\$200.00",
                                 style: TextStyle(
                                   fontSize: 18,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontWeight: FontWeight.bold,
                                   color: primaryColor,
                                 ),
                               ),
@@ -294,10 +250,7 @@ class BookingDetailsScreen extends StatelessWidget {
 
                           const SizedBox(height: 24),
 
-                          Divider(
-                            color:
-                                Colors.grey.shade300,
-                          ),
+                          Divider(color: Colors.grey.shade300),
 
                           const SizedBox(height: 16),
 
@@ -306,16 +259,12 @@ class BookingDetailsScreen extends StatelessWidget {
                               Icon(
                                 Icons.credit_card,
                                 size: 18,
-                                color:
-                                    Colors.grey.shade700,
+                                color: Colors.grey.shade700,
                               ),
                               const SizedBox(width: 8),
                               Text(
                                 "Paid via Visa ending in 4242",
-                                style: TextStyle(
-                                  color:
-                                      Colors.grey.shade700,
-                                ),
+                                style: TextStyle(color: Colors.grey.shade700),
                               ),
                             ],
                           ),
@@ -337,24 +286,15 @@ class BookingDetailsScreen extends StatelessWidget {
                     height: 56,
                     child: OutlinedButton(
                       style: OutlinedButton.styleFrom(
-                        side: BorderSide(
-                          color: Colors.grey.shade400,
-                        ),
-                        shape:
-                            RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(
-                            28,
-                          ),
+                        side: BorderSide(color: Colors.grey.shade400),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(28),
                         ),
                       ),
                       onPressed: () {},
                       child: const Text(
                         "Reschedule Appointment",
-                        style: TextStyle(
-                          color: darkText,
-                          fontSize: 16,
-                        ),
+                        style: TextStyle(color: darkText, fontSize: 16),
                       ),
                     ),
                   ),
@@ -365,10 +305,7 @@ class BookingDetailsScreen extends StatelessWidget {
                     onPressed: () {},
                     child: const Text(
                       "CANCEL BOOKING",
-                      style: TextStyle(
-                        color: Colors.red,
-                        letterSpacing: 1,
-                      ),
+                      style: TextStyle(color: Colors.red, letterSpacing: 1),
                     ),
                   ),
                 ],
@@ -387,9 +324,7 @@ class BookingDetailsScreen extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: const Color(0xFFE5E7EB),
-        ),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: child,
     );
@@ -410,17 +345,13 @@ class BookingDetailsScreen extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
-        crossAxisAlignment:
-            CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Padding(
             padding: EdgeInsets.only(top: 6),
             child: Text(
               "•",
-              style: TextStyle(
-                color: primaryColor,
-                fontSize: 18,
-              ),
+              style: TextStyle(color: primaryColor, fontSize: 18),
             ),
           ),
           const SizedBox(width: 10),
@@ -439,26 +370,11 @@ class BookingDetailsScreen extends StatelessWidget {
     );
   }
 
-  static Widget _priceRow(
-    String title,
-    String value,
-  ) {
+  static Widget _priceRow(String title, String value) {
     return Row(
       children: [
-        Expanded(
-          child: Text(
-            title,
-            style: const TextStyle(
-              fontSize: 16,
-            ),
-          ),
-        ),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 16,
-          ),
-        ),
+        Expanded(child: Text(title, style: const TextStyle(fontSize: 16))),
+        Text(value, style: const TextStyle(fontSize: 16)),
       ],
     );
   }
