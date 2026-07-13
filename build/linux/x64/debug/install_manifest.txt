@@ -9,5 +9,6 @@
 /home/cj/Documents/projects/flutter/startup/checkmate/build/linux/x64/debug/bundle/data/flutter_assets/version.json
 /home/cj/Documents/projects/flutter/startup/checkmate/build/linux/x64/debug/bundle/data/flutter_assets/kernel_blob.bin
 /home/cj/Documents/projects/flutter/startup/checkmate/build/linux/x64/debug/bundle/data/flutter_assets/FontManifest.json
+/home/cj/Documents/projects/flutter/startup/checkmate/build/linux/x64/debug/bundle/data/flutter_assets/assets/logo.png
 /home/cj/Documents/projects/flutter/startup/checkmate/build/linux/x64/debug/bundle/data/flutter_assets/packages/cupertino_icons/assets/CupertinoIcons.ttf
 /home/cj/Documents/projects/flutter/startup/checkmate/build/linux/x64/debug/bundle/data/flutter_assets/NOTICES.Z
