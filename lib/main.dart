@@ -1,3 +1,4 @@
+import 'package:checkmate/core/theme/app_theme.dart';
 import 'package:checkmate/features/auth/presentation/pages/login.dart';
 import 'package:checkmate/features/auth/presentation/pages/splash.dart';
 import 'package:checkmate/features/home/homepage.dart';
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
       debugShowCheckedModeBanner: false,
+      theme: AppTheme.light,
       home: const SplashScreen(),
     );
   }
