@@ -1,3 +1,4 @@
+import 'package:checkmate/core/widgets/logo_row.dart';
 import 'package:flutter/material.dart';
 
 class HomeTopWidget extends StatelessWidget {
@@ -10,16 +11,7 @@ class HomeTopWidget extends StatelessWidget {
         const SizedBox(height: 12),
 
         /// Header
-        Row(
-          children: [
-            const Text(
-              "CheckMate",
-              style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
-            ),
-
-            const Spacer(),
-          ],
-        ),
+        LogoRowWidget(),
 
         const SizedBox(height: 20),
 

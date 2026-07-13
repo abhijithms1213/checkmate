@@ -1,3 +1,4 @@
+import 'package:checkmate/core/widgets/logo_row.dart';
 import 'package:checkmate/features/bookings/presentation/pages/payment.dart';
 import 'package:flutter/material.dart';
 
@@ -77,38 +78,8 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               /// Header
-              Row(
-                children: [
-                  const Icon(Icons.medical_services, color: darkBlue),
-                  const SizedBox(width: 10),
-                  const Text(
-                    "CheckMate",
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: darkBlue,
-                    ),
-                  ),
-                  const Spacer(),
-                  const CircleAvatar(
-                    radius: 18,
-                    backgroundImage: NetworkImage("https://i.pravatar.cc/150"),
-                  ),
-                ],
-              ),
-
+              LogoRowWidget(),
               const SizedBox(height: 30),
-
-              TextButton.icon(
-                onPressed: () {},
-                icon: const Icon(Icons.arrow_back_ios, size: 16),
-                label: const Text(
-                  "Back to City Laboratory",
-                  style: TextStyle(fontSize: 16),
-                ),
-              ),
-
-              const SizedBox(height: 8),
 
               const Text(
                 "Select Appointment Slot",
