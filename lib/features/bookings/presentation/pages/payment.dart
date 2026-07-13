@@ -1,3 +1,4 @@
+import 'package:checkmate/core/widgets/logo_with_back_btn.dart';
 import 'package:checkmate/features/bookings/presentation/pages/success.dart';
 import 'package:flutter/material.dart';
 
@@ -16,71 +17,17 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
-
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
-        selectedItemColor: primaryColor,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today_outlined),
-            label: "Bookings",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: "Profile",
-          ),
-        ],
-      ),
-
       body: SafeArea(
         child: Column(
           children: [
             /// Header
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 14,
-              ),
-              decoration: const BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(
-                    color: Color(0xFFE5E7EB),
-                  ),
-                ),
-              ),
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.arrow_back),
-                  ),
-                  const SizedBox(width: 4),
-
-                  const Text(
-                    "CheckMate",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF10243A),
-                    ),
-                  ),
-
-                  
-                ],
-              ),
-            ),
+            CmpnyNameWithBackBtnWidget(),
 
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(18),
                 child: Column(
-                  crossAxisAlignment:
-                      CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     /// Title
                     Row(
@@ -97,10 +44,7 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                         ),
                         Text(
                           "Final Step",
-                          style: TextStyle(
-                            color: primaryColor,
-                            fontSize: 16,
-                          ),
+                          style: TextStyle(color: primaryColor, fontSize: 16),
                         ),
                       ],
                     ),
@@ -166,8 +110,7 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                       children: [
                         Expanded(
                           child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               _sectionLabel("SCHEDULE"),
 
@@ -177,20 +120,10 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                                 "Oct 24, 2023 • 09:30 AM",
                                 style: TextStyle(
                                   fontSize: 18,
-                                  fontWeight:
-                                      FontWeight.w600,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
                             ],
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {},
-                          child: const Text(
-                            "Edit",
-                            style: TextStyle(
-                              color: primaryColor,
-                            ),
                           ),
                         ),
                       ],
@@ -210,8 +143,7 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                     const SizedBox(height: 16),
 
                     _paymentTile("Pay at Lab"),
-                    const SizedBox(height: 10),
-                    _paymentTile("Credit / Debit Card"),
+
                     const SizedBox(height: 10),
                     _paymentTile("UPI / QR Scan"),
 
@@ -228,24 +160,15 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
 
                     const SizedBox(height: 20),
 
-                    _priceRow(
-                      "Full Body Checkup",
-                      "\$199.00",
-                    ),
+                    _priceRow("Full Body Checkup", "\$199.00"),
 
                     const SizedBox(height: 12),
 
-                    _priceRow(
-                      "Home Sample Collection",
-                      "FREE",
-                    ),
+                    _priceRow("Home Sample Collection", "FREE"),
 
                     const SizedBox(height: 12),
 
-                    _priceRow(
-                      "Service Fee & Taxes",
-                      "\$12.50",
-                    ),
+                    _priceRow("Service Fee & Taxes", "\$12.50"),
 
                     const SizedBox(height: 12),
 
@@ -259,8 +182,7 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                           "Total Amount",
                           style: TextStyle(
                             fontSize: 18,
-                            fontWeight:
-                                FontWeight.bold,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         Spacer(),
@@ -268,8 +190,7 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                           "\$211.50",
                           style: TextStyle(
                             fontSize: 18,
-                            fontWeight:
-                                FontWeight.bold,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
@@ -282,23 +203,20 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                       height: 58,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              primaryColor,
-                          shape:
-                              RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(
-                              14,
-                            ),
+                          backgroundColor: primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
                           ),
                         ),
                         onPressed: () {
-
-                          Navigator.of(context).push(MaterialPageRoute(builder:(context) => BookingSuccessScreen(),));
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => BookingSuccessScreen(),
+                            ),
+                          );
                         },
                         child: const Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
                               "Confirm & Pay",
@@ -308,40 +226,13 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                               ),
                             ),
                             SizedBox(width: 8),
-                            Icon(
-                              Icons.arrow_forward,
-                              color: Colors.white,
-                            ),
+                            Icon(Icons.arrow_forward, color: Colors.white),
                           ],
                         ),
                       ),
                     ),
 
                     const SizedBox(height: 16),
-
-                    const Center(
-                      child: Text(
-                        "Secure 256-bit Transaction",
-                        style: TextStyle(
-                          color: Colors.black54,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 28),
-
-                    Center(
-                      child: Text(
-                        "Free cancellation up to 24 hours before your slot. Refunds processed within 3-5 business days.",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          height: 1.5,
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
                   ],
                 ),
               ),
@@ -363,30 +254,20 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
       },
       child: Container(
         height: 58,
-        padding:
-            const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: const Color(0xFFD1D5DB),
-          ),
+          border: Border.all(color: const Color(0xFFD1D5DB)),
           color: Colors.white,
         ),
         child: Row(
           children: [
             Icon(
-              isSelected
-                  ? Icons.radio_button_checked
-                  : Icons.radio_button_off,
-              color: isSelected
-                  ? primaryColor
-                  : Colors.grey,
+              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+              color: isSelected ? primaryColor : Colors.grey,
             ),
             const SizedBox(width: 12),
-            Text(
-              title,
-              style: const TextStyle(fontSize: 16),
-            ),
+            Text(title, style: const TextStyle(fontSize: 16)),
           ],
         ),
       ),
@@ -404,26 +285,17 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
     );
   }
 
-  static Widget _priceRow(
-    String title,
-    String value,
-  ) {
+  static Widget _priceRow(String title, String value) {
     return Row(
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.black87,
-          ),
+          style: const TextStyle(fontSize: 16, color: Colors.black87),
         ),
         const Spacer(),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.black87,
-          ),
+          style: const TextStyle(fontSize: 16, color: Colors.black87),
         ),
       ],
     );
