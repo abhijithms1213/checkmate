@@ -1,5 +1,6 @@
 import 'package:checkmate/core/constants/app_assets.dart';
 import 'package:checkmate/features/auth/presentation/pages/otp.dart';
+import 'package:checkmate/core/widgets/buttons/elevated_btn.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -99,55 +100,48 @@ class LoginScreen extends StatelessWidget {
 
               const SizedBox(height: 25),
 
-              SizedBox(
-                width: double.infinity,
-                height: 55,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => OtpScreen()),
-                    );
-                  },
-                  child: const Text(
-                    "Send OTP",
-                    style: TextStyle(color: Colors.white, fontSize: 17),
-                  ),
-                ),
+              ElevatedBtnWidget(
+                primaryColor: primaryColor,
+                content: 'Send OTP',
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => OtpScreen()),
+                  );
+                },
               ),
 
               const Spacer(),
 
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "Privacy",
-                    style: TextStyle(color: Colors.grey.shade700),
-                  ),
-                  const SizedBox(width: 30),
-                  Text("Terms", style: TextStyle(color: Colors.grey.shade700)),
-                ],
-              ),
-
-              const SizedBox(height: 15),
-
-              Text(
-                "© 2024 CHECKMATE",
-                style: TextStyle(color: Colors.grey.shade400, letterSpacing: 1),
-              ),
-
-              const SizedBox(height: 30),
+              _bottom(),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _bottom() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Privacy", style: TextStyle(color: Colors.grey.shade700)),
+            const SizedBox(width: 30),
+            Text("Terms", style: TextStyle(color: Colors.grey.shade700)),
+          ],
+        ),
+
+        const SizedBox(height: 15),
+
+        Text(
+          "© 2024 CHECKMATE",
+          style: TextStyle(color: Colors.grey.shade400, letterSpacing: 1),
+        ),
+
+        const SizedBox(height: 30),
+      ],
     );
   }
 }

@@ -2,6 +2,9 @@ import 'dart:developer';
 
 import 'package:checkmate/core/widgets/button.dart';
 import 'package:checkmate/features/bookings/presentation/pages/book_lab.dart';
+import 'package:checkmate/features/home/presentation/widgets/home_category_row.dart';
+import 'package:checkmate/features/home/presentation/widgets/home_lab_tests_tile.dart';
+import 'package:checkmate/features/home/presentation/widgets/home_top_widget.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -51,39 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: [
-              const SizedBox(height: 12),
-
-              /// Header
-              Row(
-                children: [
-                  const Text(
-                    "CheckMate",
-                    style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
-                  ),
-
-                  const Spacer(),
-
-                ],
-              ),
-
-              const SizedBox(height: 20),
-
-              /// Search
-              TextField(
-                decoration: InputDecoration(
-                  hintText: "Search tests...",
-                  prefixIcon: const Icon(Icons.search),
-                  filled: true,
-                  fillColor: Colors.white,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 20),
+              HomeTopWidget(),
 
               /// Categories
               SizedBox(
@@ -101,23 +72,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           selectedCategory = index;
                         });
                       },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 18),
-                        decoration: BoxDecoration(
-                          color: selected
-                              ? const Color(0xff071B35)
-                              : Colors.grey.shade300,
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                        child: Center(
-                          child: Text(
-                            categories[index],
-                            style: TextStyle(
-                              color: selected ? Colors.white : Colors.black87,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
+                      child: HomeTestCategoriesRowWidget(
+                        index: index,
+                        selected: selected,
+                        categories: categories,
                       ),
                     );
                   },
@@ -134,13 +92,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     "Popular Tests",
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
                   ),
-                  // Text(
-                  //   "View All",
-                  //   style: TextStyle(
-                  //     color: Color(0xff00796B),
-                  //     fontWeight: FontWeight.w600,
-                  //   ),
-                  // ),
                 ],
               ),
 
@@ -152,72 +103,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   itemCount: tests.length,
                   separatorBuilder: (_, __) => const SizedBox(height: 12),
                   itemBuilder: (context, index) {
-                    return TestTile(test: tests[index]);
+                    return TestTileWidget(test: tests[index]);
                   },
                 ),
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class TestTile extends StatelessWidget {
-  final TestModel test;
-
-  const TestTile({super.key, required this.test});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        log('test ${test.title}');
-        Navigator.of(
-          context,
-        ).push(MaterialPageRoute(builder: (context) => LabBookingScreen()));
-      },
-      child: Container(
-        height: 84,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-        ),
-        child: Row(
-          children: [
-            Container(
-              height: 42,
-              width: 42,
-              decoration: BoxDecoration(
-                color: const Color(0xffF1F3F5),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(test.icon, color: const Color(0xff00796B)),
-            ),
-
-            const SizedBox(width: 14),
-
-            Expanded(
-              child: Text(
-                test.title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
-            ),
-
-            Text(
-              test.price,
-              style: const TextStyle(
-                color: Color(0xff00796B),
-                fontWeight: FontWeight.w700,
-                fontSize: 16,
-              ),
-            ),
-          ],
         ),
       ),
     );

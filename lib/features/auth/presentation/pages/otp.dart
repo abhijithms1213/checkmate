@@ -1,4 +1,7 @@
+import 'package:checkmate/core/constants/app_assets.dart';
 import 'package:checkmate/features/address/presentation/pages/addres_add.dart';
+import 'package:checkmate/core/widgets/buttons/elevated_btn.dart';
+import 'package:checkmate/features/home/presentation/pages/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 
@@ -55,14 +58,11 @@ class OtpScreen extends StatelessWidget {
                 Container(
                   width: 80,
                   height: 80,
-                  decoration: const BoxDecoration(
-                    color: Color(0xff84E9DA),
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: AssetImage(AppAssets.logoOnly),
+                    ),
                     shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.shield_outlined,
-                    size: 42,
-                    color: primaryColor,
                   ),
                 ),
 
@@ -80,48 +80,31 @@ class OtpScreen extends StatelessWidget {
                 const SizedBox(height: 16),
 
                 Text(
-                  "Enter the 6-digit code sent to your phone",
+                  "Enter the 4-digit code sent to your phone +1 234 *** 7890",
                   style: TextStyle(fontSize: 18, color: Colors.grey.shade700),
-                ),
-
-                const SizedBox(height: 6),
-
-                Text(
-                  "number +1 234 *** 7890",
-                  style: TextStyle(fontSize: 18, color: Colors.grey.shade700),
+                  textAlign: TextAlign.center,
                 ),
 
                 const SizedBox(height: 45),
 
                 Pinput(
-                  length: 6,
+                  length: 4,
                   defaultPinTheme: defaultPinTheme,
                   focusedPinTheme: focusedPinTheme,
                 ),
 
                 const SizedBox(height: 50),
 
-                SizedBox(
-                  width: double.infinity,
-                  height: 55,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: primaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => AddAddressScreen()),
-                      );
-                    },
-                    child: const Text(
-                      "Verify & Proceed",
-                      style: TextStyle(color: Colors.white, fontSize: 17),
-                    ),
-                  ),
+                ElevatedBtnWidget(
+                  primaryColor: primaryColor,
+                  content: 'Verify & Proceed',
+
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => AddAddressScreen()),
+                    );
+                  },
                 ),
 
                 const SizedBox(height: 50),
@@ -140,19 +123,7 @@ class OtpScreen extends StatelessWidget {
 
                 const SizedBox(height: 80),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.lock_outline, color: Colors.grey, size: 18),
-                    const SizedBox(width: 6),
-                    Text(
-                      "Secure 256-bit encrypted verification",
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 30),
+             
               ],
             ),
           ),
