@@ -1,7 +1,6 @@
 
 # FVM Version Cache
 .fvm/
-.dart_tool/*
 .dart_tool/
 .flutter-plugins-dependencies
 pubspec.lock
@@ -9,3 +8,5 @@ pubspec.lock
 .dart_tool/package_graph.json
 linux/flutter/generated_plugins.cmake
 windows/flutter/generated_plugins.cmake
+build/
+.dart_tool/
