@@ -1,6 +1,6 @@
-import 'package:checkmate/presentation/auth/login.dart';
-import 'package:checkmate/presentation/auth/splash.dart';
-import 'package:checkmate/presentation/home/homepage.dart';
+import 'package:checkmate/features/auth/presentation/pages/login.dart';
+import 'package:checkmate/features/auth/presentation/pages/splash.dart';
+import 'package:checkmate/features/home/homepage.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       locale: DevicePreview.locale(context),
       builder: DevicePreview.appBuilder,
       debugShowCheckedModeBanner: false,
-      home: const LoginScreen(),
+      home: const SplashScreen(),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:checkmate/features/home/homepage.dart';
 import 'package:flutter/material.dart';
 
 class AddAddressScreen extends StatefulWidget {
@@ -247,7 +248,15 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                       ),
                     ),
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const HomeScreen(),
+                      ),
+                    );
+                  },
                   icon: const Icon(
                     Icons.check_circle_outline,
                     color: Colors.white,

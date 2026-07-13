@@ -1,3 +1,4 @@
+import 'package:checkmate/features/address/addres_add.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 
@@ -110,7 +111,12 @@ class OtpScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(14),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => AddAddressScreen()),
+                      );
+                    },
                     child: const Text(
                       "Verify & Proceed",
                       style: TextStyle(color: Colors.white, fontSize: 17),

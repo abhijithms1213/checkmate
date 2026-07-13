@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:checkmate/presentation/bookings/book_lab.dart';
+import 'package:checkmate/features/bookings/book_lab.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {

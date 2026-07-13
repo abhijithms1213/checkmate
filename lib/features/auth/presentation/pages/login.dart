@@ -1,4 +1,4 @@
-import 'package:checkmate/presentation/auth/otp.dart';
+import 'package:checkmate/features/auth/presentation/otp.dart';
 import 'package:flutter/material.dart';
 
 

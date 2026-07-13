@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:checkmate/presentation/auth/login.dart';
+import 'package:checkmate/features/auth/presentation/pages/login.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
