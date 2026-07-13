@@ -3,3 +3,9 @@
 .fvm/
 .dart_tool/*
 .dart_tool/
+.flutter-plugins-dependencies
+pubspec.lock
+.dart_tool/package_config.json
+.dart_tool/package_graph.json
+linux/flutter/generated_plugins.cmake
+windows/flutter/generated_plugins.cmake
