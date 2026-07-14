@@ -148,9 +148,8 @@ class AddressScreen extends StatelessWidget {
                                       );
                                     });
                               },
-                              icon: const Icon(Icons.add, color: Colors.white),
                               label: Text(
-                                "+ Add New Address",
+                                "Add New Address",
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 18.spMin,
