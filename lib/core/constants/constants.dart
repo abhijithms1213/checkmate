@@ -5,3 +5,6 @@ const String supabasePublishableKey =
 const String razorpayKeyIdTest = 'rzp_test_TD183x0HVgZogY';
 
 const String razorpayKeyIdLive = 'rzp_live_TD14NhkhTKjQlo';
+
+const twilioAccountSid = '';
+const twiloAuthToken = '';

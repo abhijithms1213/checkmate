@@ -32,11 +32,12 @@ class AddressScreen extends StatelessWidget {
               // Header
               Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
+                  horizontal: 8,
+                  vertical: 4,
                 ),
                 child: Row(
                   children: [
+                    const SizedBox(width: 40), // balance the logout icon
                     Expanded(
                       child: Text(
                         "Lab Services",
@@ -46,6 +47,27 @@ class AddressScreen extends StatelessWidget {
                           fontWeight: FontWeight.w600,
                           color: darkText,
                         ),
+                      ),
+                    ),
+                    Builder(
+                      builder: (ctx) => IconButton(
+                        tooltip: 'Log Out',
+                        icon: const Icon(
+                          Icons.logout_rounded,
+                          color: Colors.redAccent,
+                        ),
+                        onPressed: () async {
+                          await s1<LocalStorageService>().clear();
+                          if (ctx.mounted) {
+                            Navigator.pushAndRemoveUntil(
+                              ctx,
+                              MaterialPageRoute(
+                                builder: (_) => const LoginScreen(),
+                              ),
+                              (route) => false,
+                            );
+                          }
+                        },
                       ),
                     ),
                   ],
@@ -158,47 +180,7 @@ class AddressScreen extends StatelessWidget {
                             ),
                           ),
 
-                          const SizedBox(height: 16),
 
-                          SizedBox(
-                            width: double.infinity,
-                            height: 64,
-                            child: OutlinedButton.icon(
-                              style: OutlinedButton.styleFrom(
-                                side: const BorderSide(
-                                  color: Colors.redAccent,
-                                  width: 1.5,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              onPressed: () async {
-                                await s1<LocalStorageService>().clear();
-                                if (context.mounted) {
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const LoginScreen(),
-                                    ),
-                                    (route) => false,
-                                  );
-                                }
-                              },
-                              icon: const Icon(
-                                Icons.logout,
-                                color: Colors.redAccent,
-                              ),
-                              label: Text(
-                                "Log Out",
-                                style: TextStyle(
-                                  color: Colors.redAccent,
-                                  fontSize: 18.spMin,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
 
                           const SizedBox(height: 24),
                         ],

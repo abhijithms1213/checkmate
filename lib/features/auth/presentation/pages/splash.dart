@@ -18,23 +18,22 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(
-      const Duration(seconds: 1),
-      () {
-        final isLoggedIn = s1<LocalStorageService>().isLoggedIn;
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => isLoggedIn ? const HomeScreen() : const LoginScreen(),
-          ),
-        );
-      },
-    );
+    Timer(const Duration(seconds: 1), () {
+      final isLoggedIn = s1<LocalStorageService>().isLoggedIn;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              isLoggedIn ? const HomeScreen() : const LoginScreen(),
+        ),
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
           child: Container(
