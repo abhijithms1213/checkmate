@@ -7,6 +7,10 @@ import 'package:checkmate/features/bookings/domain/entities/lab_entity.dart';
 import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_bloc.dart';
 import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_event.dart';
 import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_state.dart';
+import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
+import 'package:checkmate/features/address/presentation/bloc/user_event.dart';
+import 'package:checkmate/core/services/local_storage_service.dart';
+import 'package:checkmate/injection_container.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -54,13 +58,18 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
         child: Center(
           child: InkWell(
             onTap: () {
+              final phone = s1<LocalStorageService>().phone ?? '';
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => ReviewPayScreen(
-                    labs: widget.labs,
-                    test: widget.test,
-                    selectedDate: dates[selectedDate]['fullDate']!,
-                    selectedTime: selectedTime,
+                  builder: (context) => BlocProvider(
+                    create: (_) => s1<UserBloc>()
+                      ..add(LoadAddressesEvent(phone)),
+                    child: ReviewPayScreen(
+                      labs: widget.labs,
+                      test: widget.test,
+                      selectedDate: dates[selectedDate]['fullDate']!,
+                      selectedTime: selectedTime,
+                    ),
                   ),
                 ),
               );
