@@ -57,7 +57,9 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocListener<OtpBloc, OtpState>(
       listener: (context, state) {
         if (state is OtpSuccess) {
-          Navigator.push(
+          // pushReplacement: Login is removed from the stack, so resend
+          // can never push a second OtpScreen on top of an existing one.
+          Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (_) => OtpScreen(phone: _phoneController.text.trim()),
