@@ -10,6 +10,7 @@ void main() {
       SharedPreferences.setMockInitialValues({
         'is_logged_in': false,
         'phone': '1234567890',
+        'pincode': '123456',
       });
       final sharedPreferences = await SharedPreferences.getInstance();
       localStorageService = LocalStorageService(sharedPreferences);
@@ -33,10 +34,20 @@ void main() {
       expect(localStorageService.phone, equals('0987654321'));
     });
 
+    test('pincode returns initial value', () {
+      expect(localStorageService.pincode, equals('123456'));
+    });
+
+    test('setPincode updates value', () async {
+      await localStorageService.setPincode('654321');
+      expect(localStorageService.pincode, equals('654321'));
+    });
+
     test('clear removes all keys', () async {
       await localStorageService.clear();
       expect(localStorageService.isLoggedIn, isFalse);
       expect(localStorageService.phone, isNull);
+      expect(localStorageService.pincode, isNull);
     });
   });
 }

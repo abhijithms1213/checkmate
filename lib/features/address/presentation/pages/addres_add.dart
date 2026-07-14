@@ -86,6 +86,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
             s1<LocalStorageService>().setLoggedIn(true);
             s1<LocalStorageService>().setPhone(widget.phone!);
           }
+          s1<LocalStorageService>().setPincode(_pincodeController.text.trim());
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => const HomeScreen()),

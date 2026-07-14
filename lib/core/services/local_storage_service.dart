@@ -7,6 +7,7 @@ class LocalStorageService {
 
   static const String _keyIsLoggedIn = 'is_logged_in';
   static const String _keyPhone = 'phone';
+  static const String _keyPincode = 'pincode';
 
   bool get isLoggedIn => _prefs.getBool(_keyIsLoggedIn) ?? false;
 
@@ -18,6 +19,12 @@ class LocalStorageService {
 
   Future<bool> setPhone(String value) async {
     return await _prefs.setString(_keyPhone, value);
+  }
+
+  String? get pincode => _prefs.getString(_keyPincode);
+
+  Future<bool> setPincode(String value) async {
+    return await _prefs.setString(_keyPincode, value);
   }
 
   Future<bool> clear() async {
