@@ -1,6 +1,4 @@
 import 'dart:developer';
-
-import 'package:checkmate/features/bookings/data/models/booking_details_model.dart';
 import 'package:checkmate/features/bookings/data/models/booking_model.dart';
 import 'package:checkmate/features/bookings/data/models/booking_request_model.dart';
 import 'package:checkmate/features/bookings/data/models/slot_model.dart';
@@ -14,7 +12,7 @@ class LabsRemoteDataSource {
   LabsRemoteDataSource(this.client);
 
   Future<List<TestModel>> getTestsByPincode(String pincode) async {
-    log('pi ${pincode}');
+    log('pi $pincode');
     // Step 1
     final labPincodes = await client
         .from('lab_pincodes')
@@ -109,60 +107,5 @@ class LabsRemoteDataSource {
     });
 
     return BookingModel.fromJson(booking);
-  }
-
-  Future<List<BookingDetailsModel>> getUserBookings(String userId) async {
-    final result = await client
-        .from('bookings')
-        .select('''
-        *,
-        labs(
-          name
-        ),
-        lab_slots(
-          slot_time
-        ),
-        booking_tests(
-          tests(
-            name
-          )
-        )
-      ''')
-        .eq('user_id', userId)
-        .order('created_at', ascending: false);
-
-    return result.map<BookingDetailsModel>((booking) {
-      final tests = (booking['booking_tests'] as List)
-          .map((e) => e['tests']['name'] as String)
-          .toList();
-
-      return BookingDetailsModel(
-        id: booking['id'],
-        labName: booking['labs']['name'],
-        status: booking['status'],
-        totalAmount: (booking['total_amount'] as num).toDouble(),
-        bookingDate: DateTime.parse(booking['booking_date']),
-        slotTime: booking['lab_slots']['slot_time'],
-        tests: tests,
-      );
-    }).toList();
-  }
-
-  Future<BookingDetailsModel> getBookingDetails(String bookingId) async {
-    final result = await client
-        .from('bookings')
-        .select('''
-      *,
-      labs(*),
-      addresses(*),
-      lab_slots(*),
-      booking_tests(
-        *,
-        tests(*)
-      )
-    ''')
-        .eq('id', bookingId)
-        .single();
-    return BookingDetailsModel.fromJson(result);
   }
 }

@@ -23,6 +23,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int selectedCategory = 0;
+  String searchQuery = '';
 
   final List<String> categories = ["All", "Blood", "Heart", "Women", "Hormone"];
 
@@ -41,7 +42,13 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               children: [
-                HomeTopWidget(),
+                HomeTopWidget(
+                  onSearchChanged: (value) {
+                    setState(() {
+                      searchQuery = value;
+                    });
+                  },
+                ),
 
                 /// Categories
                 SizedBox(
@@ -94,10 +101,31 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (state is LabsLoading) {
                         return const Center(child: CircularProgressIndicator());
                       } else if (state is LabsLoaded) {
-                        final tests = state.tests;
+                        var tests = state.tests;
+
+                        // 1. Filter by category
+                        final selectedCatName = categories[selectedCategory];
+                        if (selectedCatName != "All") {
+                          tests = tests
+                              .where((test) =>
+                                  test.category != null &&
+                                  test.category!.toLowerCase().contains(
+                                      selectedCatName.toLowerCase()))
+                              .toList();
+                        }
+
+                        // 2. Filter by search query
+                        if (searchQuery.trim().isNotEmpty) {
+                          final query = searchQuery.trim().toLowerCase();
+                          tests = tests
+                              .where((test) =>
+                                  test.name.toLowerCase().contains(query))
+                              .toList();
+                        }
+
                         if (tests.isEmpty) {
                           return const Center(
-                            child: Text("No tests found for your location."),
+                            child: Text("No tests found for your location or search criteria."),
                           );
                         }
                         return ListView.separated(

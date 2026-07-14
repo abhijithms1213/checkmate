@@ -2,7 +2,9 @@ import 'package:checkmate/core/widgets/logo_row.dart';
 import 'package:flutter/material.dart';
 
 class HomeTopWidget extends StatelessWidget {
-  const HomeTopWidget({super.key});
+  final ValueChanged<String> onSearchChanged;
+
+  const HomeTopWidget({super.key, required this.onSearchChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +19,7 @@ class HomeTopWidget extends StatelessWidget {
 
         /// Search
         TextField(
+          onChanged: onSearchChanged,
           decoration: InputDecoration(
             hintText: "Search tests...",
             prefixIcon: const Icon(Icons.search),
