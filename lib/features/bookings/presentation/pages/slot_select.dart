@@ -1,13 +1,21 @@
 import 'package:checkmate/core/constants/app_colors.dart';
-import 'package:checkmate/core/widgets/logo_row.dart';
+import 'package:checkmate/core/widgets/logo_with_back_btn.dart';
+import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
+import 'package:checkmate/features/bookings/presentation/pages/book_lab.dart';
 import 'package:checkmate/features/bookings/presentation/pages/payment.dart';
 import 'package:checkmate/features/bookings/presentation/widgets/date_tile.dart';
+import 'package:checkmate/features/bookings/domain/entities/lab_entity.dart';
+import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_bloc.dart';
+import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_event.dart';
+import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_state.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class SelectSlotScreen extends StatefulWidget {
-  const SelectSlotScreen({super.key});
-
+  const SelectSlotScreen({super.key, required this.labs, required this.test});
+  final LabEntity labs;
+  final TestEntity test;
   @override
   State<SelectSlotScreen> createState() => _SelectSlotScreenState();
 }
@@ -22,6 +30,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
   @override
   void initState() {
     super.initState();
+    context.read<LabsBloc>().add(GetSlotsByLabIdEvent(widget.labs.id));
     dates = List.generate(30, (index) {
       final date = DateTime.now().add(Duration(days: index));
       return {
@@ -87,7 +96,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               /// Header
-              LogoRowWidget(),
+              CmpnyNameWithBackBtnWidget(isPadding: false),
               const SizedBox(height: 30),
 
               const Text(
@@ -202,56 +211,79 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(18),
                 ),
-                child: GridView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: slots.length,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 14,
-                    crossAxisSpacing: 14,
-                    childAspectRatio: 2.2,
-                  ),
-                  itemBuilder: (context, index) {
-                    final slot = slots[index];
+                child: BlocBuilder<LabsBloc, LabsState>(
+                  builder: (context, state) {
+                    if (state is LabsLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is LabsError) {
+                      return Center(child: Text(state.message));
+                    } else if (state is SlotsLoaded) {
+                      if (state.slots.isEmpty) {
+                        return const Center(child: Text("No slots available"));
+                      }
+                      
+                      // Format slots
+                      final formattedSlots = state.slots.map((s) {
+                        return {
+                          "id": s.id,
+                          "time": s.slotTime, // Assuming it's already a formatted string or easily displayable
+                          "isActive": s.isActive,
+                        };
+                      }).toList();
 
-                    final disabled = disabledSlots.contains(slot);
-
-                    final selected = selectedTime == slot;
-
-                    return GestureDetector(
-                      onTap: disabled
-                          ? null
-                          : () {
-                              setState(() {
-                                selectedTime = slot;
-                              });
-                            },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: selected
-                              ? AppColors.primary
-                              : disabled
-                              ? const Color(0xffF3F4F6)
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: Colors.grey.shade300),
+                      return GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: formattedSlots.length,
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3,
+                          mainAxisSpacing: 14,
+                          crossAxisSpacing: 14,
+                          childAspectRatio: 2.2,
                         ),
-                        child: Center(
-                          child: Text(
-                            slot,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: selected
-                                  ? Colors.white
-                                  : disabled
-                                  ? Colors.grey
-                                  : Colors.black87,
+                        itemBuilder: (context, index) {
+                          final slot = formattedSlots[index];
+                          final timeStr = slot["time"] as String;
+                          final disabled = !(slot["isActive"] as bool);
+                          final selected = selectedTime == timeStr;
+
+                          return GestureDetector(
+                            onTap: disabled
+                                ? null
+                                : () {
+                                    setState(() {
+                                      selectedTime = timeStr;
+                                    });
+                                  },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: selected
+                                    ? AppColors.primary
+                                    : disabled
+                                    ? const Color(0xffF3F4F6)
+                                    : Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(color: Colors.grey.shade300),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  timeStr,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: selected
+                                        ? Colors.white
+                                        : disabled
+                                        ? Colors.grey
+                                        : Colors.black87,
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      ),
-                    );
+                          );
+                        },
+                      );
+                    }
+                    return const SizedBox.shrink();
                   },
                 ),
               ),
@@ -273,10 +305,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
 
               const SizedBox(height: 18),
 
-              const Text(
-                "Lab: City Diagnostic Center",
-                style: TextStyle(fontSize: 18),
-              ),
+              Text("Lab: ${widget.labs.name}", style: TextStyle(fontSize: 18)),
 
               const SizedBox(height: 8),
 
@@ -291,7 +320,10 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
 
               const SizedBox(height: 8),
 
-              const Text("Total: \$145.00", style: TextStyle(fontSize: 18)),
+              Text(
+                "Total: ${widget.labs.price} Rs",
+                style: TextStyle(fontSize: 18),
+              ),
 
               const SizedBox(height: 100),
             ],

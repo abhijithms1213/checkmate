@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:checkmate/features/bookings/data/models/slot_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:checkmate/features/bookings/data/models/test_model.dart';
 import 'package:checkmate/features/bookings/data/models/lab_model.dart';
@@ -49,5 +50,16 @@ class LabsRemoteDataSource {
         .eq('is_available', true);
 
     return result.map<LabModel>((e) => LabModel.fromJson(e)).toList();
+  }
+
+  Future<List<SlotModel>> getSlotsByLabId(String labId) async {
+    final result = await client
+        .from('lab_slots')
+        .select()
+        .eq('lab_id', labId)
+        .eq('is_active', true)
+        .order('slot_time');
+
+    return result.map<SlotModel>((e) => SlotModel.fromJson(e)).toList();
   }
 }

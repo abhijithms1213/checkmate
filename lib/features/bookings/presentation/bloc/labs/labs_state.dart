@@ -1,5 +1,6 @@
 import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/lab_entity.dart';
+import 'package:checkmate/features/bookings/domain/entities/slot_entity.dart';
 
 abstract class LabsState {}
 
@@ -17,6 +18,12 @@ class LabsForTestLoaded extends LabsState {
   final List<LabEntity> labs;
 
   LabsForTestLoaded(this.labs);
+}
+
+class SlotsLoaded extends LabsState {
+  final List<SlotEntity> slots;
+
+  SlotsLoaded(this.slots);
 }
 
 class LabsError extends LabsState {

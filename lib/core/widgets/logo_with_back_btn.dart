@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 
 class CmpnyNameWithBackBtnWidget extends StatelessWidget {
-  const CmpnyNameWithBackBtnWidget({super.key});
+  const CmpnyNameWithBackBtnWidget({super.key, this.isPadding = true});
+  final bool isPadding;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      padding: isPadding
+          ? const EdgeInsets.symmetric(horizontal: 16, vertical: 14)
+          : null,
       decoration: const BoxDecoration(
         border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB))),
       ),

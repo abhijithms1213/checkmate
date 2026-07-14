@@ -11,3 +11,9 @@ class GetLabsByTestIdEvent extends LabsEvent {
 
   GetLabsByTestIdEvent(this.testId);
 }
+
+class GetSlotsByLabIdEvent extends LabsEvent {
+  final String labId;
+
+  GetSlotsByLabIdEvent(this.labId);
+}
