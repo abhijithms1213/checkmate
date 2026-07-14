@@ -56,8 +56,12 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
             onTap: () {
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) =>
-                      ReviewPayScreen(labs: widget.labs, test: widget.test),
+                  builder: (context) => ReviewPayScreen(
+                    labs: widget.labs,
+                    test: widget.test,
+                    selectedDate: dates[selectedDate]['fullDate']!,
+                    selectedTime: selectedTime,
+                  ),
                 ),
               );
             },
