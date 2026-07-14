@@ -91,35 +91,60 @@ class _BookingDetailsView extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           /// Status
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: statusColor.withOpacity(0.15),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  booking.status.toLowerCase() == 'pending'
-                                      ? Icons.pending_actions
-                                      : Icons.check_circle,
-                                  size: 16,
-                                  color: statusColor,
+                          // Container(
+                          //   padding: const EdgeInsets.symmetric(
+                          //     horizontal: 14,
+                          //     vertical: 6,
+                          //   ),
+                          //   decoration: BoxDecoration(
+                          //     color: statusColor.withOpacity(0.15),
+                          //     borderRadius: BorderRadius.circular(20),
+                          //   ),
+                          //   child: Row(
+                          //     mainAxisSize: MainAxisSize.min,
+                          //     children: [
+                          //       Icon(
+                          //         booking.status.toLowerCase() == 'pending'
+                          //             ? Icons.pending_actions
+                          //             : Icons.check_circle,
+                          //         size: 16,
+                          //         color: statusColor,
+                          //       ),
+                          //       const SizedBox(width: 6),
+                          //       Text(
+                          //         booking.status.toUpperCase(),
+                          //         style: TextStyle(
+                          //           color: statusColor,
+                          //           fontWeight: FontWeight.w600,
+                          //         ),
+                          //       ),
+                          //     ],
+                          //   ),
+                          // ),
+
+                          const SizedBox(height: 16),
+
+                          Row(
+                            children: [
+                              Text(
+                                "Booking ID:",
+                                style: TextStyle(
+                                  color: Colors.grey.shade600,
+                                  fontSize: 14,
                                 ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  booking.status.toUpperCase(),
-                                  style: TextStyle(
-                                    color: statusColor,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: SelectableText(
+                                  booking.id,
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.w600,
+                                    color: darkText,
+                                    fontSize: 12,
                                   ),
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
 
                           const SizedBox(height: 20),

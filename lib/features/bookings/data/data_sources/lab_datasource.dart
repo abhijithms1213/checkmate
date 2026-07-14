@@ -103,7 +103,8 @@ class LabsRemoteDataSource {
     await client.from('payments').insert({
       'booking_id': bookingId,
       'amount': request.totalAmount,
-      'status': 'pending',
+      'status': request.paymentStatus ?? 'pending',
+      if (request.transactionId != null) 'transaction_id': request.transactionId,
     });
 
     return BookingModel.fromJson(booking);

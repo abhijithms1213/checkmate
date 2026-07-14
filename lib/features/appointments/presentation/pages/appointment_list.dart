@@ -55,9 +55,9 @@ class _MyAppointmentsView extends StatelessWidget {
               child: Text(
                 'My Appointments',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: darkText,
-                    ),
+                  fontWeight: FontWeight.bold,
+                  color: darkText,
+                ),
               ),
             ),
             const SizedBox(height: 24),
@@ -73,13 +73,17 @@ class _MyAppointmentsView extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.error_outline,
-                              size: 48, color: Colors.red.shade300),
+                          Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: Colors.red.shade300,
+                          ),
                           const SizedBox(height: 12),
-                          Text(state.message,
-                              textAlign: TextAlign.center,
-                              style:
-                                  const TextStyle(color: Colors.black54)),
+                          Text(
+                            state.message,
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(color: Colors.black54),
+                          ),
                         ],
                       ),
                     );
@@ -90,13 +94,18 @@ class _MyAppointmentsView extends StatelessWidget {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.calendar_today_outlined,
-                                size: 64, color: Colors.grey.shade300),
+                            Icon(
+                              Icons.calendar_today_outlined,
+                              size: 64,
+                              color: Colors.grey.shade300,
+                            ),
                             const SizedBox(height: 16),
                             const Text(
                               'No appointments yet',
                               style: TextStyle(
-                                  fontSize: 18, color: Colors.black45),
+                                fontSize: 18,
+                                color: Colors.black45,
+                              ),
                             ),
                           ],
                         ),
@@ -105,11 +114,9 @@ class _MyAppointmentsView extends StatelessWidget {
                     return ListView.separated(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       itemCount: state.bookings.length,
-                      separatorBuilder: (_, __) =>
-                          const SizedBox(height: 20),
-                      itemBuilder: (_, index) => AppointmentCard(
-                        booking: state.bookings[index],
-                      ),
+                      separatorBuilder: (_, __) => const SizedBox(height: 20),
+                      itemBuilder: (_, index) =>
+                          AppointmentCard(booking: state.bookings[index]),
                     );
                   }
                   return const SizedBox.shrink();
@@ -145,8 +152,9 @@ class AppointmentCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final formattedDate =
-        DateFormat('EEE, MMM d yyyy').format(booking.bookingDate);
+    final formattedDate = DateFormat(
+      'EEE, MMM d yyyy',
+    ).format(booking.bookingDate);
 
     return Container(
       padding: const EdgeInsets.all(20),
@@ -169,24 +177,24 @@ class AppointmentCard extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              const Spacer(),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: _statusColor(booking.status).withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  booking.status.toUpperCase(),
-                  style: TextStyle(
-                    color: _statusColor(booking.status),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ),
+              // const Spacer(),
+              // Container(
+              //   padding:
+              //       const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              //   decoration: BoxDecoration(
+              //     color: _statusColor(booking.status).withOpacity(0.12),
+              //     borderRadius: BorderRadius.circular(20),
+              //   ),
+              //   child: Text(
+              //     booking.status.toUpperCase(),
+              //     style: TextStyle(
+              //       color: _statusColor(booking.status),
+              //       fontSize: 12,
+              //       fontWeight: FontWeight.w600,
+              //       letterSpacing: 0.5,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
 
@@ -207,14 +215,16 @@ class AppointmentCard extends StatelessWidget {
           /// Lab name
           Row(
             children: [
-              Icon(Icons.local_hospital_outlined,
-                  color: Colors.grey.shade500, size: 16),
+              Icon(
+                Icons.local_hospital_outlined,
+                color: Colors.grey.shade500,
+                size: 16,
+              ),
               const SizedBox(width: 4),
               Expanded(
                 child: Text(
                   booking.labName,
-                  style:
-                      TextStyle(color: Colors.grey.shade600, fontSize: 15),
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 15),
                 ),
               ),
             ],
@@ -227,13 +237,15 @@ class AppointmentCard extends StatelessWidget {
           /// Date
           Row(
             children: [
-              const Icon(Icons.calendar_today_outlined,
-                  color: primaryColor, size: 18),
+              const Icon(
+                Icons.calendar_today_outlined,
+                color: primaryColor,
+                size: 18,
+              ),
               const SizedBox(width: 10),
               Text(
                 formattedDate,
-                style:
-                    TextStyle(color: Colors.grey.shade700, fontSize: 15),
+                style: TextStyle(color: Colors.grey.shade700, fontSize: 15),
               ),
             ],
           ),
@@ -247,8 +259,7 @@ class AppointmentCard extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 booking.slotTime,
-                style:
-                    TextStyle(color: Colors.grey.shade700, fontSize: 15),
+                style: TextStyle(color: Colors.grey.shade700, fontSize: 15),
               ),
             ],
           ),
@@ -268,9 +279,8 @@ class AppointmentCard extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => BookingDetailsScreen(
-                      bookingId: booking.id,
-                    ),
+                    builder: (context) =>
+                        BookingDetailsScreen(bookingId: booking.id),
                   ),
                 );
               },
