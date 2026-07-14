@@ -1,7 +1,9 @@
 import 'dart:developer';
 
+import 'package:checkmate/features/auth/domain/entities/vaiidate_otp_model.dart';
 import 'package:checkmate/features/auth/domain/usecases/add_otp_to_db.dart';
 import 'package:checkmate/features/auth/domain/usecases/delete_existing_otp_fr_db.dart';
+import 'package:checkmate/features/auth/domain/usecases/verify_otp.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'otp_event.dart';
@@ -10,10 +12,15 @@ import 'otp_state.dart';
 class OtpBloc extends Bloc<OtpEvent, OtpState> {
   final AddOtpToDbUseCase addOtpToDbUseCase;
   final DeleteOtpFrDbUseCase deleteOtpFrDbUseCase;
+  final VerifyOtpUseCase verifyOtpUseCase;
 
-  OtpBloc({required this.addOtpToDbUseCase, required this.deleteOtpFrDbUseCase})
-    : super(OtpInitial()) {
+  OtpBloc({
+    required this.addOtpToDbUseCase,
+    required this.deleteOtpFrDbUseCase,
+    required this.verifyOtpUseCase,
+  }) : super(OtpInitial()) {
     on<AddOtpEvent>(_onAddOtp);
+    on<VerifyOtpEvent>(_onVerifyOtp);
   }
 
   Future<void> _onAddOtp(AddOtpEvent event, Emitter<OtpState> emit) async {
@@ -26,6 +33,27 @@ class OtpBloc extends Bloc<OtpEvent, OtpState> {
       log('sended');
 
       emit(OtpSuccess());
+    } catch (e) {
+      emit(OtpFailure(e.toString()));
+    }
+  }
+
+  Future<void> _onVerifyOtp(
+    VerifyOtpEvent event,
+    Emitter<OtpState> emit,
+  ) async {
+    emit(OtpLoading());
+
+    try {
+      final verified = await verifyOtpUseCase(
+        params: VerifyOtpParamsEntity(phone: event.phone, otp: event.otp),
+      );
+
+      if (verified) {
+        emit(OtpVerified());
+      } else {
+        emit(OtpInvalid());
+      }
     } catch (e) {
       emit(OtpFailure(e.toString()));
     }

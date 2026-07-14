@@ -22,4 +22,9 @@ class AuthRepoImplementation extends AuthRepository {
 
     return _authDatasource.otpSendAndAddToDbDS(model);
   }
+
+  @override
+  Future<bool> verifyOtp({required String phone, required String otp}) {
+    return _authDatasource.verifyOtpDS(phone: phone, otp: otp);
+  }
 }

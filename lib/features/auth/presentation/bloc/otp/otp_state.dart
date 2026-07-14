@@ -23,3 +23,7 @@ class OtpFailure extends OtpState {
   @override
   List<Object?> get props => [message];
 }
+
+class OtpVerified extends OtpState {}
+
+class OtpInvalid extends OtpState {}

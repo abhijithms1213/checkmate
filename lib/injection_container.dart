@@ -3,6 +3,7 @@ import 'package:checkmate/features/auth/data/repository/auth_impl.dart';
 import 'package:checkmate/features/auth/domain/repository/auth_repository.dart';
 import 'package:checkmate/features/auth/domain/usecases/add_otp_to_db.dart';
 import 'package:checkmate/features/auth/domain/usecases/delete_existing_otp_fr_db.dart';
+import 'package:checkmate/features/auth/domain/usecases/verify_otp.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_bloc.dart';
 import 'package:checkmate/features/news/data/data_sources/remote/news_api_service.dart';
 import 'package:checkmate/features/news/data/repository/article_repo_impl.dart';
@@ -46,11 +47,16 @@ Future<void> initializeDependencies() async {
   // Use Cases
   s1.registerLazySingleton(() => AddOtpToDbUseCase(s1()));
 
+  s1.registerLazySingleton(() => VerifyOtpUseCase(s1()));
   s1.registerLazySingleton(() => DeleteOtpFrDbUseCase(s1()));
 
   // Bloc
   s1.registerFactory(
-    () => OtpBloc(addOtpToDbUseCase: s1(), deleteOtpFrDbUseCase: s1()),
+    () => OtpBloc(
+      addOtpToDbUseCase: s1(),
+      deleteOtpFrDbUseCase: s1(),
+      verifyOtpUseCase: s1(),
+    ),
   );
 
   //=====================================================

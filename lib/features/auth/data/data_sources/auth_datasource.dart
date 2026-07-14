@@ -39,4 +39,32 @@ class AuthDatasource {
       );
     }
   }
+
+  Future<bool> verifyOtpDS({required String phone, required String otp}) async {
+    try {
+      final result = await client
+          .from('otp_verifications')
+          .select()
+          .eq('phone', phone)
+          .eq('otp', otp)
+          .eq('verified', false)
+          .gt('expires_at', DateTime.now().toIso8601String());
+
+      if (result.isEmpty) {
+        return false;
+      }
+
+      await client
+          .from('otp_verifications')
+          .update({'verified': true})
+          .eq('id', result.first['id']);
+
+      return true;
+    } catch (e) {
+      throw DioException(
+        requestOptions: RequestOptions(path: ''),
+        error: e.toString(),
+      );
+    }
+  }
 }

@@ -16,3 +16,13 @@ class AddOtpEvent extends OtpEvent {
   @override
   List<Object?> get props => [otp];
 }
+
+class VerifyOtpEvent extends OtpEvent {
+  final String phone;
+  final String otp;
+
+  const VerifyOtpEvent({required this.phone, required this.otp});
+
+  @override
+  List<Object?> get props => [phone, otp];
+}
