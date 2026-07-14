@@ -37,7 +37,8 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    final otp = generateOtp();
+    // final otp = generateOtp();
+    final otp = '123456';
 
     context.read<OtpBloc>().add(
       AddOtpEvent(
