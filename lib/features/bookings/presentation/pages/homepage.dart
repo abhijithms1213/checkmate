@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:developer';
 
 import 'package:checkmate/core/widgets/button.dart';
@@ -81,11 +82,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 /// Popular Header
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
+                  children: [
                     Text(
                       "Popular Tests",
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 24.spMin,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:developer';
 
 import 'package:checkmate/features/bookings/presentation/pages/book_lab.dart';
@@ -50,8 +51,8 @@ class TestTileWidget extends StatelessWidget {
             Expanded(
               child: Text(
                 test.name,
-                style: const TextStyle(
-                  fontSize: 16,
+                style: TextStyle(
+                  fontSize: 16.spMin,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -59,10 +60,10 @@ class TestTileWidget extends StatelessWidget {
 
             Text(
               test.category ?? '',
-              style: const TextStyle(
+              style: TextStyle(
                 color: Color(0xff00796B),
                 fontWeight: FontWeight.w700,
-                fontSize: 12,
+                fontSize: 12.spMin,
               ),
             ),
           ],

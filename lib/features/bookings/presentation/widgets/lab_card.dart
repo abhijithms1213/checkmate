@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/constants/app_colors.dart';
 import 'package:checkmate/core/widgets/buttons/elevated_btn.dart';
 import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
@@ -33,8 +34,8 @@ class LabCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   lab.name,
-                  style: const TextStyle(
-                    fontSize: 20,
+                  style: TextStyle(
+                    fontSize: 20.spMin,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -52,7 +53,7 @@ class LabCard extends StatelessWidget {
               //       const SizedBox(width: 3),
               //       Text(
               //         lab.rating,
-              //         style: const TextStyle(
+              //         style: TextStyle(
               //           color: Color(0xff0A7A72),
               //           fontWeight: FontWeight.w600,
               //         ),
@@ -75,7 +76,7 @@ class LabCard extends StatelessWidget {
               //       "TRUSTED",
               //       style: TextStyle(
               //         color: Colors.white,
-              //         fontSize: 11,
+              //         fontSize: 11.spMin,
               //         fontWeight: FontWeight.w600,
               //       ),
               //     ),
@@ -88,7 +89,7 @@ class LabCard extends StatelessWidget {
 
           Text(
             lab.description ?? "Nearby Location",
-            style: TextStyle(color: Colors.grey.shade700, fontSize: 16),
+            style: TextStyle(color: Colors.grey.shade700, fontSize: 16.spMin),
           ),
 
           const SizedBox(height: 14),
@@ -124,15 +125,15 @@ class LabCard extends StatelessWidget {
                 children: [
                   Text(
                     "Rs ${lab.price}",
-                    style: const TextStyle(
-                      fontSize: 28,
+                    style: TextStyle(
+                      fontSize: 28.spMin,
                       color: Color(0xff0A7A72),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const Text(
+                  Text(
                     "TOTAL PRICE",
-                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
+                    style: TextStyle(fontSize: 11.spMin, fontWeight: FontWeight.w700),
                   ),
                 ],
               ),

@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/features/appointments/domain/entities/booking_full_details_entity.dart';
 import 'package:checkmate/features/appointments/presentation/bloc/appointments_bloc.dart';
 import 'package:checkmate/features/appointments/presentation/bloc/appointments_event.dart';
@@ -130,17 +131,17 @@ class _BookingDetailsView extends StatelessWidget {
                                 "Booking ID:",
                                 style: TextStyle(
                                   color: Colors.grey.shade600,
-                                  fontSize: 14,
+                                  fontSize: 14.spMin,
                                 ),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: SelectableText(
                                   booking.id,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.w600,
                                     color: darkText,
-                                    fontSize: 12,
+                                    fontSize: 12.spMin,
                                   ),
                                 ),
                               ),
@@ -151,8 +152,8 @@ class _BookingDetailsView extends StatelessWidget {
 
                           Text(
                             booking.tests.map((e) => e.testName).join(', '),
-                            style: const TextStyle(
-                              fontSize: 28,
+                            style: TextStyle(
+                              fontSize: 28.spMin,
                               height: 1.2,
                               fontWeight: FontWeight.bold,
                               color: darkText,
@@ -178,7 +179,7 @@ class _BookingDetailsView extends StatelessWidget {
                                     const SizedBox(width: 12),
                                     Text(
                                       formattedDate,
-                                      style: const TextStyle(fontSize: 16),
+                                      style: TextStyle(fontSize: 16.spMin),
                                     ),
                                   ],
                                 ),
@@ -193,7 +194,7 @@ class _BookingDetailsView extends StatelessWidget {
                                     const SizedBox(width: 12),
                                     Text(
                                       booking.slotTime,
-                                      style: const TextStyle(fontSize: 16),
+                                      style: TextStyle(fontSize: 16.spMin),
                                     ),
                                   ],
                                 ),
@@ -212,8 +213,8 @@ class _BookingDetailsView extends StatelessWidget {
                                 const SizedBox(height: 18),
                                 Text(
                                   booking.labName,
-                                  style: const TextStyle(
-                                    fontSize: 18,
+                                  style: TextStyle(
+                                    fontSize: 18.spMin,
                                     fontWeight: FontWeight.w600,
                                     color: darkText,
                                   ),
@@ -225,7 +226,7 @@ class _BookingDetailsView extends StatelessWidget {
                                     style: TextStyle(
                                       color: Colors.grey.shade700,
                                       height: 1.5,
-                                      fontSize: 15,
+                                      fontSize: 15.spMin,
                                     ),
                                   ),
                                 ],
@@ -245,8 +246,8 @@ class _BookingDetailsView extends StatelessWidget {
                                   const SizedBox(height: 18),
                                   Text(
                                     booking.address!.fullName,
-                                    style: const TextStyle(
-                                      fontSize: 18,
+                                    style: TextStyle(
+                                      fontSize: 18.spMin,
                                       fontWeight: FontWeight.w600,
                                       color: darkText,
                                     ),
@@ -257,7 +258,7 @@ class _BookingDetailsView extends StatelessWidget {
                                     style: TextStyle(
                                       color: Colors.grey.shade700,
                                       height: 1.5,
-                                      fontSize: 15,
+                                      fontSize: 15.spMin,
                                     ),
                                   ),
                                 ],
@@ -286,18 +287,18 @@ class _BookingDetailsView extends StatelessWidget {
                                 const SizedBox(height: 12),
                                 Row(
                                   children: [
-                                    const Text(
+                                    Text(
                                       "Total Amount",
                                       style: TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 18.spMin,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
                                     const Spacer(),
                                     Text(
                                       "₹ ${booking.totalAmount.toStringAsFixed(0)}",
-                                      style: const TextStyle(
-                                        fontSize: 18,
+                                      style: TextStyle(
+                                        fontSize: 18.spMin,
                                         fontWeight: FontWeight.bold,
                                         color: primaryColor,
                                       ),
@@ -337,8 +338,8 @@ class _BookingDetailsView extends StatelessWidget {
   static Widget _sectionTitle(String text) {
     return Text(
       text,
-      style: const TextStyle(
-        fontSize: 14,
+      style: TextStyle(
+        fontSize: 14.spMin,
         color: Colors.black54,
         letterSpacing: 0.8,
       ),
@@ -348,8 +349,8 @@ class _BookingDetailsView extends StatelessWidget {
   static Widget _priceRow(String title, String value) {
     return Row(
       children: [
-        Expanded(child: Text(title, style: const TextStyle(fontSize: 16))),
-        Text(value, style: const TextStyle(fontSize: 16)),
+        Expanded(child: Text(title, style: TextStyle(fontSize: 16.spMin))),
+        Text(value, style: TextStyle(fontSize: 16.spMin)),
       ],
     );
   }

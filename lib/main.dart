@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/constants/constants.dart';
 import 'package:checkmate/core/theme/app_theme.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
@@ -30,6 +31,7 @@ Future<void> main() async {
   );
 }
 
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -41,10 +43,17 @@ class MyApp extends StatelessWidget {
 
         BlocProvider<UserBloc>(create: (_) => s1<UserBloc>()),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light,
-        home: const SplashScreen(),
+      child: ScreenUtilInit(
+        designSize: const Size(390, 844), // Typical iPhone size
+        minTextAdapt: true,
+        splitScreenMode: true,
+        builder: (_, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light,
+            home: const SplashScreen(),
+          );
+        },
       ),
     );
   }

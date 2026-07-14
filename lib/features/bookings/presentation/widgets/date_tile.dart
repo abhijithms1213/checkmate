@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
 
 class DateTileWidget extends StatelessWidget {
@@ -31,7 +32,7 @@ class DateTileWidget extends StatelessWidget {
           Text(
             dates[index]["date"]!,
             style: TextStyle(
-              fontSize: 28,
+              fontSize: 28.spMin,
               fontWeight: FontWeight.bold,
               color: selected ? Colors.white : Colors.black,
             ),

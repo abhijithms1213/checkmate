@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/constants/app_colors.dart';
 import 'package:checkmate/core/widgets/logo_with_back_btn.dart';
 import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
@@ -92,7 +93,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
               "CONFIRM APPOINTMENT",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 20.spMin,
                 letterSpacing: 1,
                 fontWeight: FontWeight.w500,
               ),
@@ -111,10 +112,10 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
               CmpnyNameWithBackBtnWidget(isPadding: false),
               const SizedBox(height: 30),
 
-              const Text(
+              Text(
                 "Select Appointment Slot",
                 style: TextStyle(
-                  fontSize: 36,
+                  fontSize: 36.spMin,
                   fontWeight: FontWeight.bold,
                   color: darkBlue,
                 ),
@@ -124,7 +125,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
 
               Text(
                 "Full Blood Count & Lipid Profile",
-                style: TextStyle(color: Colors.grey.shade700, fontSize: 18),
+                style: TextStyle(color: Colors.grey.shade700, fontSize: 18.spMin),
               ),
 
               const SizedBox(height: 28),
@@ -144,8 +145,8 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                           DateFormat('MMMM yyyy').format(
                             DateTime.parse(dates[selectedDate]["fullDate"]!),
                           ),
-                          style: const TextStyle(
-                            fontSize: 20,
+                          style: TextStyle(
+                            fontSize: 20.spMin,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -196,7 +197,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                             //       Text(
                             //         dates[index]["date"]!,
                             //         style: TextStyle(
-                            //           fontSize: 28,
+                            //           fontSize: 28.spMin,
                             //           fontWeight: FontWeight.bold,
                             //           color: selected
                             //               ? Colors.white
@@ -284,7 +285,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                                 child: Text(
                                   timeStr,
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 16.spMin,
                                     color: selected
                                         ? Colors.white
                                         : disabled
@@ -309,35 +310,35 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
 
               const SizedBox(height: 20),
 
-              const Text(
+              Text(
                 "BOOKING DETAILS",
                 style: TextStyle(
                   color: Colors.black54,
-                  fontSize: 14,
+                  fontSize: 14.spMin,
                   letterSpacing: 1,
                 ),
               ),
 
-              const SizedBox(height: 18),
+              SizedBox(height: 18),
 
-              Text("Lab: ${widget.labs.name}", style: TextStyle(fontSize: 18)),
+              Text("Lab: ${widget.labs.name}", style: TextStyle(fontSize: 18.spMin)),
 
               const SizedBox(height: 8),
 
               Text(
                 "Date: ${DateFormat('EEEE, MMMM d').format(DateTime.parse(dates[selectedDate]["fullDate"]!))}",
-                style: const TextStyle(fontSize: 18),
+                style: TextStyle(fontSize: 18.spMin),
               ),
 
-              const SizedBox(height: 8),
+              SizedBox(height: 8),
 
-              Text("Time: ${selectedTime ?? 'Not selected'}", style: const TextStyle(fontSize: 18)),
+              Text("Time: ${selectedTime ?? 'Not selected'}", style: TextStyle(fontSize: 18.spMin)),
 
               const SizedBox(height: 8),
 
               Text(
                 "Total: ${widget.labs.price} Rs",
-                style: TextStyle(fontSize: 18),
+                style: TextStyle(fontSize: 18.spMin),
               ),
 
               const SizedBox(height: 100),

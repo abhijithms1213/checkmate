@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/constants/constants.dart';
 import 'package:checkmate/core/widgets/logo_with_back_btn.dart';
 import 'package:checkmate/features/address/domain/entities/address_entity.dart';
@@ -171,12 +172,12 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                     children: [
                       /// Title
                       Row(
-                        children: const [
+                        children: [
                           Expanded(
                             child: Text(
                               "Review & Pay",
                               style: TextStyle(
-                                fontSize: 24,
+                                fontSize: 24.spMin,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF10243A),
                               ),
@@ -184,7 +185,10 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                           ),
                           Text(
                             "Final Step",
-                            style: TextStyle(color: primaryColor, fontSize: 16),
+                            style: TextStyle(
+                              color: primaryColor,
+                              fontSize: 16.spMin,
+                            ),
                           ),
                         ],
                       ),
@@ -333,10 +337,10 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                       //--------------------------------------------------
                       // PAYMENT METHOD
                       //--------------------------------------------------
-                      const Text(
+                      Text(
                         "Payment Method",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 18.spMin,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -354,10 +358,10 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                       //--------------------------------------------------
                       // ORDER SUMMARY
                       //--------------------------------------------------
-                      const Text(
+                      Text(
                         "Order Summary",
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 18.spMin,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -370,18 +374,18 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                       const SizedBox(height: 12),
                       Row(
                         children: [
-                          const Text(
+                          Text(
                             "Total Amount",
                             style: TextStyle(
-                              fontSize: 18,
+                              fontSize: 18.spMin,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           const Spacer(),
                           Text(
                             "₹ $price",
-                            style: const TextStyle(
-                              fontSize: 18,
+                            style: TextStyle(
+                              fontSize: 18.spMin,
                               fontWeight: FontWeight.bold,
                               color: primaryColor,
                             ),
@@ -435,14 +439,14 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                               }
                             }
                           },
-                          child: const Row(
+                          child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
                                 "Confirm & Pay",
                                 style: TextStyle(
                                   color: Colors.white,
-                                  fontSize: 18,
+                                  fontSize: 18.spMin,
                                 ),
                               ),
                               SizedBox(width: 8),
@@ -491,8 +495,8 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
             children: [
               Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 12,
+                style: TextStyle(
+                  fontSize: 12.spMin,
                   color: Colors.black54,
                   letterSpacing: 0.4,
                 ),
@@ -500,8 +504,8 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
               const SizedBox(height: 2),
               Text(
                 value,
-                style: const TextStyle(
-                  fontSize: 15,
+                style: TextStyle(
+                  fontSize: 15.spMin,
                   fontWeight: FontWeight.w600,
                   color: Color(0xFF10243A),
                 ),
@@ -541,8 +545,10 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
               color: isSelected ? primaryColor : Colors.grey,
               size: 22,
             ),
-            const SizedBox(width: 12),
-            Expanded(child: Text(title, style: const TextStyle(fontSize: 16))),
+            SizedBox(width: 12),
+            Expanded(
+              child: Text(title, style: TextStyle(fontSize: 16.spMin)),
+            ),
             Icon(
               isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
               color: isSelected ? primaryColor : Colors.grey,
@@ -556,8 +562,8 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
   static Widget _sectionLabel(String text) {
     return Text(
       text,
-      style: const TextStyle(
-        fontSize: 12,
+      style: TextStyle(
+        fontSize: 12.spMin,
         color: Colors.black54,
         letterSpacing: 0.8,
         fontWeight: FontWeight.w600,
@@ -571,13 +577,13 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
         Expanded(
           child: Text(
             title,
-            style: const TextStyle(fontSize: 15, color: Colors.black87),
+            style: TextStyle(fontSize: 15.spMin, color: Colors.black87),
           ),
         ),
         Text(
           value,
-          style: const TextStyle(
-            fontSize: 15,
+          style: TextStyle(
+            fontSize: 15.spMin,
             color: Colors.black87,
             fontWeight: FontWeight.w500,
           ),

@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
 
 class CmpnyNameWithBackBtnWidget extends StatelessWidget {
@@ -23,10 +24,10 @@ class CmpnyNameWithBackBtnWidget extends StatelessWidget {
           ),
           const SizedBox(width: 4),
 
-          const Text(
+          Text(
             "CheckMate",
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 20.spMin,
               fontWeight: FontWeight.bold,
               color: Color(0xFF10243A),
             ),

@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/constants/app_assets.dart';
 import 'package:checkmate/core/constants/app_colors.dart';
 import 'package:checkmate/core/widgets/buttons/elevated_btn.dart';
@@ -43,7 +44,7 @@ class _OtpScreenState extends State<OtpScreen> {
     final defaultPinTheme = PinTheme(
       width: 52,
       height: 62,
-      textStyle: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+      textStyle: TextStyle(fontSize: 22.spMin, fontWeight: FontWeight.w600),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(14),
@@ -106,10 +107,10 @@ class _OtpScreenState extends State<OtpScreen> {
                         icon: const Icon(Icons.arrow_back),
                       ),
                       const SizedBox(width: 8),
-                      const Text(
+                      Text(
                         "Verify OTP",
                         style: TextStyle(
-                          fontSize: 28,
+                          fontSize: 28.spMin,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
@@ -131,10 +132,10 @@ class _OtpScreenState extends State<OtpScreen> {
 
                   const SizedBox(height: 36),
 
-                  const Text(
+                  Text(
                     "Code Verification",
                     style: TextStyle(
-                      fontSize: 32,
+                      fontSize: 32.spMin,
                       fontWeight: FontWeight.bold,
                       color: Color(0xff10243A),
                     ),
@@ -146,7 +147,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     "Enter the 6-digit code sent to\n$maskedPhone",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      fontSize: 17,
+                      fontSize: 17.spMin,
                       color: Colors.grey.shade700,
                       height: 1.5,
                     ),
@@ -197,7 +198,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
                   Text(
                     "Didn't receive the code?",
-                    style: TextStyle(fontSize: 17, color: Colors.grey.shade700),
+                    style: TextStyle(fontSize: 17.spMin, color: Colors.grey.shade700),
                   ),
 
                   const SizedBox(height: 10),
@@ -206,10 +207,10 @@ class _OtpScreenState extends State<OtpScreen> {
                     onPressed: () {
                       /// Resend OTP later
                     },
-                    child: const Text(
+                    child: Text(
                       "Resend OTP",
                       style: TextStyle(
-                        fontSize: 17,
+                        fontSize: 17.spMin,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

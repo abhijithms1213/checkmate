@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/services/local_storage_service.dart';
 import 'package:checkmate/core/widgets/button.dart';
 import 'package:checkmate/features/address/domain/repository/user_repo.dart';
@@ -82,7 +83,7 @@ class _MyAppointmentsView extends StatelessWidget {
                           Text(
                             state.message,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(color: Colors.black54),
+                            style: TextStyle(color: Colors.black54),
                           ),
                         ],
                       ),
@@ -100,10 +101,10 @@ class _MyAppointmentsView extends StatelessWidget {
                               color: Colors.grey.shade300,
                             ),
                             const SizedBox(height: 16),
-                            const Text(
+                            Text(
                               'No appointments yet',
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 18.spMin,
                                 color: Colors.black45,
                               ),
                             ),
@@ -171,9 +172,9 @@ class AppointmentCard extends StatelessWidget {
             children: [
               Text(
                 '₹ ${booking.totalAmount.toStringAsFixed(0)}',
-                style: const TextStyle(
+                style: TextStyle(
                   color: primaryColor,
-                  fontSize: 22,
+                  fontSize: 22.spMin,
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -189,7 +190,7 @@ class AppointmentCard extends StatelessWidget {
               //     booking.status.toUpperCase(),
               //     style: TextStyle(
               //       color: _statusColor(booking.status),
-              //       fontSize: 12,
+              //       fontSize: 12.spMin,
               //       fontWeight: FontWeight.w600,
               //       letterSpacing: 0.5,
               //     ),
@@ -203,8 +204,8 @@ class AppointmentCard extends StatelessWidget {
           /// Tests
           Text(
             booking.tests.join(', '),
-            style: const TextStyle(
-              fontSize: 18,
+            style: TextStyle(
+              fontSize: 18.spMin,
               fontWeight: FontWeight.w700,
               color: Color(0xFF10243A),
             ),
@@ -224,7 +225,7 @@ class AppointmentCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   booking.labName,
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 15),
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 15.spMin),
                 ),
               ),
             ],
@@ -245,7 +246,7 @@ class AppointmentCard extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 formattedDate,
-                style: TextStyle(color: Colors.grey.shade700, fontSize: 15),
+                style: TextStyle(color: Colors.grey.shade700, fontSize: 15.spMin),
               ),
             ],
           ),
@@ -259,7 +260,7 @@ class AppointmentCard extends StatelessWidget {
               const SizedBox(width: 10),
               Text(
                 booking.slotTime,
-                style: TextStyle(color: Colors.grey.shade700, fontSize: 15),
+                style: TextStyle(color: Colors.grey.shade700, fontSize: 15.spMin),
               ),
             ],
           ),
@@ -284,9 +285,9 @@ class AppointmentCard extends StatelessWidget {
                   ),
                 );
               },
-              child: const Text(
+              child: Text(
                 'View Details',
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                style: TextStyle(color: Colors.white, fontSize: 16.spMin),
               ),
             ),
           ),

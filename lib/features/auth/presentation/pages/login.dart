@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/constants/app_assets.dart';
 import 'package:checkmate/core/utils/otp_gen.dart';
 import 'package:checkmate/core/widgets/buttons/elevated_btn.dart';
@@ -117,16 +118,16 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 Text(
                   "Login to access your diagnostics portal.",
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 18),
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 18.spMin),
                 ),
 
                 const SizedBox(height: 50),
 
-                const Align(
+                Align(
                   alignment: Alignment.centerLeft,
                   child: Text(
                     "Phone Number",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                    style: TextStyle(fontSize: 18.spMin, fontWeight: FontWeight.w500),
                   ),
                 ),
 

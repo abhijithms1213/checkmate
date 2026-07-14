@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/features/bookings/presentation/widgets/lab_card.dart';
 import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
 import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_bloc.dart';
@@ -48,8 +49,8 @@ class _LabBookingScreenState extends State<LabBookingScreen> {
                       children: [
                         Text(
                           widget.test.name,
-                          style: const TextStyle(
-                            fontSize: 18,
+                          style: TextStyle(
+                            fontSize: 18.spMin,
                             fontWeight: FontWeight.w600,
                           ),
                         ),
@@ -73,7 +74,7 @@ class _LabBookingScreenState extends State<LabBookingScreen> {
                       }
                       return Text(
                         "$count Labs available near you",
-                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+                        style: TextStyle(fontSize: 22.spMin, fontWeight: FontWeight.w600),
                       );
                     },
                   ),

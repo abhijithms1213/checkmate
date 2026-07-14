@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/constants/app_colors.dart';
 import 'package:checkmate/core/widgets/buttons/elevated_btn.dart';
 import 'package:checkmate/features/address/domain/entities/address_entity.dart';
@@ -157,7 +158,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                           color: const Color(0xFFF1F3F5),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: const Column(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Icon(
@@ -170,7 +171,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
                               "Enter your diagnostic delivery or\nservice location",
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                fontSize: 18,
+                                fontSize: 18.spMin,
                                 color: Colors.black54,
                               ),
                             ),
@@ -276,8 +277,8 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
   Widget _label(String text) {
     return Text(
       text,
-      style: const TextStyle(
-        fontSize: 15,
+      style: TextStyle(
+        fontSize: 15.spMin,
         color: Colors.black87,
         fontWeight: FontWeight.w500,
       ),

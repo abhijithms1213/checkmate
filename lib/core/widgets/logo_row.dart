@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/constants/app_assets.dart';
 import 'package:flutter/material.dart';
 
@@ -17,9 +18,9 @@ class LogoRowWidget extends StatelessWidget {
           ),
         ),
         SizedBox(width: 2),
-        const Text(
+        Text(
           "CheckMate",
-          style: TextStyle(fontSize: 28, fontWeight: FontWeight.w700),
+          style: TextStyle(fontSize: 28.spMin, fontWeight: FontWeight.w700),
         ),
       ],
     );

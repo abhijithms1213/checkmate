@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/services/local_storage_service.dart';
 import 'package:checkmate/core/widgets/button.dart';
 import 'package:checkmate/features/address/domain/entities/address_entity.dart';
@@ -30,15 +31,18 @@ class AddressScreen extends StatelessWidget {
             children: [
               // Header
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 12,
+                ),
                 child: Row(
-                  children: const [
+                  children: [
                     Expanded(
                       child: Text(
                         "Lab Services",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 18.spMin,
                           fontWeight: FontWeight.w600,
                           color: darkText,
                         ),
@@ -52,9 +56,9 @@ class AddressScreen extends StatelessWidget {
                 child: BlocConsumer<UserBloc, UserState>(
                   listener: (context, state) {
                     if (state is UserFailure) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(state.message)),
-                      );
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(state.message)));
                     }
                   },
                   builder: (context, state) {
@@ -73,10 +77,10 @@ class AddressScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const SizedBox(height: 20),
-                          const Text(
+                          Text(
                             "Saved Addresses",
                             style: TextStyle(
-                              fontSize: 24,
+                              fontSize: 24.spMin,
                               fontWeight: FontWeight.bold,
                               color: darkText,
                             ),
@@ -85,7 +89,7 @@ class AddressScreen extends StatelessWidget {
                           Text(
                             "Manage your sample collection locations",
                             style: TextStyle(
-                              fontSize: 15,
+                              fontSize: 15.spMin,
                               color: Colors.grey.shade600,
                             ),
                           ),
@@ -94,12 +98,14 @@ class AddressScreen extends StatelessWidget {
                           if (addresses.isEmpty && state is! UserLoading)
                             Center(
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 40),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 40,
+                                ),
                                 child: Text(
                                   "No addresses saved yet.",
                                   style: TextStyle(
                                     color: Colors.grey.shade500,
-                                    fontSize: 16,
+                                    fontSize: 16.spMin,
                                   ),
                                 ),
                               ),
@@ -132,19 +138,23 @@ class AddressScreen extends StatelessWidget {
                                     .push(
                                       MaterialPageRoute(
                                         // phone: null → user already exists, just add address
-                                        builder: (_) => const AddAddressScreen(),
+                                        builder: (_) =>
+                                            const AddAddressScreen(),
                                       ),
                                     )
                                     .then((_) {
-                                  context
-                                      .read<UserBloc>()
-                                      .add(LoadAddressesEvent(phone));
-                                });
+                                      context.read<UserBloc>().add(
+                                        LoadAddressesEvent(phone),
+                                      );
+                                    });
                               },
                               icon: const Icon(Icons.add, color: Colors.white),
-                              label: const Text(
+                              label: Text(
                                 "+ Add New Address",
-                                style: TextStyle(color: Colors.white, fontSize: 18),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18.spMin,
+                                ),
                               ),
                             ),
                           ),
@@ -157,7 +167,9 @@ class AddressScreen extends StatelessWidget {
                             child: OutlinedButton.icon(
                               style: OutlinedButton.styleFrom(
                                 side: const BorderSide(
-                                    color: Colors.redAccent, width: 1.5),
+                                  color: Colors.redAccent,
+                                  width: 1.5,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -168,19 +180,23 @@ class AddressScreen extends StatelessWidget {
                                   Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (_) => const LoginScreen()),
+                                      builder: (_) => const LoginScreen(),
+                                    ),
                                     (route) => false,
                                   );
                                 }
                               },
-                              icon: const Icon(Icons.logout,
-                                  color: Colors.redAccent),
-                              label: const Text(
+                              icon: const Icon(
+                                Icons.logout,
+                                color: Colors.redAccent,
+                              ),
+                              label: Text(
                                 "Log Out",
                                 style: TextStyle(
-                                    color: Colors.redAccent,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold),
+                                  color: Colors.redAccent,
+                                  fontSize: 18.spMin,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ),
                           ),
@@ -236,17 +252,13 @@ class _AddressCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Icon(
-                Icons.location_on_outlined,
-                color: primaryColor,
-                size: 22,
-              ),
+              Icon(Icons.location_on_outlined, color: primaryColor, size: 22),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   address.fullName,
-                  style: const TextStyle(
-                    fontSize: 18,
+                  style: TextStyle(
+                    fontSize: 18.spMin,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -261,12 +273,12 @@ class _AddressCard extends StatelessWidget {
                     color: const Color(0xFF82E6D8),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Text(
+                  child: Text(
                     "Default",
                     style: TextStyle(
                       color: primaryColor,
                       fontWeight: FontWeight.w600,
-                      fontSize: 13,
+                      fontSize: 13.spMin,
                     ),
                   ),
                 ),
@@ -293,14 +305,14 @@ class _AddressCard extends StatelessWidget {
 
           Text(
             '${address.houseNumber}, ${address.fullAddress}',
-            style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
+            style: TextStyle(fontSize: 15.spMin, color: Colors.grey.shade700),
           ),
 
           const SizedBox(height: 4),
 
           Text(
             'Pincode: ${address.pincode}',
-            style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
+            style: TextStyle(fontSize: 14.spMin, color: Colors.grey.shade500),
           ),
 
           if (!address.isDefault) ...[
@@ -309,14 +321,14 @@ class _AddressCard extends StatelessWidget {
               onTap: () {
                 s1<LocalStorageService>().setPincode(address.pincode);
                 context.read<UserBloc>().add(
-                      SetDefaultAddressEvent(
-                        addressId: address.id!,
-                        userId: address.userId,
-                        phone: phone,
-                      ),
-                    );
+                  SetDefaultAddressEvent(
+                    addressId: address.id!,
+                    userId: address.userId,
+                    phone: phone,
+                  ),
+                );
               },
-              child: const Row(
+              child: Row(
                 children: [
                   Icon(
                     Icons.check_circle_outline,
@@ -329,7 +341,7 @@ class _AddressCard extends StatelessWidget {
                     style: TextStyle(
                       color: primaryColor,
                       fontWeight: FontWeight.w500,
-                      fontSize: 14,
+                      fontSize: 14.spMin,
                     ),
                   ),
                 ],
@@ -342,7 +354,10 @@ class _AddressCard extends StatelessWidget {
   }
 
   void _showDeleteConfirm(
-      BuildContext context, String addressId, String phone) {
+    BuildContext context,
+    String addressId,
+    String phone,
+  ) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -357,14 +372,10 @@ class _AddressCard extends StatelessWidget {
             onPressed: () {
               Navigator.pop(ctx);
               context.read<UserBloc>().add(
-                    DeleteAddressEvent(
-                      addressId: addressId,
-                      phone: phone,
-                    ),
-                  );
+                DeleteAddressEvent(addressId: addressId, phone: phone),
+              );
             },
-            child: const Text("Delete",
-                style: TextStyle(color: Colors.red)),
+            child: const Text("Delete", style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

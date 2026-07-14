@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -6,43 +7,43 @@ class AppTextTheme {
   static TextTheme get textTheme {
     return GoogleFonts.manropeTextTheme().copyWith(
       headlineLarge: GoogleFonts.manrope(
-        fontSize: 32,
+        fontSize: 32.spMin,
         fontWeight: FontWeight.w700,
         color: AppColors.onSurface,
       ),
 
       headlineMedium: GoogleFonts.manrope(
-        fontSize: 28,
+        fontSize: 28.spMin,
         fontWeight: FontWeight.w700,
         color: AppColors.onSurface,
       ),
 
       titleLarge: GoogleFonts.manrope(
-        fontSize: 22,
+        fontSize: 22.spMin,
         fontWeight: FontWeight.w600,
         color: AppColors.onSurface,
       ),
 
       titleMedium: GoogleFonts.manrope(
-        fontSize: 18,
+        fontSize: 18.spMin,
         fontWeight: FontWeight.w600,
         color: AppColors.onSurface,
       ),
 
       bodyLarge: GoogleFonts.manrope(
-        fontSize: 16,
+        fontSize: 16.spMin,
         fontWeight: FontWeight.w500,
         color: AppColors.onSurfaceVariant,
       ),
 
       bodyMedium: GoogleFonts.manrope(
-        fontSize: 14,
+        fontSize: 14.spMin,
         fontWeight: FontWeight.w400,
         color: AppColors.onSurfaceVariant,
       ),
 
       labelLarge: GoogleFonts.manrope(
-        fontSize: 14,
+        fontSize: 14.spMin,
         fontWeight: FontWeight.w600,
         color: AppColors.onSurface,
       ),

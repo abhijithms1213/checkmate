@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter/material.dart';
 
 class ElevatedBtnWidget extends StatelessWidget {
@@ -26,7 +27,7 @@ class ElevatedBtnWidget extends StatelessWidget {
         onPressed: onTap,
         child: Text(
           content,
-          style: TextStyle(color: Colors.white, fontSize: 17),
+          style: TextStyle(color: Colors.white, fontSize: 17.spMin),
         ),
       ),
     );

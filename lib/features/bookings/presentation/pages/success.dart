@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/features/bookings/domain/entities/booking_entity.dart';
 import 'package:checkmate/features/bookings/presentation/pages/homepage.dart';
 import 'package:flutter/material.dart';
@@ -44,12 +45,12 @@ class BookingSuccessScreen extends StatelessWidget {
               decoration: const BoxDecoration(
                 border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB))),
               ),
-              child: const Row(
+              child: Row(
                 children: [
                   Text(
                     "CheckMate",
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 20.spMin,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF10243A),
                     ),
@@ -92,11 +93,11 @@ class BookingSuccessScreen extends StatelessWidget {
 
                     const SizedBox(height: 28),
 
-                    const Text(
+                    Text(
                       "Booking Confirmed!",
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 36,
+                        fontSize: 36.spMin,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF10243A),
                       ),
@@ -109,7 +110,7 @@ class BookingSuccessScreen extends StatelessWidget {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         height: 1.5,
-                        fontSize: 17,
+                        fontSize: 17.spMin,
                         color: Colors.grey.shade700,
                       ),
                     ),
@@ -149,10 +150,10 @@ class BookingSuccessScreen extends StatelessWidget {
 
                           Row(
                             children: [
-                              const Text(
+                              Text(
                                 "REFERENCE ID",
                                 style: TextStyle(
-                                  fontSize: 13,
+                                  fontSize: 13.spMin,
                                   color: Colors.black54,
                                   letterSpacing: 0.5,
                                 ),
@@ -161,8 +162,8 @@ class BookingSuccessScreen extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   booking.id,
-                                  style: const TextStyle(
-                                    fontSize: 18,
+                                  style: TextStyle(
+                                    fontSize: 18.spMin,
                                     fontWeight: FontWeight.w600,
                                     color: primaryColor,
                                   ),
@@ -195,9 +196,9 @@ class BookingSuccessScreen extends StatelessWidget {
                             (route) => false,
                           );
                         },
-                        child: const Text(
+                        child: Text(
                           "Back to Home",
-                          style: TextStyle(color: Colors.white, fontSize: 17),
+                          style: TextStyle(color: Colors.white, fontSize: 17.spMin),
                         ),
                       ),
                     ),
@@ -216,8 +217,8 @@ class BookingSuccessScreen extends StatelessWidget {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontSize: 13,
+          style: TextStyle(
+            fontSize: 13.spMin,
             color: Colors.black54,
             letterSpacing: 0.5,
           ),
@@ -227,8 +228,8 @@ class BookingSuccessScreen extends StatelessWidget {
           child: Text(
             value,
             textAlign: TextAlign.right,
-            style: const TextStyle(
-              fontSize: 16,
+            style: TextStyle(
+              fontSize: 16.spMin,
               fontWeight: FontWeight.w600,
               color: Color(0xFF10243A),
             ),
