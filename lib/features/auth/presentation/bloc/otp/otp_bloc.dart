@@ -55,7 +55,8 @@ class OtpBloc extends Bloc<OtpEvent, OtpState> {
       }
 
       if (result['userExists']) {
-        emit(UserAlreadyExists());
+        final pincode = result['defaultPincode'] as String?;
+        emit(UserAlreadyExists(pincode: pincode));
       } else {
         emit(NewUser());
       }

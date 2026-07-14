@@ -67,7 +67,28 @@ class AuthDatasource {
           .select('id')
           .eq('phone', phone);
 
-      return {'verified': true, 'userExists': userResult.isNotEmpty};
+      bool userExists = userResult.isNotEmpty;
+      String? defaultPincode;
+
+      if (userExists) {
+        final userId = userResult.first['id'];
+        final addressResult = await client
+            .from('addresses')
+            .select('pincode')
+            .eq('user_id', userId)
+            .eq('is_default', true)
+            .limit(1);
+
+        if (addressResult.isNotEmpty) {
+          defaultPincode = addressResult.first['pincode'].toString();
+        }
+      }
+
+      return {
+        'verified': true,
+        'userExists': userExists,
+        'defaultPincode': defaultPincode,
+      };
     } catch (e) {
       throw DioException(
         requestOptions: RequestOptions(path: ''),

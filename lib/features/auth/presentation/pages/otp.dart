@@ -60,6 +60,9 @@ class _OtpScreenState extends State<OtpScreen> {
         if (state is UserAlreadyExists) {
           s1<LocalStorageService>().setLoggedIn(true);
           s1<LocalStorageService>().setPhone(widget.phone);
+          if (state.pincode != null && state.pincode!.isNotEmpty) {
+            s1<LocalStorageService>().setPincode(state.pincode!);
+          }
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (_) => const HomeScreen()),

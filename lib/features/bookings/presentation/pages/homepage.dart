@@ -6,6 +6,13 @@ import 'package:checkmate/features/bookings/presentation/widgets/home_category_r
 import 'package:checkmate/features/bookings/presentation/widgets/home_lab_tests_tile.dart';
 import 'package:checkmate/features/bookings/presentation/widgets/home_top_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:checkmate/core/services/local_storage_service.dart';
+import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
+import 'package:checkmate/injection_container.dart';
+import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_bloc.dart';
+import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_event.dart';
+import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_state.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,104 +26,100 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<String> categories = ["All", "Blood", "Heart", "Women", "Hormone"];
 
-  final List<TestModel> tests = [
-    TestModel(
-      title: "Full Blood Count (FBC)",
-      price: "\$45.00",
-      icon: Icons.science_outlined,
-    ),
-    TestModel(
-      title: "Thyroid Profile (T3, T4, TSH)",
-      price: "\$68.00",
-      icon: Icons.biotech_outlined,
-    ),
-    TestModel(
-      title: "Lipid Profile",
-      price: "\$85.00",
-      icon: Icons.monitor_heart_outlined,
-    ),
-    TestModel(
-      title: "Vitamin D & B12 Panel",
-      price: "\$120.00",
-      icon: Icons.medication_outlined,
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: const CustomBottomNavBar(currentIndex: 0),
+    return BlocProvider(
+      create: (context) {
+        final pincode = s1<LocalStorageService>().pincode ?? '';
+        return s1<LabsBloc>()..add(GetTestsEvent(pincode));
+      },
+      child: Scaffold(
+        bottomNavigationBar: const CustomBottomNavBar(currentIndex: 0),
 
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: [
-              HomeTopWidget(),
+        body: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: [
+                HomeTopWidget(),
 
-              /// Categories
-              SizedBox(
-                height: 40,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: categories.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 10),
-                  itemBuilder: (context, index) {
-                    final selected = selectedCategory == index;
+                /// Categories
+                SizedBox(
+                  height: 40,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: categories.length,
+                    separatorBuilder: (_, __) => const SizedBox(width: 10),
+                    itemBuilder: (context, index) {
+                      final selected = selectedCategory == index;
 
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          selectedCategory = index;
-                        });
-                      },
-                      child: HomeTestCategoriesRowWidget(
-                        index: index,
-                        selected: selected,
-                        categories: categories,
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              const SizedBox(height: 28),
-
-              /// Popular Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: const [
-                  Text(
-                    "Popular Tests",
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            selectedCategory = index;
+                          });
+                        },
+                        child: HomeTestCategoriesRowWidget(
+                          index: index,
+                          selected: selected,
+                          categories: categories,
+                        ),
+                      );
+                    },
                   ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              /// Test List
-              Expanded(
-                child: ListView.separated(
-                  itemCount: tests.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
-                  itemBuilder: (context, index) {
-                    return TestTileWidget(test: tests[index]);
-                  },
                 ),
-              ),
-            ],
+
+                const SizedBox(height: 28),
+
+                /// Popular Header
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: const [
+                    Text(
+                      "Popular Tests",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 16),
+
+                /// Test List
+                Expanded(
+                  child: BlocBuilder<LabsBloc, LabsState>(
+                    builder: (context, state) {
+                      if (state is LabsLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (state is LabsLoaded) {
+                        final tests = state.tests;
+                        if (tests.isEmpty) {
+                          return const Center(
+                            child: Text("No tests found for your location."),
+                          );
+                        }
+                        return ListView.separated(
+                          itemCount: tests.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(height: 12),
+                          itemBuilder: (context, index) {
+                            return TestTileWidget(test: tests[index]);
+                          },
+                        );
+                      } else if (state is LabsError) {
+                        return Center(child: Text(state.message));
+                      }
+                      return const SizedBox.shrink();
+                    },
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
-}
-
-class TestModel {
-  final String title;
-  final String price;
-  final IconData icon;
-
-  TestModel({required this.title, required this.price, required this.icon});
 }

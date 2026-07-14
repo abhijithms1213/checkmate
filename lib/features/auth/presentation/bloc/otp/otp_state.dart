@@ -28,6 +28,13 @@ class OtpVerified extends OtpState {}
 
 class OtpInvalid extends OtpState {}
 
-class UserAlreadyExists extends OtpState {}
+class UserAlreadyExists extends OtpState {
+  final String? pincode;
+
+  const UserAlreadyExists({this.pincode});
+
+  @override
+  List<Object?> get props => [pincode];
+}
 
 class NewUser extends OtpState {}

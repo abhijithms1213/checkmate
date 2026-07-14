@@ -21,6 +21,11 @@ import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:checkmate/core/services/local_storage_service.dart';
+import 'package:checkmate/features/bookings/data/data_sources/lab_datasource.dart';
+import 'package:checkmate/features/bookings/data/repository/labs_repository_impl.dart';
+import 'package:checkmate/features/bookings/domain/repository/labs_repository.dart';
+import 'package:checkmate/features/bookings/domain/usecases/get_tests_by_pincode_uc.dart';
+import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_bloc.dart';
 
 final s1 = GetIt.instance;
 
@@ -100,4 +105,14 @@ Future<void> initializeDependencies() async {
   //=====================================================
   // USER - ENDS
   //=====================================================
+
+  //=====================================================
+  // BOOKINGS
+  //=====================================================
+
+  s1.registerLazySingleton<LabsRemoteDataSource>(() => LabsRemoteDataSource(s1()));
+  s1.registerLazySingleton<LabsRepository>(() => LabsRepositoryImpl(s1()));
+  s1.registerLazySingleton(() => GetTestsByPincodeUseCase(s1()));
+
+  s1.registerFactory(() => LabsBloc(getTestsByPincodeUseCase: s1()));
 }
