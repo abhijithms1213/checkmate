@@ -6,6 +6,8 @@ import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_event.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_state.dart';
 import 'package:checkmate/features/home/presentation/pages/homepage.dart';
+import 'package:checkmate/core/services/local_storage_service.dart';
+import 'package:checkmate/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -80,6 +82,10 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         }
 
         if (state is AddressAdded) {
+          if (widget.phone != null) {
+            s1<LocalStorageService>().setLoggedIn(true);
+            s1<LocalStorageService>().setPhone(widget.phone!);
+          }
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (_) => const HomeScreen()),

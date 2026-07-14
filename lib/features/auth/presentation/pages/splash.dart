@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:checkmate/core/constants/app_assets.dart';
+import 'package:checkmate/core/services/local_storage_service.dart';
 import 'package:checkmate/features/auth/presentation/pages/login.dart';
+import 'package:checkmate/features/home/presentation/pages/homepage.dart';
+import 'package:checkmate/injection_container.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -16,11 +19,16 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(
-      Duration(seconds: 1),
-      () => Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
-      ),
+      const Duration(seconds: 1),
+      () {
+        final isLoggedIn = s1<LocalStorageService>().isLoggedIn;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => isLoggedIn ? const HomeScreen() : const LoginScreen(),
+          ),
+        );
+      },
     );
   }
 

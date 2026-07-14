@@ -6,6 +6,8 @@ import 'package:checkmate/features/auth/presentation/bloc/otp/otp_bloc.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_event.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_state.dart';
 import 'package:checkmate/features/home/presentation/pages/homepage.dart';
+import 'package:checkmate/core/services/local_storage_service.dart';
+import 'package:checkmate/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
@@ -56,6 +58,8 @@ class _OtpScreenState extends State<OtpScreen> {
     return BlocListener<OtpBloc, OtpState>(
       listener: (context, state) {
         if (state is UserAlreadyExists) {
+          s1<LocalStorageService>().setLoggedIn(true);
+          s1<LocalStorageService>().setPhone(widget.phone);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (_) => const HomeScreen()),

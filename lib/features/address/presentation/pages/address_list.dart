@@ -1,5 +1,8 @@
 import 'package:checkmate/core/widgets/button.dart';
 import 'package:checkmate/features/address/presentation/pages/addres_add.dart';
+import 'package:checkmate/features/auth/presentation/pages/login.dart';
+import 'package:checkmate/core/services/local_storage_service.dart';
+import 'package:checkmate/injection_container.dart';
 import 'package:flutter/material.dart';
 
 class AddressScreen extends StatelessWidget {
@@ -107,6 +110,36 @@ class AddressScreen extends StatelessWidget {
                         label: const Text(
                           "+ Add New Address",
                           style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    SizedBox(
+                      width: double.infinity,
+                      height: 64,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: Colors.redAccent, width: 1.5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () async {
+                          await s1<LocalStorageService>().clear();
+                          if (context.mounted) {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              MaterialPageRoute(builder: (_) => const LoginScreen()),
+                              (route) => false,
+                            );
+                          }
+                        },
+                        icon: const Icon(Icons.logout, color: Colors.redAccent),
+                        label: const Text(
+                          "Log Out",
+                          style: TextStyle(color: Colors.redAccent, fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ),
                     ),

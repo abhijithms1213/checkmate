@@ -19,10 +19,17 @@ import 'package:checkmate/features/news/presentation/bloc/article/article_bloc.d
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:checkmate/core/services/local_storage_service.dart';
 
 final s1 = GetIt.instance;
 
 Future<void> initializeDependencies() async {
+  // SharedPreferences & LocalStorageService
+  final sharedPreferences = await SharedPreferences.getInstance();
+  s1.registerSingleton<SharedPreferences>(sharedPreferences);
+  s1.registerSingleton<LocalStorageService>(LocalStorageService(s1()));
+
   // Dio
   s1.registerSingleton<Dio>(Dio());
 
