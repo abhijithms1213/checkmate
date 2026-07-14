@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int selectedCategory = 0;
   String searchQuery = '';
 
-  final List<String> categories = ["All", "Blood", "Heart", "Women", "Hormone"];
+  final List<String> categories = ["All", "Blood", "Heart", "Skin", "Hormone"];
 
   @override
   Widget build(BuildContext context) {
