@@ -32,12 +32,13 @@ class _LoginScreenState extends State<LoginScreen> {
   void _sendOtp() {
     final phone = _phoneController.text.trim();
 
-    if (phone.isEmpty) {
+    if (phone.length != 10) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter phone number')),
+        const SnackBar(content: Text('Phone number must be 10 digits')),
       );
       return;
     }
+
     final otp = '123456';
 
     context.read<OtpBloc>().add(
@@ -146,7 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       const SizedBox(height: 10),
 
-                      TextField(
+                      TextFormField(
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
@@ -162,6 +163,17 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         maxLength: 10,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Phone number is required';
+                          }
+
+                          if (value.length != 10) {
+                            return 'Phone number must be 10 digits';
+                          }
+
+                          return null;
+                        },
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
                           LengthLimitingTextInputFormatter(10),

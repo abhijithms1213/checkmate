@@ -98,7 +98,15 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       final addresses = await userRepository.getAddresses(event.phone);
       emit(AddressesLoaded(addresses));
     } catch (e) {
-      emit(UserFailure(e.toString()));
+      // Reload addresses so the UI doesn't get stuck in a weird state
+      final addresses = await userRepository.getAddresses(event.phone);
+      emit(AddressesLoaded(addresses));
+      
+      if (e.toString().contains('violates foreign key constraint')) {
+        emit(UserFailure('Cannot delete this address because it is associated with an existing booking.'));
+      } else {
+        emit(UserFailure('Failed to delete address. Please try again.'));
+      }
     }
   }
 }

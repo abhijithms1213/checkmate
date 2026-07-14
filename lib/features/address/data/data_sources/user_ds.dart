@@ -44,6 +44,7 @@ class UserDs {
         .from('addresses')
         .select()
         .eq('user_id', userId)
+        .eq('is_deleted', false)
         .order('is_default', ascending: false);
     return List<Map<String, dynamic>>.from(result);
   }
@@ -62,7 +63,10 @@ class UserDs {
   }
 
   Future<void> deleteAddressDS(String addressId) async {
-    await client.from('addresses').delete().eq('id', addressId);
+    await client
+        .from('addresses')
+        .update({'is_deleted': true})
+        .eq('id', addressId);
   }
 
   Future<String?> getUserIdByPhone(String phone) async {
