@@ -33,6 +33,7 @@ import 'package:checkmate/features/appointments/data/data_sources/appointments_d
 import 'package:checkmate/features/appointments/data/repository/appointments_repository_impl.dart';
 import 'package:checkmate/features/appointments/domain/repository/appointments_repository.dart';
 import 'package:checkmate/features/appointments/domain/usecases/get_user_bookings_uc.dart';
+import 'package:checkmate/features/appointments/domain/usecases/get_booking_details_uc.dart';
 import 'package:checkmate/features/appointments/presentation/bloc/appointments_bloc.dart';
 
 final s1 = GetIt.instance;
@@ -146,7 +147,11 @@ Future<void> initializeDependencies() async {
     () => AppointmentsRepositoryImpl(s1()),
   );
   s1.registerLazySingleton(() => GetUserBookingsUseCase(s1()));
+  s1.registerLazySingleton(() => GetBookingDetailsUseCase(s1()));
   s1.registerFactory(
-    () => AppointmentsBloc(getUserBookingsUseCase: s1()),
+    () => AppointmentsBloc(
+      getUserBookingsUseCase: s1(),
+      getBookingDetailsUseCase: s1(),
+    ),
   );
 }

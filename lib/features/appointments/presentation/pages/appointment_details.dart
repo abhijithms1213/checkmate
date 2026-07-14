@@ -1,16 +1,50 @@
+import 'package:checkmate/features/appointments/domain/entities/booking_full_details_entity.dart';
+import 'package:checkmate/features/appointments/presentation/bloc/appointments_bloc.dart';
+import 'package:checkmate/features/appointments/presentation/bloc/appointments_event.dart';
+import 'package:checkmate/features/appointments/presentation/bloc/appointments_state.dart';
+import 'package:checkmate/injection_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 
 class BookingDetailsScreen extends StatelessWidget {
-  const BookingDetailsScreen({super.key});
+  final String bookingId;
+
+  const BookingDetailsScreen({super.key, required this.bookingId});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) =>
+          s1<AppointmentsBloc>()..add(GetBookingDetailsEvent(bookingId)),
+      child: const _BookingDetailsView(),
+    );
+  }
+}
+
+class _BookingDetailsView extends StatelessWidget {
+  const _BookingDetailsView();
 
   static const Color primaryColor = Color(0xFF006D67);
   static const Color darkText = Color(0xFF10243A);
+
+  Color _statusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'confirmed':
+        return Colors.green;
+      case 'pending':
+        return Colors.orange;
+      case 'cancelled':
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
-
       appBar: AppBar(
         backgroundColor: const Color(0xFFF8F9FB),
         elevation: 0,
@@ -26,292 +60,237 @@ class BookingDetailsScreen extends StatelessWidget {
           },
         ),
       ),
-
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.only(left: 16,right: 16,bottom: 16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    /// Status
-                    // Container(
-                    //   padding: const EdgeInsets.symmetric(
-                    //     horizontal: 14,
-                    //     vertical: 6,
-                    //   ),
-                    //   decoration: BoxDecoration(
-                    //     color: const Color(0xFF82E6D8),
-                    //     borderRadius: BorderRadius.circular(20),
-                    //   ),
-                    //   child: const Row(
-                    //     mainAxisSize: MainAxisSize.min,
-                    //     children: [
-                    //       Icon(
-                    //         Icons.check_circle,
-                    //         size: 16,
-                    //         color: primaryColor,
-                    //       ),
-                    //       SizedBox(width: 6),
-                    //       Text(
-                    //         "Confirmed",
-                    //         style: TextStyle(
-                    //           color: primaryColor,
-                    //           fontWeight: FontWeight.w500,
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
+        child: BlocBuilder<AppointmentsBloc, AppointmentsState>(
+          builder: (context, state) {
+            if (state is AppointmentsLoading || state is AppointmentsInitial) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-                    const SizedBox(height: 24),
+            if (state is AppointmentsError) {
+              return Center(child: Text(state.message));
+            }
 
-                    const Text(
-                      "Comprehensive Blood\nPanel",
-                      style: TextStyle(
-                        fontSize: 28,
-                        height: 1.2,
-                        fontWeight: FontWeight.bold,
-                        color: darkText,
+            if (state is BookingDetailsLoaded) {
+              final booking = state.bookingDetails;
+              final formattedDate = DateFormat(
+                'EEE, MMM d, yyyy',
+              ).format(booking.bookingDate);
+              final statusColor = _statusColor(booking.status);
+
+              return Column(
+                children: [
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.only(
+                        left: 16,
+                        right: 16,
+                        bottom: 16,
                       ),
-                    ),
-
-                    const SizedBox(height: 40),
-
-                    /// Schedule Card
-                    _card(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _sectionTitle("SCHEDULE"),
-
-                          const SizedBox(height: 18),
-
-                          const Row(
-                            children: [
-                              Icon(Icons.calendar_today, color: primaryColor),
-                              SizedBox(width: 12),
-                              Text(
-                                "Oct 24, 2023",
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 18),
-
-                          const Row(
-                            children: [
-                              Icon(Icons.access_time, color: primaryColor),
-                              SizedBox(width: 12),
-                              Text("09:30 AM", style: TextStyle(fontSize: 16)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    /// Lab Card
-                    _card(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _sectionTitle("LABORATORY"),
-
-                          const SizedBox(height: 18),
-
-                          const Text(
-                            "Boutique Diagnostics Center",
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: darkText,
+                          /// Status
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                              vertical: 6,
                             ),
-                          ),
-
-                          const SizedBox(height: 8),
-
-                          Text(
-                            "122 Medical Plaza, Suite 400\nNorthpoint District, NY 10012",
-                            style: TextStyle(
-                              color: Colors.grey.shade700,
-                              height: 1.5,
-                              fontSize: 15,
+                            decoration: BoxDecoration(
+                              color: statusColor.withOpacity(0.15),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  booking.status.toLowerCase() == 'pending'
+                                      ? Icons.pending_actions
+                                      : Icons.check_circle,
+                                  size: 16,
+                                  color: statusColor,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  booking.status.toUpperCase(),
+                                  style: TextStyle(
+                                    color: statusColor,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
 
                           const SizedBox(height: 20),
 
-                          const Row(
-                            children: [
-                              Icon(
-                                Icons.navigation,
-                                color: primaryColor,
-                                size: 18,
-                              ),
-                              SizedBox(width: 6),
-                              Text(
-                                "Get Directions",
-                                style: TextStyle(
-                                  color: primaryColor,
-                                  fontWeight: FontWeight.w500,
+                          Text(
+                            booking.tests.map((e) => e.testName).join(', '),
+                            style: const TextStyle(
+                              fontSize: 28,
+                              height: 1.2,
+                              fontWeight: FontWeight.bold,
+                              color: darkText,
+                            ),
+                          ),
+
+                          const SizedBox(height: 32),
+
+                          /// Schedule Card
+                          _card(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _sectionTitle("SCHEDULE"),
+                                const SizedBox(height: 18),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.calendar_today,
+                                      color: primaryColor,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      formattedDate,
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    /// Instructions Card
-                    _card(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Row(
-                            children: [
-                              Icon(Icons.info_outline, color: primaryColor),
-                              SizedBox(width: 10),
-                              Text(
-                                "Pre-test Instructions",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: darkText,
+                                const SizedBox(height: 18),
+                                Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.access_time,
+                                      color: primaryColor,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      booking.slotTime,
+                                      style: const TextStyle(fontSize: 16),
+                                    ),
+                                  ],
                                 ),
-                              ),
-                            ],
-                          ),
-
-                          const SizedBox(height: 18),
-
-                          _instruction(
-                            "Fast for 8-12 hours before your blood draw. Only water is permitted.",
-                          ),
-                          _instruction(
-                            "Drink plenty of water to ensure you are well-hydrated.",
-                          ),
-                          _instruction(
-                            "Avoid strenuous exercise for 24 hours prior to the test.",
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    /// Payment Summary
-                    _card(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _sectionTitle("PAYMENT SUMMARY"),
-
-                          const SizedBox(height: 24),
-
-                          _priceRow("Comprehensive Blood Panel", "\$185.00"),
-
-                          const SizedBox(height: 14),
-
-                          _priceRow("Collection Fee", "\$15.00"),
-
-                          const SizedBox(height: 16),
-
-                          const Divider(),
-
-                          const SizedBox(height: 12),
-
-                          Row(
-                            children: const [
-                              Text(
-                                "Total Amount",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Spacer(),
-                              Text(
-                                "\$200.00",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: primaryColor,
-                                ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
 
                           const SizedBox(height: 24),
 
-                          Divider(color: Colors.grey.shade300),
+                          /// Lab Card
+                          _card(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _sectionTitle("LABORATORY"),
+                                const SizedBox(height: 18),
+                                Text(
+                                  booking.labName,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    color: darkText,
+                                  ),
+                                ),
+                                if (booking.labAddress != null) ...[
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    booking.labAddress!,
+                                    style: TextStyle(
+                                      color: Colors.grey.shade700,
+                                      height: 1.5,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ],
+                              ],
+                            ),
+                          ),
 
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 24),
 
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.credit_card,
-                                size: 18,
-                                color: Colors.grey.shade700,
+                          /// Address Card (Home Collection)
+                          if (booking.address != null) ...[
+                            _card(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  _sectionTitle("HOME COLLECTION ADDRESS"),
+                                  const SizedBox(height: 18),
+                                  Text(
+                                    booking.address!.fullName,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w600,
+                                      color: darkText,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    "${booking.address!.houseNumber}, ${booking.address!.fullAddress}\nPincode: ${booking.address!.pincode}",
+                                    style: TextStyle(
+                                      color: Colors.grey.shade700,
+                                      height: 1.5,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(width: 8),
-                              Text(
-                                "Paid via Visa ending in 4242",
-                                style: TextStyle(color: Colors.grey.shade700),
-                              ),
-                            ],
+                            ),
+                            const SizedBox(height: 24),
+                          ],
+
+                          /// Payment Summary
+                          _card(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                _sectionTitle("PAYMENT SUMMARY"),
+                                const SizedBox(height: 24),
+                                ...booking.tests.map(
+                                  (test) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 14),
+                                    child: _priceRow(
+                                      test.testName,
+                                      "₹ ${test.price.toStringAsFixed(0)}",
+                                    ),
+                                  ),
+                                ),
+                                const Divider(),
+                                const SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    const Text(
+                                      "Total Amount",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    Text(
+                                      "₹ ${booking.totalAmount.toStringAsFixed(0)}",
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: primaryColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-
-            /// Bottom Actions
-            // Padding(
-            //   padding: const EdgeInsets.all(24),
-            //   child: Column(
-            //     children: [
-            //       SizedBox(
-            //         width: double.infinity,
-            //         height: 56,
-            //         child: OutlinedButton(
-            //           style: OutlinedButton.styleFrom(
-            //             side: BorderSide(color: Colors.grey.shade400),
-            //             shape: RoundedRectangleBorder(
-            //               borderRadius: BorderRadius.circular(28),
-            //             ),
-            //           ),
-            //           onPressed: () {},
-            //           child: const Text(
-            //             "Reschedule Appointment",
-            //             style: TextStyle(color: darkText, fontSize: 16),
-            //           ),
-            //         ),
-            //       ),
-
-            //       const SizedBox(height: 18),
-
-            //       TextButton(
-            //         onPressed: () {},
-            //         child: const Text(
-            //           "CANCEL BOOKING",
-            //           style: TextStyle(color: Colors.red, letterSpacing: 1),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // ),
-          ],
+                  ),
+                ],
+              );
+            }
+            return const SizedBox.shrink();
+          },
         ),
       ),
     );
@@ -337,35 +316,6 @@ class BookingDetailsScreen extends StatelessWidget {
         fontSize: 14,
         color: Colors.black54,
         letterSpacing: 0.8,
-      ),
-    );
-  }
-
-  static Widget _instruction(String text) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(top: 6),
-            child: Text(
-              "•",
-              style: TextStyle(color: primaryColor, fontSize: 18),
-            ),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              text,
-              style: TextStyle(
-                color: Colors.grey.shade700,
-                height: 1.5,
-                fontSize: 15,
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }

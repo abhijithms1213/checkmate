@@ -268,7 +268,9 @@ class AppointmentCard extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (context) => BookingDetailsScreen(),
+                    builder: (context) => BookingDetailsScreen(
+                      bookingId: booking.id,
+                    ),
                   ),
                 );
               },
