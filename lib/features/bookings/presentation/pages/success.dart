@@ -1,4 +1,4 @@
-import 'package:checkmate/features/home/presentation/pages/homepage.dart';
+import 'package:checkmate/features/bookings/presentation/pages/homepage.dart';
 import 'package:flutter/material.dart';
 
 class BookingSuccessScreen extends StatelessWidget {

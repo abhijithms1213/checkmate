@@ -5,7 +5,7 @@ import 'package:checkmate/features/address/domain/entities/user_entity.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_event.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_state.dart';
-import 'package:checkmate/features/home/presentation/pages/homepage.dart';
+import 'package:checkmate/features/bookings/presentation/pages/homepage.dart';
 import 'package:checkmate/core/services/local_storage_service.dart';
 import 'package:checkmate/injection_container.dart';
 import 'package:flutter/material.dart';

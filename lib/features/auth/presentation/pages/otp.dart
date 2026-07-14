@@ -5,7 +5,7 @@ import 'package:checkmate/features/address/presentation/pages/addres_add.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_bloc.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_event.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_state.dart';
-import 'package:checkmate/features/home/presentation/pages/homepage.dart';
+import 'package:checkmate/features/bookings/presentation/pages/homepage.dart';
 import 'package:checkmate/core/services/local_storage_service.dart';
 import 'package:checkmate/injection_container.dart';
 import 'package:flutter/material.dart';

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:checkmate/core/constants/app_assets.dart';
 import 'package:checkmate/core/services/local_storage_service.dart';
 import 'package:checkmate/features/auth/presentation/pages/login.dart';
-import 'package:checkmate/features/home/presentation/pages/homepage.dart';
+import 'package:checkmate/features/bookings/presentation/pages/homepage.dart';
 import 'package:checkmate/injection_container.dart';
 import 'package:flutter/material.dart';
 

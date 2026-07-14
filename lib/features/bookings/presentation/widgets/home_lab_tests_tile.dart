@@ -2,7 +2,7 @@
 import 'dart:developer';
 
 import 'package:checkmate/features/bookings/presentation/pages/book_lab.dart';
-import 'package:checkmate/features/home/presentation/pages/homepage.dart';
+import 'package:checkmate/features/bookings/presentation/pages/homepage.dart';
 import 'package:flutter/material.dart';
 
 class TestTileWidget extends StatelessWidget {

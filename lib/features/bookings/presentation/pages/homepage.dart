@@ -2,9 +2,9 @@ import 'dart:developer';
 
 import 'package:checkmate/core/widgets/button.dart';
 import 'package:checkmate/features/bookings/presentation/pages/book_lab.dart';
-import 'package:checkmate/features/home/presentation/widgets/home_category_row.dart';
-import 'package:checkmate/features/home/presentation/widgets/home_lab_tests_tile.dart';
-import 'package:checkmate/features/home/presentation/widgets/home_top_widget.dart';
+import 'package:checkmate/features/bookings/presentation/widgets/home_category_row.dart';
+import 'package:checkmate/features/bookings/presentation/widgets/home_lab_tests_tile.dart';
+import 'package:checkmate/features/bookings/presentation/widgets/home_top_widget.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {

@@ -2,7 +2,7 @@ import 'package:checkmate/core/constants/app_colors.dart';
 import 'package:checkmate/core/constants/app_text.dart';
 import 'package:checkmate/features/address/presentation/pages/address_list.dart';
 import 'package:checkmate/features/appointments/presentation/pages/appointment_list.dart';
-import 'package:checkmate/features/home/presentation/pages/homepage.dart';
+import 'package:checkmate/features/bookings/presentation/pages/homepage.dart';
 import 'package:flutter/material.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
