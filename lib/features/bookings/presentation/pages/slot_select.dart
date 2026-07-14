@@ -1,5 +1,7 @@
+import 'package:checkmate/core/constants/app_colors.dart';
 import 'package:checkmate/core/widgets/logo_row.dart';
 import 'package:checkmate/features/bookings/presentation/pages/payment.dart';
+import 'package:checkmate/features/bookings/presentation/widgets/date_tile.dart';
 import 'package:flutter/material.dart';
 
 class SelectSlotScreen extends StatefulWidget {
@@ -39,7 +41,6 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
 
   final List<String> disabledSlots = ["07:00 PM", "07:30 PM"];
 
-  static const Color primaryColor = Color(0xFF006D67);
   static const Color darkBlue = Color(0xFF081E36);
 
   @override
@@ -50,7 +51,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
       bottomNavigationBar: Container(
         height: 72,
         padding: const EdgeInsets.all(12),
-        color: primaryColor,
+        color: AppColors.primary,
         child: Center(
           child: InkWell(
             onTap: () {
@@ -146,38 +147,43 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                                 selectedDate = index;
                               });
                             },
-                            child: Container(
-                              width: 72,
-                              decoration: BoxDecoration(
-                                color: selected ? darkBlue : Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.grey.shade300),
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    dates[index]["day"]!,
-                                    style: TextStyle(
-                                      color: selected
-                                          ? Colors.white
-                                          : Colors.grey,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    dates[index]["date"]!,
-                                    style: TextStyle(
-                                      fontSize: 28,
-                                      fontWeight: FontWeight.bold,
-                                      color: selected
-                                          ? Colors.white
-                                          : Colors.black,
-                                    ),
-                                  ),
-                                ],
-                              ),
+                            child: DateTileWidget(
+                              selected: selected,
+                              dates: dates,
+                              index: index,
                             ),
+                            // child: Container(
+                            //   width: 72,
+                            //   decoration: BoxDecoration(
+                            //     color: selected ? darkBlue : Colors.white,
+                            //     borderRadius: BorderRadius.circular(12),
+                            //     border: Border.all(color: Colors.grey.shade300),
+                            //   ),
+                            //   child: Column(
+                            //     mainAxisAlignment: MainAxisAlignment.center,
+                            //     children: [
+                            //       Text(
+                            //         dates[index]["day"]!,
+                            //         style: TextStyle(
+                            //           color: selected
+                            //               ? Colors.white
+                            //               : Colors.grey,
+                            //         ),
+                            //       ),
+                            //       const SizedBox(height: 4),
+                            //       Text(
+                            //         dates[index]["date"]!,
+                            //         style: TextStyle(
+                            //           fontSize: 28,
+                            //           fontWeight: FontWeight.bold,
+                            //           color: selected
+                            //               ? Colors.white
+                            //               : Colors.black,
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // ),
                           );
                         },
                       ),
@@ -223,7 +229,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                       child: Container(
                         decoration: BoxDecoration(
                           color: selected
-                              ? primaryColor
+                              ? AppColors.primary
                               : disabled
                               ? const Color(0xffF3F4F6)
                               : Colors.white,
