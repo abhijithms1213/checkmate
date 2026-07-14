@@ -1,7 +1,6 @@
 import 'package:checkmate/core/constants/app_colors.dart';
 import 'package:checkmate/core/widgets/logo_with_back_btn.dart';
 import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
-import 'package:checkmate/features/bookings/presentation/pages/book_lab.dart';
 import 'package:checkmate/features/bookings/presentation/pages/payment.dart';
 import 'package:checkmate/features/bookings/presentation/widgets/date_tile.dart';
 import 'package:checkmate/features/bookings/domain/entities/lab_entity.dart';
@@ -41,23 +40,6 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
     });
   }
 
-  final List<String> slots = [
-    "08:00 AM",
-    "08:30 AM",
-    "09:00 AM",
-    "10:30 AM",
-    "12:30 PM",
-    "01:00 PM",
-    "02:30 PM",
-    "03:00 PM",
-    "05:30 PM",
-    "06:00 PM",
-    "07:00 PM",
-    "07:30 PM",
-  ];
-
-  final List<String> disabledSlots = ["07:00 PM", "07:30 PM"];
-
   static const Color darkBlue = Color(0xFF081E36);
 
   @override
@@ -73,7 +55,10 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
           child: InkWell(
             onTap: () {
               Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => ReviewPayScreen()),
+                MaterialPageRoute(
+                  builder: (context) =>
+                      ReviewPayScreen(labs: widget.labs, test: widget.test),
+                ),
               );
             },
             child: Text(
@@ -147,7 +132,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                       child: ListView.separated(
                         scrollDirection: Axis.horizontal,
                         itemCount: dates.length,
-                        separatorBuilder: (_, __) => const SizedBox(width: 12),
+                        separatorBuilder: (_, _) => const SizedBox(width: 12),
                         itemBuilder: (context, index) {
                           final selected = selectedDate == index;
 
@@ -221,12 +206,13 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                       if (state.slots.isEmpty) {
                         return const Center(child: Text("No slots available"));
                       }
-                      
+
                       // Format slots
                       final formattedSlots = state.slots.map((s) {
                         return {
                           "id": s.id,
-                          "time": s.slotTime, // Assuming it's already a formatted string or easily displayable
+                          "time": s
+                              .slotTime, // Assuming it's already a formatted string or easily displayable
                           "isActive": s.isActive,
                         };
                       }).toList();
@@ -235,12 +221,13 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: formattedSlots.length,
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          mainAxisSpacing: 14,
-                          crossAxisSpacing: 14,
-                          childAspectRatio: 2.2,
-                        ),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 3,
+                              mainAxisSpacing: 14,
+                              crossAxisSpacing: 14,
+                              childAspectRatio: 2.2,
+                            ),
                         itemBuilder: (context, index) {
                           final slot = formattedSlots[index];
                           final timeStr = slot["time"] as String;

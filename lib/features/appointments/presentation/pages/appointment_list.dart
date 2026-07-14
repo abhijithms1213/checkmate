@@ -36,24 +36,7 @@ class MyAppointmentsScreen extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            /// Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              child: Row(
-                children: [
-                  const Text(
-                    "Lab Services",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: darkText,
-                    ),
-                  ),
-
-                ],
-              ),
-            ),
-
+            SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Align(
@@ -74,7 +57,7 @@ class MyAppointmentsScreen extends StatelessWidget {
               child: ListView.separated(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 itemCount: appointments.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 24),
+                separatorBuilder: (_, _) => const SizedBox(height: 24),
                 itemBuilder: (_, index) {
                   return AppointmentCard(appointment: appointments[index]);
                 },
@@ -202,18 +185,6 @@ class AppointmentCard extends StatelessWidget {
                     ),
                   ),
                 ),
-              ),
-
-              const SizedBox(width: 10),
-
-              Container(
-                height: 58,
-                width: 58,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: const Icon(Icons.more_horiz, color: Colors.black54),
               ),
             ],
           ),

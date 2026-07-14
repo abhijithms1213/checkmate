@@ -1,9 +1,13 @@
 import 'package:checkmate/core/widgets/logo_with_back_btn.dart';
+import 'package:checkmate/features/bookings/domain/entities/lab_entity.dart';
+import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
 import 'package:checkmate/features/bookings/presentation/pages/success.dart';
 import 'package:flutter/material.dart';
 
 class ReviewPayScreen extends StatefulWidget {
-  const ReviewPayScreen({super.key});
+  const ReviewPayScreen({super.key, required this.labs, required this.test});
+  final LabEntity labs;
+  final TestEntity test;
 
   @override
   State<ReviewPayScreen> createState() => _ReviewPayScreenState();
