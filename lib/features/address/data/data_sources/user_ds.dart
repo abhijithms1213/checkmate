@@ -73,4 +73,32 @@ class UserDs {
         .maybeSingle();
     return result?['id'];
   }
+
+  /// Fetches user's phone, name and default address pincode from DB
+  Future<Map<String, dynamic>?> getContactInfoDS(String phone) async {
+    // 1. Get user row
+    final userResult = await client
+        .from('users')
+        .select('id, phone, name')
+        .eq('phone', phone)
+        .maybeSingle();
+
+    if (userResult == null) return null;
+
+    final userId = userResult['id'];
+
+    // 2. Get default address for pincode
+    final addressResult = await client
+        .from('addresses')
+        .select('pincode')
+        .eq('user_id', userId)
+        .eq('is_default', true)
+        .maybeSingle();
+
+    return {
+      'phone': userResult['phone'] ?? '',
+      'name': userResult['name'] ?? '',
+      'pincode': addressResult?['pincode']?.toString() ?? '',
+    };
+  }
 }

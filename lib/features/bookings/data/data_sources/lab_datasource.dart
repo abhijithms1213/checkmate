@@ -49,7 +49,11 @@ class LabsRemoteDataSource {
         .eq('test_id', testId)
         .eq('is_available', true);
 
-    return result.map<LabModel>((e) => LabModel.fromJson(e)).toList();
+    return result.map<LabModel>((e) {
+      final labsData = Map<String, dynamic>.from(e['labs'] as Map<String, dynamic>);
+      labsData['price'] = e['price'];
+      return LabModel.fromJson(labsData);
+    }).toList();
   }
 
   Future<List<SlotModel>> getSlotsByLabId(String labId) async {

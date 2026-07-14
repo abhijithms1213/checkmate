@@ -1,10 +1,12 @@
-import 'package:checkmate/core/services/local_storage_service.dart';
 import 'package:checkmate/core/widgets/logo_with_back_btn.dart';
+import 'package:checkmate/features/address/domain/entities/address_entity.dart';
+import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
+import 'package:checkmate/features/address/presentation/bloc/user_state.dart';
 import 'package:checkmate/features/bookings/domain/entities/lab_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
 import 'package:checkmate/features/bookings/presentation/pages/success.dart';
-import 'package:checkmate/injection_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class ReviewPayScreen extends StatefulWidget {
@@ -28,12 +30,6 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
   String selectedPayment = "Pay at Lab";
 
   static const Color primaryColor = Color(0xFF006D67);
-
-  // Load from local storage
-  final _storage = s1<LocalStorageService>();
-
-  String get _phone => _storage.phone ?? '—';
-  String get _pincode => _storage.pincode ?? '—';
 
   String get _formattedDate {
     try {
@@ -91,16 +87,44 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                     //--------------------------------------------------
                     _sectionLabel("CONTACT INFO"),
                     const SizedBox(height: 12),
-                    _infoCard(
-                      children: [
-                        _infoRow(Icons.phone_outlined, "Phone", _phone),
-                        const Divider(height: 24),
-                        _infoRow(
-                          Icons.location_on_outlined,
-                          "Service Pincode",
-                          _pincode,
-                        ),
-                      ],
+                    BlocBuilder<UserBloc, UserState>(
+                      builder: (context, state) {
+                        AddressEntity? defaultAddress;
+                        if (state is AddressesLoaded &&
+                            state.addresses.isNotEmpty) {
+                          try {
+                            defaultAddress = state.addresses.firstWhere(
+                              (a) => a.isDefault,
+                            );
+                          } catch (_) {
+                            defaultAddress = state.addresses.first;
+                          }
+                        }
+
+                        return _infoCard(
+                          children: [
+                            _infoRow(
+                              Icons.person_outline,
+                              "Name",
+                              defaultAddress?.fullName ?? '—',
+                            ),
+                            const Divider(height: 24),
+                            _infoRow(
+                              Icons.location_on_outlined,
+                              "Service Pincode",
+                              defaultAddress?.pincode ?? '—',
+                            ),
+                            const Divider(height: 24),
+                            _infoRow(
+                              Icons.home_outlined,
+                              "Address",
+                              defaultAddress != null
+                                  ? '${defaultAddress.houseNumber}, ${defaultAddress.fullAddress}'
+                                  : '—',
+                            ),
+                          ],
+                        );
+                      },
                     ),
 
                     const SizedBox(height: 24),
@@ -156,6 +180,15 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                             Icons.place_outlined,
                             "Location",
                             widget.labs.description!,
+                          ),
+                        ],
+
+                        if (widget.labs.description != null) ...[
+                          const Divider(height: 24),
+                          _infoRow(
+                            Icons.place_outlined,
+                            "About Lab",
+                            widget.labs.address!,
                           ),
                         ],
                       ],
