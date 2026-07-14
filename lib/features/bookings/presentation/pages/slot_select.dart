@@ -3,6 +3,7 @@ import 'package:checkmate/core/widgets/logo_row.dart';
 import 'package:checkmate/features/bookings/presentation/pages/payment.dart';
 import 'package:checkmate/features/bookings/presentation/widgets/date_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class SelectSlotScreen extends StatefulWidget {
   const SelectSlotScreen({super.key});
@@ -12,17 +13,24 @@ class SelectSlotScreen extends StatefulWidget {
 }
 
 class _SelectSlotScreenState extends State<SelectSlotScreen> {
-  int selectedDate = 1;
+  int selectedDate = 0;
 
   String selectedTime = "12:30 PM";
 
-  final List<Map<String, String>> dates = [
-    {"day": "MON", "date": "23"},
-    {"day": "TUE", "date": "24"},
-    {"day": "WED", "date": "25"},
-    {"day": "THU", "date": "26"},
-    {"day": "FRI", "date": "27"},
-  ];
+  late List<Map<String, String>> dates;
+
+  @override
+  void initState() {
+    super.initState();
+    dates = List.generate(30, (index) {
+      final date = DateTime.now().add(Duration(days: index));
+      return {
+        "day": DateFormat('E').format(date).toUpperCase(),
+        "date": DateFormat('d').format(date),
+        "fullDate": date.toIso8601String(),
+      };
+    });
+  }
 
   final List<String> slots = [
     "08:00 AM",
@@ -111,21 +119,14 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                   children: [
                     Row(
                       children: [
-                        const Text(
-                          "October 2023",
-                          style: TextStyle(
+                        Text(
+                          DateFormat('MMMM yyyy').format(
+                            DateTime.parse(dates[selectedDate]["fullDate"]!),
+                          ),
+                          style: const TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
                           ),
-                        ),
-                        const Spacer(),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.chevron_left),
-                        ),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.chevron_right),
                         ),
                       ],
                     ),
@@ -279,9 +280,9 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
 
               const SizedBox(height: 8),
 
-              const Text(
-                "Date: Tuesday, October 24",
-                style: TextStyle(fontSize: 18),
+              Text(
+                "Date: ${DateFormat('EEEE, MMMM d').format(DateTime.parse(dates[selectedDate]["fullDate"]!))}",
+                style: const TextStyle(fontSize: 18),
               ),
 
               const SizedBox(height: 8),
