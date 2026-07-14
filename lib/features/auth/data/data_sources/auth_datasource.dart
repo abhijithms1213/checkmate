@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:checkmate/core/constants/constants.dart';
 import 'package:checkmate/features/auth/data/models/otp_varify_model.dart';
 import 'package:dio/dio.dart';
@@ -23,25 +24,29 @@ class AuthDatasource {
       // Twilio SMS Integration
       final dio = Dio();
 
-      final basicAuth =
-          'Basic ${base64Encode(utf8.encode('$twilioAccountSid:$twiloAuthToken'))}';
+      if (otp.phone == '9188129607') {
+        final basicAuth =
+            'Basic ${base64Encode(utf8.encode('$twilioAccountSid:$twiloAuthToken'))}';
 
-      final formattedPhone = '+91${otp.phone}';
+        final formattedPhone = '+91${otp.phone}';
 
-      await dio.post(
-        'https://api.twilio.com/2010-04-01/Accounts/$twilioAccountSid/Messages.json',
-        data: {
-          'To': formattedPhone, // Dynamic phone number
-          'From': '+14782762920', // Your Twilio phone number
-          'Body': 'your otp is ${otp.otp}', // Dynamic OTP
-        },
-        options: Options(
-          headers: {
-            'Authorization': basicAuth,
-            Headers.contentTypeHeader: Headers.formUrlEncodedContentType,
+        await dio.post(
+          'https://api.twilio.com/2010-04-01/Accounts/$twilioAccountSid/Messages.json',
+          data: {
+            'To': formattedPhone, // Dynamic phone number
+            'From': '+14782762920', // Your Twilio phone number
+            'Body': 'your otp is ${otp.otp}', // Dynamic OTP
           },
-        ),
-      );
+          options: Options(
+            headers: {
+              'Authorization': basicAuth,
+              Headers.contentTypeHeader: Headers.formUrlEncodedContentType,
+            },
+          ),
+        );
+      } else {
+        log('skipped sms');
+      }
     } on DioException {
       rethrow;
     } catch (e) {

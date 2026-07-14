@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/constants/app_assets.dart';
 import 'package:checkmate/core/utils/otp_gen.dart';
@@ -37,8 +38,6 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       return;
     }
-
-    // final otp = generateOtp();
     final otp = '123456';
 
     context.read<OtpBloc>().add(
@@ -113,17 +112,21 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       Text(
                         "Welcome",
-                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xff10243A),
-                        ),
+                        style: Theme.of(context).textTheme.headlineMedium
+                            ?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: const Color(0xff10243A),
+                            ),
                       ),
 
                       const SizedBox(height: 12),
 
                       Text(
                         "Login to access your diagnostics portal.",
-                        style: TextStyle(color: Colors.grey.shade600, fontSize: 18.spMin),
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 18.spMin,
+                        ),
                       ),
 
                       const SizedBox(height: 50),
@@ -132,7 +135,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         alignment: Alignment.centerLeft,
                         child: Text(
                           "Phone Number",
-                          style: TextStyle(fontSize: 18.spMin, fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                            fontSize: 18.spMin,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
 
@@ -153,6 +159,11 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
+                        maxLength: 10,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(10),
+                        ],
                       ),
 
                       const SizedBox(height: 8),
@@ -171,7 +182,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         builder: (context, state) {
                           return ElevatedBtnWidget(
                             primaryColor: LoginScreen.primaryColor,
-                            content: state is OtpLoading ? 'Sending...' : 'Send OTP',
+                            content: state is OtpLoading
+                                ? 'Sending...'
+                                : 'Send OTP',
                             onTap: state is OtpLoading ? () {} : _sendOtp,
                           );
                         },
