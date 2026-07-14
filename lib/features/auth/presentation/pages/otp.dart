@@ -1,15 +1,13 @@
 import 'package:checkmate/core/constants/app_assets.dart';
+import 'package:checkmate/core/constants/app_colors.dart';
 import 'package:checkmate/features/address/presentation/pages/addres_add.dart';
 import 'package:checkmate/core/widgets/buttons/elevated_btn.dart';
-import 'package:checkmate/features/home/presentation/pages/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:pinput/pinput.dart';
 
 class OtpScreen extends StatelessWidget {
-  const OtpScreen({super.key});
-
-  static const Color primaryColor = Color(0xFF006D67);
-
+  const OtpScreen({super.key, required this.phone});
+  final String phone;
   @override
   Widget build(BuildContext context) {
     final defaultPinTheme = PinTheme(
@@ -96,7 +94,7 @@ class OtpScreen extends StatelessWidget {
                 const SizedBox(height: 50),
 
                 ElevatedBtnWidget(
-                  primaryColor: primaryColor,
+                  primaryColor: AppColors.primary,
                   content: 'Verify & Proceed',
 
                   onTap: () {
@@ -122,8 +120,6 @@ class OtpScreen extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 80),
-
-             
               ],
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:checkmate/core/constants/constants.dart';
 import 'package:checkmate/core/theme/app_theme.dart';
+import 'package:checkmate/features/auth/presentation/bloc/otp/otp_bloc.dart';
 import 'package:checkmate/features/auth/presentation/pages/login.dart';
 import 'package:checkmate/features/auth/presentation/pages/splash.dart';
 import 'package:checkmate/features/news/domain/usecases/get_article.dart';
@@ -14,13 +15,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
-  initializeDependencies();
   WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(
-    url:supabaseUrl,
-    publishableKey:supabasePublishableKey,
+    url: supabaseUrl,
+    publishableKey: supabasePublishableKey,
   );
+
+  await initializeDependencies();
 
   runApp(
     DevicePreview(enabled: !kReleaseMode, builder: (context) => const MyApp()),
@@ -32,18 +34,35 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<ArticleBloc>(
-      // create: (context) => BlocProvider.of<ArticleBloc>(context)..add(GetArticles()),
-      create: (context) => s1()..add(GetArticles()),
+    return BlocProvider<OtpBloc>(
+      create: (context) => s1<OtpBloc>(),
       child: MaterialApp(
         useInheritedMediaQuery: true,
         locale: DevicePreview.locale(context),
         builder: DevicePreview.appBuilder,
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
-        // home: const SplashScreen(),
-        home: ArticlePage(),
+        home: const SplashScreen(),
+        // home: LoginScreen(),
       ),
     );
   }
 }
+
+
+
+
+
+    // return BlocProvider<ArticleBloc>(
+    //   // create: (context) => BlocProvider.of<ArticleBloc>(context)..add(GetArticles()),
+    //   create: (context) => s1<ArticleBloc>()..add(GetArticles()),
+    //   child: MaterialApp(
+    //     useInheritedMediaQuery: true,
+    //     locale: DevicePreview.locale(context),
+    //     builder: DevicePreview.appBuilder,
+    //     debugShowCheckedModeBanner: false,
+    //     theme: AppTheme.light,
+    //     // home: const SplashScreen(),
+    //     home: ArticlePage(),
+    //   ),
+    // );

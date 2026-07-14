@@ -9,6 +9,6 @@ class GetArticleUseCase implements UseCase<DataState<List<NewsArticleEntity>>, v
 
   @override
   Future<DataState<List<NewsArticleEntity>>> call({void params}) async {
-    return _articleRepository.getNewsArticles();
+    return await _articleRepository.getNewsArticles();
   }
 }
