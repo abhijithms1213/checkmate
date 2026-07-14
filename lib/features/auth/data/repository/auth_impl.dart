@@ -24,7 +24,7 @@ class AuthRepoImplementation extends AuthRepository {
   }
 
   @override
-  Future<bool> verifyOtp({required String phone, required String otp}) {
+  Future<Map<String, dynamic>> verifyOtp({required String phone, required String otp}) {
     return _authDatasource.verifyOtpDS(phone: phone, otp: otp);
   }
 }

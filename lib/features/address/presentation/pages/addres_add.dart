@@ -1,135 +1,229 @@
+import 'package:checkmate/core/constants/app_colors.dart';
 import 'package:checkmate/core/widgets/buttons/elevated_btn.dart';
+import 'package:checkmate/features/address/domain/entities/address_entity.dart';
+import 'package:checkmate/features/address/domain/entities/user_entity.dart';
+import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
+import 'package:checkmate/features/address/presentation/bloc/user_event.dart';
+import 'package:checkmate/features/address/presentation/bloc/user_state.dart';
 import 'package:checkmate/features/home/presentation/pages/homepage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddAddressScreen extends StatefulWidget {
-  const AddAddressScreen({super.key});
+  const AddAddressScreen({super.key, this.phone});
+
+  final String? phone;
 
   @override
   State<AddAddressScreen> createState() => _AddAddressScreenState();
 }
 
 class _AddAddressScreenState extends State<AddAddressScreen> {
-  static const Color primaryColor = Color(0xFF006D67);
   static const Color darkText = Color(0xFF10243A);
 
-  int selectedType = 0;
+  final _nameController = TextEditingController();
+  final _houseController = TextEditingController();
+  final _addressController = TextEditingController();
+  final _pincodeController = TextEditingController();
 
-  final addressTypes = ["Home", "Office", "Other"];
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _houseController.dispose();
+    _addressController.dispose();
+    _pincodeController.dispose();
+    super.dispose();
+  }
+
+  void _saveUser() {
+    if (_nameController.text.trim().isEmpty ||
+        _houseController.text.trim().isEmpty ||
+        _addressController.text.trim().isEmpty ||
+        _pincodeController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
+      return;
+    }
+
+    if (widget.phone != null) {
+      context.read<UserBloc>().add(
+        CreateUserEvent(
+          UserEntity(
+            phone: widget.phone ?? '',
+            name: _nameController.text.trim(),
+          ),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
+    return BlocListener<UserBloc, UserState>(
+      listener: (context, state) {
+        if (state is UserCreated) {
+          context.read<UserBloc>().add(
+            AddAddressEvent(
+              AddressEntity(
+                userId: state.userId,
+                fullName: _nameController.text.trim(),
+                houseNumber: _houseController.text.trim(),
+                fullAddress: _addressController.text.trim(),
+                pincode: _pincodeController.text.trim(),
+                latitude: null,
+                longitude: null,
+                isDefault: true,
+              ),
+            ),
+          );
+        }
 
-      appBar: AppBar(
+        if (state is AddressAdded) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => const HomeScreen()),
+            (route) => false,
+          );
+        }
+
+        if (state is UserFailure) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
+        }
+      },
+      child: Scaffold(
         backgroundColor: const Color(0xFFF8F9FB),
-        elevation: 0,
-        centerTitle: true,
-        title: const Text(
-          "Add Address",
-          style: TextStyle(color: darkText, fontWeight: FontWeight.w600),
+        appBar: AppBar(
+          backgroundColor: const Color(0xFFF8F9FB),
+          elevation: 0,
+          centerTitle: true,
+          title: const Text(
+            "Add Address",
+            style: TextStyle(color: darkText, fontWeight: FontWeight.w600),
+          ),
+          leading: IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back_ios_new, color: darkText),
+          ),
         ),
-        leading: IconButton(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back_ios_new, color: darkText),
-        ),
-      ),
-
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    /// Location Placeholder
-                    Container(
-                      height: 160,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF1F3F5),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.location_on_outlined,
-                            size: 50,
-                            color: primaryColor,
-                          ),
-                          SizedBox(height: 12),
-                          Text(
-                            "Enter your diagnostic delivery or\nservice location",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.black54,
+        body: SafeArea(
+          child: Column(
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: 160,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF1F3F5),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.location_on_outlined,
+                              size: 50,
+                              color: AppColors.primary,
                             ),
-                          ),
-                        ],
+                            SizedBox(height: 12),
+                            Text(
+                              "Enter your diagnostic delivery or\nservice location",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.black54,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
 
-                    const SizedBox(height: 40),
+                      const SizedBox(height: 40),
 
-                    _label("Full Name"),
-                    const SizedBox(height: 8),
+                      _label("Full Name"),
+                      const SizedBox(height: 8),
 
-                    _textField(hint: "e.g. Johnathan Doe"),
+                      _textField(
+                        controller: _nameController,
+                        hint: "e.g. Johnathan Doe",
+                      ),
 
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 20),
 
-                    _label("house Number"),
+                      _label("House Number"),
+                      const SizedBox(height: 8),
 
-                    const SizedBox(height: 8),
+                      _textField(
+                        controller: _houseController,
+                        hint: "123 ABCD",
+                      ),
 
-                    _textField(hint: "123 abcd"),
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 20),
 
-                    _label("Full Address"),
-                    const SizedBox(height: 8),
+                      _label("Full Address"),
+                      const SizedBox(height: 8),
 
-                    _textField(hint: "House number and street name"),
+                      _textField(
+                        controller: _addressController,
+                        hint: "House number and street name",
+                        maxLines: 3,
+                      ),
 
-                    const SizedBox(height: 24),
+                      const SizedBox(height: 20),
 
-                    _label("pincode"),
-                    const SizedBox(height: 8),
+                      _label("Pincode"),
+                      const SizedBox(height: 8),
 
-                    _textField(hint: "695003"),
+                      _textField(
+                        controller: _pincodeController,
+                        hint: "695003",
+                        keyboardType: TextInputType.number,
+                      ),
 
-                    const SizedBox(height: 36),
-                  ],
+                      const SizedBox(height: 30),
+                    ],
+                  ),
                 ),
               ),
-            ),
 
-            /// Bottom Button
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: ElevatedBtnWidget(
-                primaryColor: primaryColor,
-                content: 'Save Address',
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const HomeScreen()),
-                  );
-                },
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: BlocBuilder<UserBloc, UserState>(
+                  builder: (context, state) {
+                    return ElevatedBtnWidget(
+                      primaryColor: AppColors.primary,
+                      content: state is UserLoading
+                          ? 'Saving...'
+                          : 'Save Address',
+                      onTap: state is UserLoading ? () {} : _saveUser,
+                    );
+                  },
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _textField({required String hint}) {
+  Widget _textField({
+    required TextEditingController controller,
+    required String hint,
+    int maxLines = 1,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
     return TextField(
+      controller: controller,
+      maxLines: maxLines,
+      keyboardType: keyboardType,
       decoration: InputDecoration(
         hintText: hint,
         filled: true,

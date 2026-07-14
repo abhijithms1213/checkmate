@@ -27,3 +27,7 @@ class OtpFailure extends OtpState {
 class OtpVerified extends OtpState {}
 
 class OtpInvalid extends OtpState {}
+
+class UserAlreadyExists extends OtpState {}
+
+class NewUser extends OtpState {}

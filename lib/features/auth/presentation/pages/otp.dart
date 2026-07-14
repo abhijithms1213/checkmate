@@ -5,6 +5,7 @@ import 'package:checkmate/features/address/presentation/pages/addres_add.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_bloc.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_event.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_state.dart';
+import 'package:checkmate/features/home/presentation/pages/homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pinput/pinput.dart';
@@ -54,14 +55,18 @@ class _OtpScreenState extends State<OtpScreen> {
 
     return BlocListener<OtpBloc, OtpState>(
       listener: (context, state) {
-        if (state is OtpVerified) {
-          ScaffoldMessenger.of(
+        if (state is UserAlreadyExists) {
+          Navigator.pushReplacement(
             context,
-          ).showSnackBar(const SnackBar(content: Text('Success')));
+            MaterialPageRoute(builder: (_) => const HomeScreen()),
+          );
+        }
+
+        if (state is NewUser) {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (_) => AddAddressScreen(),
+              builder: (_) => AddAddressScreen(phone: widget.phone),
             ),
           );
         }

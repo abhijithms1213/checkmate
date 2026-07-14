@@ -1,5 +1,6 @@
 import 'package:checkmate/core/constants/constants.dart';
 import 'package:checkmate/core/theme/app_theme.dart';
+import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_bloc.dart';
 import 'package:checkmate/features/auth/presentation/pages/login.dart';
 import 'package:checkmate/features/auth/presentation/pages/splash.dart';
@@ -34,16 +35,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<OtpBloc>(
-      create: (context) => s1<OtpBloc>(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<OtpBloc>(create: (_) => s1<OtpBloc>()),
+
+        BlocProvider<UserBloc>(create: (_) => s1<UserBloc>()),
+      ],
       child: MaterialApp(
-        useInheritedMediaQuery: true,
-        locale: DevicePreview.locale(context),
-        builder: DevicePreview.appBuilder,
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
         home: const SplashScreen(),
-        // home: LoginScreen(),
       ),
     );
   }

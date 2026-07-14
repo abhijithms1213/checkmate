@@ -40,7 +40,10 @@ class AuthDatasource {
     }
   }
 
-  Future<bool> verifyOtpDS({required String phone, required String otp}) async {
+  Future<Map<String, dynamic>> verifyOtpDS({
+    required String phone,
+    required String otp,
+  }) async {
     try {
       final result = await client
           .from('otp_verifications')
@@ -51,7 +54,7 @@ class AuthDatasource {
           .gt('expires_at', DateTime.now().toIso8601String());
 
       if (result.isEmpty) {
-        return false;
+        return {'verified': false, 'userExists': false};
       }
 
       await client
@@ -59,7 +62,12 @@ class AuthDatasource {
           .update({'verified': true})
           .eq('id', result.first['id']);
 
-      return true;
+      final userResult = await client
+          .from('users')
+          .select('id')
+          .eq('phone', phone);
+
+      return {'verified': true, 'userExists': userResult.isNotEmpty};
     } catch (e) {
       throw DioException(
         requestOptions: RequestOptions(path: ''),

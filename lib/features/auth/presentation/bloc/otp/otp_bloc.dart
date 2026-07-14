@@ -45,14 +45,19 @@ class OtpBloc extends Bloc<OtpEvent, OtpState> {
     emit(OtpLoading());
 
     try {
-      final verified = await verifyOtpUseCase(
+      final result = await verifyOtpUseCase(
         params: VerifyOtpParamsEntity(phone: event.phone, otp: event.otp),
       );
 
-      if (verified) {
-        emit(OtpVerified());
-      } else {
+      if (!result['verified']) {
         emit(OtpInvalid());
+        return;
+      }
+
+      if (result['userExists']) {
+        emit(UserAlreadyExists());
+      } else {
+        emit(NewUser());
       }
     } catch (e) {
       emit(OtpFailure(e.toString()));
