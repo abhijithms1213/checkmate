@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:checkmate/core/resources/data_state.dart';
 import 'package:checkmate/features/news/data/data_sources/remote/news_api_service.dart';
