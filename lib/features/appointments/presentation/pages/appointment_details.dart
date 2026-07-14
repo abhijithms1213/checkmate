@@ -32,39 +32,39 @@ class BookingDetailsScreen extends StatelessWidget {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.only(left: 16,right: 16,bottom: 16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     /// Status
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF82E6D8),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.check_circle,
-                            size: 16,
-                            color: primaryColor,
-                          ),
-                          SizedBox(width: 6),
-                          Text(
-                            "Confirmed",
-                            style: TextStyle(
-                              color: primaryColor,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    // Container(
+                    //   padding: const EdgeInsets.symmetric(
+                    //     horizontal: 14,
+                    //     vertical: 6,
+                    //   ),
+                    //   decoration: BoxDecoration(
+                    //     color: const Color(0xFF82E6D8),
+                    //     borderRadius: BorderRadius.circular(20),
+                    //   ),
+                    //   child: const Row(
+                    //     mainAxisSize: MainAxisSize.min,
+                    //     children: [
+                    //       Icon(
+                    //         Icons.check_circle,
+                    //         size: 16,
+                    //         color: primaryColor,
+                    //       ),
+                    //       SizedBox(width: 6),
+                    //       Text(
+                    //         "Confirmed",
+                    //         style: TextStyle(
+                    //           color: primaryColor,
+                    //           fontWeight: FontWeight.w500,
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
 
                     const SizedBox(height: 24),
 
@@ -277,40 +277,40 @@ class BookingDetailsScreen extends StatelessWidget {
             ),
 
             /// Bottom Actions
-            Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: OutlinedButton(
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(color: Colors.grey.shade400),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(28),
-                        ),
-                      ),
-                      onPressed: () {},
-                      child: const Text(
-                        "Reschedule Appointment",
-                        style: TextStyle(color: darkText, fontSize: 16),
-                      ),
-                    ),
-                  ),
+            // Padding(
+            //   padding: const EdgeInsets.all(24),
+            //   child: Column(
+            //     children: [
+            //       SizedBox(
+            //         width: double.infinity,
+            //         height: 56,
+            //         child: OutlinedButton(
+            //           style: OutlinedButton.styleFrom(
+            //             side: BorderSide(color: Colors.grey.shade400),
+            //             shape: RoundedRectangleBorder(
+            //               borderRadius: BorderRadius.circular(28),
+            //             ),
+            //           ),
+            //           onPressed: () {},
+            //           child: const Text(
+            //             "Reschedule Appointment",
+            //             style: TextStyle(color: darkText, fontSize: 16),
+            //           ),
+            //         ),
+            //       ),
 
-                  const SizedBox(height: 18),
+            //       const SizedBox(height: 18),
 
-                  TextButton(
-                    onPressed: () {},
-                    child: const Text(
-                      "CANCEL BOOKING",
-                      style: TextStyle(color: Colors.red, letterSpacing: 1),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            //       TextButton(
+            //         onPressed: () {},
+            //         child: const Text(
+            //           "CANCEL BOOKING",
+            //           style: TextStyle(color: Colors.red, letterSpacing: 1),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),

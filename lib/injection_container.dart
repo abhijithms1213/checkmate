@@ -29,6 +29,11 @@ import 'package:checkmate/features/bookings/domain/usecases/get_labs_by_testid_u
 import 'package:checkmate/features/bookings/domain/usecases/get_slots_by_labid_uc.dart';
 import 'package:checkmate/features/bookings/domain/usecases/place_order_uc.dart';
 import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_bloc.dart';
+import 'package:checkmate/features/appointments/data/data_sources/appointments_datasource.dart';
+import 'package:checkmate/features/appointments/data/repository/appointments_repository_impl.dart';
+import 'package:checkmate/features/appointments/domain/repository/appointments_repository.dart';
+import 'package:checkmate/features/appointments/domain/usecases/get_user_bookings_uc.dart';
+import 'package:checkmate/features/appointments/presentation/bloc/appointments_bloc.dart';
 
 final s1 = GetIt.instance;
 
@@ -130,4 +135,18 @@ Future<void> initializeDependencies() async {
         getSlotsByLabIdUseCase: s1(),
         placeOrderUseCase: s1(),
       ));
+
+  //=====================================================
+  // APPOINTMENTS
+  //=====================================================
+  s1.registerLazySingleton<AppointmentsRemoteDataSource>(
+    () => AppointmentsRemoteDataSource(s1()),
+  );
+  s1.registerLazySingleton<AppointmentsRepository>(
+    () => AppointmentsRepositoryImpl(s1()),
+  );
+  s1.registerLazySingleton(() => GetUserBookingsUseCase(s1()));
+  s1.registerFactory(
+    () => AppointmentsBloc(getUserBookingsUseCase: s1()),
+  );
 }
