@@ -5,3 +5,9 @@ class GetTestsEvent extends LabsEvent {
 
   GetTestsEvent(this.pincode);
 }
+
+class GetLabsByTestIdEvent extends LabsEvent {
+  final String testId;
+
+  GetLabsByTestIdEvent(this.testId);
+}

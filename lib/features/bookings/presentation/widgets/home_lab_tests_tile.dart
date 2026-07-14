@@ -3,6 +3,9 @@ import 'dart:developer';
 import 'package:checkmate/features/bookings/presentation/pages/book_lab.dart';
 import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_bloc.dart';
+import 'package:checkmate/injection_container.dart';
 
 class TestTileWidget extends StatelessWidget {
   final TestEntity test;
@@ -16,7 +19,12 @@ class TestTileWidget extends StatelessWidget {
         log('test ${test.name}');
         Navigator.of(
           context,
-        ).push(MaterialPageRoute(builder: (context) => LabBookingScreen()));
+        ).push(MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (context) => s1<LabsBloc>(),
+            child: LabBookingScreen(test: test),
+          ),
+        ));
       },
       child: Container(
         height: 84,
