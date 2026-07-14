@@ -2,6 +2,7 @@ import 'package:checkmate/core/constants/app_colors.dart';
 import 'package:checkmate/core/widgets/buttons/elevated_btn.dart';
 import 'package:checkmate/features/address/domain/entities/address_entity.dart';
 import 'package:checkmate/features/address/domain/entities/user_entity.dart';
+import 'package:checkmate/features/address/domain/repository/user_repo.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_event.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_state.dart';
@@ -49,6 +50,7 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     }
 
     if (widget.phone != null) {
+      // New registration — create user first, address added in listener
       context.read<UserBloc>().add(
         CreateUserEvent(
           UserEntity(
@@ -57,6 +59,26 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
           ),
         ),
       );
+    } else {
+      // Adding from profile — get userId from DB directly
+      final phone = s1<LocalStorageService>().phone ?? '';
+      s1<UserRepository>().getUserIdByPhone(phone).then((userId) {
+        if (userId == null) return;
+        context.read<UserBloc>().add(
+          AddAddressEvent(
+            AddressEntity(
+              userId: userId,
+              fullName: _nameController.text.trim(),
+              houseNumber: _houseController.text.trim(),
+              fullAddress: _addressController.text.trim(),
+              pincode: _pincodeController.text.trim(),
+              latitude: null,
+              longitude: null,
+              isDefault: false,
+            ),
+          ),
+        );
+      });
     }
   }
 
@@ -82,16 +104,20 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
         }
 
         if (state is AddressAdded) {
+          s1<LocalStorageService>().setPincode(_pincodeController.text.trim());
           if (widget.phone != null) {
+            // Coming from registration — log in and go to home
             s1<LocalStorageService>().setLoggedIn(true);
             s1<LocalStorageService>().setPhone(widget.phone!);
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
+              (route) => false,
+            );
+          } else {
+            // Coming from profile — just go back
+            Navigator.pop(context);
           }
-          s1<LocalStorageService>().setPincode(_pincodeController.text.trim());
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (_) => const HomeScreen()),
-            (route) => false,
-          );
         }
 
         if (state is UserFailure) {

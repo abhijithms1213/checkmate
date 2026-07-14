@@ -99,7 +99,11 @@ Future<void> initializeDependencies() async {
 
   // Bloc
   s1.registerFactory(
-    () => UserBloc(createUserUseCase: s1(), addAddressUseCase: s1()),
+    () => UserBloc(
+      createUserUseCase: s1(),
+      addAddressUseCase: s1(),
+      userRepository: s1(),
+    ),
   );
 
   //=====================================================

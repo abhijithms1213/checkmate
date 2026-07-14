@@ -1,3 +1,5 @@
+import 'package:checkmate/features/address/domain/entities/address_entity.dart';
+
 abstract class UserState {
   const UserState();
 }
@@ -17,6 +19,16 @@ class UserCreated extends UserState {
 }
 
 class AddressAdded extends UserState {}
+
+class AddressesLoaded extends UserState {
+  final List<AddressEntity> addresses;
+
+  const AddressesLoaded(this.addresses);
+}
+
+class AddressDefaultSet extends UserState {}
+
+class AddressDeleted extends UserState {}
 
 class UserFailure extends UserState {
   final String message;

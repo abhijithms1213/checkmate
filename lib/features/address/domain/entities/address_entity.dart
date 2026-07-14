@@ -24,4 +24,18 @@ class AddressEntity {
     this.longitude,
     this.isDefault = false,
   });
+
+  AddressEntity copyWith({bool? isDefault}) {
+    return AddressEntity(
+      id: id,
+      userId: userId,
+      fullName: fullName,
+      houseNumber: houseNumber,
+      fullAddress: fullAddress,
+      pincode: pincode,
+      latitude: latitude,
+      longitude: longitude,
+      isDefault: isDefault ?? this.isDefault,
+    );
+  }
 }

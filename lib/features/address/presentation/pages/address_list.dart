@@ -1,9 +1,14 @@
+import 'package:checkmate/core/services/local_storage_service.dart';
 import 'package:checkmate/core/widgets/button.dart';
+import 'package:checkmate/features/address/domain/entities/address_entity.dart';
+import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
+import 'package:checkmate/features/address/presentation/bloc/user_event.dart';
+import 'package:checkmate/features/address/presentation/bloc/user_state.dart';
 import 'package:checkmate/features/address/presentation/pages/addres_add.dart';
 import 'package:checkmate/features/auth/presentation/pages/login.dart';
-import 'package:checkmate/core/services/local_storage_service.dart';
 import 'package:checkmate/injection_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddressScreen extends StatelessWidget {
   const AddressScreen({super.key});
@@ -13,197 +18,244 @@ class AddressScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
+    final phone = s1<LocalStorageService>().phone ?? '';
 
-      bottomNavigationBar: const CustomBottomNavBar(currentIndex: 2),
-
-      body: SafeArea(
-        child: Column(
-          children: [
-            /// Header
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              child: Row(
-                children: [
-                  const Expanded(
-                    child: Text(
-                      "Lab Services",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: darkText,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-
-                    const Text(
-                      "Saved Addresses",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: darkText,
-                      ),
-                    ),
-
-                    const SizedBox(height: 4),
-
-                    Text(
-                      "Manage your sample collection locations",
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    const AddressCard(
-                      title: "Home",
-                      address1: "42nd Clinical Avenue, Suite 500",
-                      address2: "Metropolis, Central District, 10101",
-                      isDefault: true,
-                      icon: Icons.home_outlined,
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    const AddressCard(
-                      title: "Office",
-                      address1: "Innovation Plaza, Block C",
-                      address2: "West Tech Park, Metropolis, 10102",
-                      icon: Icons.business_center_outlined,
-                    ),
-
-                    const SizedBox(height: 36),
-
-                    SizedBox(
-                      width: double.infinity,
-                      height: 64,
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => AddAddressScreen(),
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.add, color: Colors.white),
-                        label: const Text(
-                          "+ Add New Address",
-                          style: TextStyle(color: Colors.white, fontSize: 18),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    SizedBox(
-                      width: double.infinity,
-                      height: 64,
-                      child: OutlinedButton.icon(
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Colors.redAccent, width: 1.5),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        onPressed: () async {
-                          await s1<LocalStorageService>().clear();
-                          if (context.mounted) {
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(builder: (_) => const LoginScreen()),
-                              (route) => false,
-                            );
-                          }
-                        },
-                        icon: const Icon(Icons.logout, color: Colors.redAccent),
-                        label: const Text(
-                          "Log Out",
-                          style: TextStyle(color: Colors.redAccent, fontSize: 18, fontWeight: FontWeight.bold),
+    return BlocProvider(
+      create: (_) => s1<UserBloc>()..add(LoadAddressesEvent(phone)),
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF8F9FB),
+        bottomNavigationBar: const CustomBottomNavBar(currentIndex: 2),
+        body: SafeArea(
+          child: Column(
+            children: [
+              // Header
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                child: Row(
+                  children: const [
+                    Expanded(
+                      child: Text(
+                        "Lab Services",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: darkText,
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-          ],
+
+              Expanded(
+                child: BlocConsumer<UserBloc, UserState>(
+                  listener: (context, state) {
+                    if (state is UserFailure) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.message)),
+                      );
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is UserLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    List<AddressEntity> addresses = [];
+                    if (state is AddressesLoaded) {
+                      addresses = state.addresses;
+                    }
+
+                    return SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 20),
+                          const Text(
+                            "Saved Addresses",
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: darkText,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Manage your sample collection locations",
+                            style: TextStyle(
+                              fontSize: 15,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          if (addresses.isEmpty && state is! UserLoading)
+                            Center(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 40),
+                                child: Text(
+                                  "No addresses saved yet.",
+                                  style: TextStyle(
+                                    color: Colors.grey.shade500,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                          ...addresses.map(
+                            (address) => Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: _AddressCard(
+                                address: address,
+                                phone: phone,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          SizedBox(
+                            width: double.infinity,
+                            height: 64,
+                            child: ElevatedButton.icon(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: primaryColor,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              onPressed: () {
+                                Navigator.of(context)
+                                    .push(
+                                      MaterialPageRoute(
+                                        // phone: null → user already exists, just add address
+                                        builder: (_) => const AddAddressScreen(),
+                                      ),
+                                    )
+                                    .then((_) {
+                                  context
+                                      .read<UserBloc>()
+                                      .add(LoadAddressesEvent(phone));
+                                });
+                              },
+                              icon: const Icon(Icons.add, color: Colors.white),
+                              label: const Text(
+                                "+ Add New Address",
+                                style: TextStyle(color: Colors.white, fontSize: 18),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          SizedBox(
+                            width: double.infinity,
+                            height: 64,
+                            child: OutlinedButton.icon(
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(
+                                    color: Colors.redAccent, width: 1.5),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              onPressed: () async {
+                                await s1<LocalStorageService>().clear();
+                                if (context.mounted) {
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (_) => const LoginScreen()),
+                                    (route) => false,
+                                  );
+                                }
+                              },
+                              icon: const Icon(Icons.logout,
+                                  color: Colors.redAccent),
+                              label: const Text(
+                                "Log Out",
+                                style: TextStyle(
+                                    color: Colors.redAccent,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 24),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class AddressCard extends StatelessWidget {
-  final String title;
-  final String address1;
-  final String address2;
-  final bool isDefault;
-  final IconData icon;
+class _AddressCard extends StatelessWidget {
+  final AddressEntity address;
+  final String phone;
 
-  const AddressCard({
-    super.key,
-    required this.title,
-    required this.address1,
-    required this.address2,
-    required this.icon,
-    this.isDefault = false,
-  });
+  const _AddressCard({required this.address, required this.phone});
 
   static const Color primaryColor = Color(0xFF006D67);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE5E7EB)),
+        border: Border.all(
+          color: address.isDefault
+              ? primaryColor.withOpacity(0.4)
+              : const Color(0xFFE5E7EB),
+          width: address.isDefault ? 1.5 : 1,
+        ),
+        boxShadow: address.isDefault
+            ? [
+                BoxShadow(
+                  color: primaryColor.withOpacity(0.08),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(icon, color: primaryColor),
+              Icon(
+                Icons.location_on_outlined,
+                color: primaryColor,
+                size: 22,
+              ),
               const SizedBox(width: 8),
-
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w500,
+              Expanded(
+                child: Text(
+                  address.fullName,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-
-              const Spacer(),
-
-              if (isDefault)
+              if (address.isDefault)
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 6,
+                    vertical: 5,
                   ),
                   decoration: BoxDecoration(
                     color: const Color(0xFF82E6D8),
@@ -211,66 +263,108 @@ class AddressCard extends StatelessWidget {
                   ),
                   child: const Text(
                     "Default",
-                    style: TextStyle(color: primaryColor),
+                    style: TextStyle(
+                      color: primaryColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
                   ),
                 ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          Text(
-            address1,
-            style: TextStyle(fontSize: 16, color: Colors.grey.shade800),
-          ),
-
-          const SizedBox(height: 6),
-
-          Text(
-            address2,
-            style: TextStyle(fontSize: 16, color: Colors.grey.shade700),
-          ),
-
-          const SizedBox(height: 24),
-
-          Row(
-            children: [
-              if (!isDefault)
-                const Row(
-                  children: [
-                    Icon(
-                      Icons.check_circle_outline,
-                      color: primaryColor,
-                      size: 18,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      "Set as Default",
-                      style: TextStyle(
-                        color: primaryColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-
-              const Spacer(),
-
-              // TextButton(
-              //   onPressed: () {},
-              //   child: const Text(
-              //     "Edit",
-              //     style: TextStyle(color: Colors.black),
-              //   ),
-              // ),
-              TextButton(
-                onPressed: () {},
-                child: const Text(
-                  "Delete",
-                  style: TextStyle(color: Colors.red),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: () => _showDeleteConfirm(context, address.id!, phone),
+                child: Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.delete_outline,
+                    color: Colors.red.shade400,
+                    size: 20,
+                  ),
                 ),
               ),
             ],
+          ),
+
+          const SizedBox(height: 12),
+
+          Text(
+            '${address.houseNumber}, ${address.fullAddress}',
+            style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
+          ),
+
+          const SizedBox(height: 4),
+
+          Text(
+            'Pincode: ${address.pincode}',
+            style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
+          ),
+
+          if (!address.isDefault) ...[
+            const SizedBox(height: 16),
+            GestureDetector(
+              onTap: () {
+                s1<LocalStorageService>().setPincode(address.pincode);
+                context.read<UserBloc>().add(
+                      SetDefaultAddressEvent(
+                        addressId: address.id!,
+                        userId: address.userId,
+                        phone: phone,
+                      ),
+                    );
+              },
+              child: const Row(
+                children: [
+                  Icon(
+                    Icons.check_circle_outline,
+                    color: primaryColor,
+                    size: 18,
+                  ),
+                  SizedBox(width: 4),
+                  Text(
+                    "Set as Default",
+                    style: TextStyle(
+                      color: primaryColor,
+                      fontWeight: FontWeight.w500,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  void _showDeleteConfirm(
+      BuildContext context, String addressId, String phone) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Delete Address"),
+        content: const Text("Are you sure you want to delete this address?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text("Cancel"),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(ctx);
+              context.read<UserBloc>().add(
+                    DeleteAddressEvent(
+                      addressId: addressId,
+                      phone: phone,
+                    ),
+                  );
+            },
+            child: const Text("Delete",
+                style: TextStyle(color: Colors.red)),
           ),
         ],
       ),

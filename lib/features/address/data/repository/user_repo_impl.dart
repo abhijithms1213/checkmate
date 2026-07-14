@@ -17,4 +17,33 @@ class UserRepoImpl extends UserRepository {
   Future<String> createUser(UserEntity user) async {
     return _userDs.createUserDS(user);
   }
+
+  @override
+  Future<List<AddressEntity>> getAddresses(String phone) async {
+    final raw = await _userDs.getAddressesDS(phone);
+    return raw.map((e) => AddressEntity(
+      id: e['id'],
+      userId: e['user_id'],
+      fullName: e['full_name'] ?? '',
+      houseNumber: e['house_number'] ?? '',
+      fullAddress: e['full_address'] ?? '',
+      pincode: e['pincode'].toString(),
+      isDefault: e['is_default'] ?? false,
+    )).toList();
+  }
+
+  @override
+  Future<void> setDefaultAddress(String addressId, String userId) async {
+    return _userDs.setDefaultAddressDS(addressId, userId);
+  }
+
+  @override
+  Future<void> deleteAddress(String addressId) async {
+    return _userDs.deleteAddressDS(addressId);
+  }
+
+  @override
+  Future<String?> getUserIdByPhone(String phone) async {
+    return _userDs.getUserIdByPhone(phone);
+  }
 }
