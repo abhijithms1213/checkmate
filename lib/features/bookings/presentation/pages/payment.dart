@@ -2,12 +2,19 @@ import 'package:checkmate/core/widgets/logo_with_back_btn.dart';
 import 'package:checkmate/features/address/domain/entities/address_entity.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_state.dart';
+import 'package:checkmate/features/bookings/data/data_sources/lab_datasource.dart';
+import 'package:checkmate/features/bookings/data/models/booking_request_model.dart';
 import 'package:checkmate/features/bookings/domain/entities/lab_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
 import 'package:checkmate/features/bookings/presentation/pages/success.dart';
+import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_bloc.dart';
+import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_event.dart';
+import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_state.dart';
+import 'package:checkmate/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'dart:developer';
 
 class ReviewPayScreen extends StatefulWidget {
   const ReviewPayScreen({
@@ -16,11 +23,13 @@ class ReviewPayScreen extends StatefulWidget {
     required this.test,
     required this.selectedDate,
     required this.selectedTime,
+    required this.selectedSlotId,
   });
   final LabEntity labs;
   final TestEntity test;
   final String selectedDate; // ISO8601 string
   final String selectedTime;
+  final String selectedSlotId;
 
   @override
   State<ReviewPayScreen> createState() => _ReviewPayScreenState();
@@ -44,8 +53,36 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
   Widget build(BuildContext context) {
     final price = widget.labs.price;
 
-    return Scaffold(
-      backgroundColor: const Color(0xffF8F9FB),
+    return BlocListener<LabsBloc, LabsState>(
+      listener: (context, state) {
+        if (state is OrderPlacing) {
+          showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (ctx) => const Center(child: CircularProgressIndicator()),
+          );
+        } else if (state is OrderPlaced) {
+          Navigator.of(context, rootNavigator: true).pop(); // dismiss dialog
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+              builder: (context) => BookingSuccessScreen(
+                booking: state.booking,
+                labName: widget.labs.name,
+                testName: widget.test.name,
+                selectedTime: widget.selectedTime,
+              ),
+            ),
+            (route) => false,
+          );
+        } else if (state is LabsError) {
+          Navigator.of(context, rootNavigator: true).pop(); // dismiss dialog
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Order failed: ${state.message}')),
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: const Color(0xffF8F9FB),
       body: SafeArea(
         child: Column(
           children: [
@@ -290,12 +327,39 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                             borderRadius: BorderRadius.circular(14),
                           ),
                         ),
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => BookingSuccessScreen(),
-                            ),
-                          );
+                        onPressed: () async {
+                          final userState = context.read<UserBloc>().state;
+                          if (userState is AddressesLoaded && userState.addresses.isNotEmpty) {
+                            AddressEntity? defaultAddress;
+                            try {
+                              defaultAddress = userState.addresses.firstWhere((a) => a.isDefault);
+                            } catch (_) {
+                              defaultAddress = userState.addresses.first;
+                            }
+
+                            final request = BookingRequestModel(
+                              userId: defaultAddress.userId,
+                              addressId: defaultAddress.id ?? '',
+                              labId: widget.labs.id,
+                              slotId: widget.selectedSlotId,
+                              bookingDate: DateTime.parse(widget.selectedDate),
+                              totalAmount: price,
+                              tests: [
+                                BookingTestItem(
+                                  testId: widget.test.id,
+                                  price: price,
+                                ),
+                              ],
+                            );
+
+                            log('PAYMENT PAYLOAD: userId: ${request.userId}, addressId: ${request.addressId}, labId: ${request.labId}, slotId: ${request.slotId}, date: ${request.bookingDate}, amount: ${request.totalAmount}, testId: ${request.tests.first.testId}');
+
+                            context.read<LabsBloc>().add(PlaceOrderEvent(request));
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Please add an address first')),
+                            );
+                          }
                         },
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -322,7 +386,7 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget _infoCard({required List<Widget> children}) {

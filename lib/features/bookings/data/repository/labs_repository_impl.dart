@@ -3,6 +3,8 @@ import 'package:checkmate/features/bookings/domain/entities/lab_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/slot_entity.dart';
 import 'package:checkmate/features/bookings/domain/repository/labs_repository.dart';
+import 'package:checkmate/features/bookings/domain/entities/booking_entity.dart';
+import 'package:checkmate/features/bookings/data/models/booking_request_model.dart';
 
 class LabsRepositoryImpl implements LabsRepository {
   final LabsRemoteDataSource remoteDataSource;
@@ -22,5 +24,10 @@ class LabsRepositoryImpl implements LabsRepository {
   @override
   Future<List<TestEntity>> getTestsByPincode(String pincode) async {
     return await remoteDataSource.getTestsByPincode(pincode);
+  }
+
+  @override
+  Future<BookingEntity> placeOrder(BookingRequestModel request) async {
+    return await remoteDataSource.placeOrder(request);
   }
 }

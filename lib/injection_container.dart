@@ -27,6 +27,7 @@ import 'package:checkmate/features/bookings/domain/repository/labs_repository.da
 import 'package:checkmate/features/bookings/domain/usecases/get_tests_by_pincode_uc.dart';
 import 'package:checkmate/features/bookings/domain/usecases/get_labs_by_testid_uc.dart';
 import 'package:checkmate/features/bookings/domain/usecases/get_slots_by_labid_uc.dart';
+import 'package:checkmate/features/bookings/domain/usecases/place_order_uc.dart';
 import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_bloc.dart';
 
 final s1 = GetIt.instance;
@@ -121,10 +122,12 @@ Future<void> initializeDependencies() async {
   s1.registerLazySingleton(() => GetTestsByPincodeUseCase(s1()));
   s1.registerLazySingleton(() => GetLabsByTestIdUseCase(s1()));
   s1.registerLazySingleton(() => GetSlotsByLabIdUseCase(s1()));
+  s1.registerLazySingleton(() => PlaceOrderUseCase(s1()));
 
   s1.registerFactory(() => LabsBloc(
         getTestsByPincodeUseCase: s1(),
         getLabsByTestIdUseCase: s1(),
         getSlotsByLabIdUseCase: s1(),
+        placeOrderUseCase: s1(),
       ));
 }

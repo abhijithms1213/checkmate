@@ -1,6 +1,7 @@
 import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/lab_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/slot_entity.dart';
+import 'package:checkmate/features/bookings/domain/entities/booking_entity.dart';
 
 abstract class LabsState {}
 
@@ -30,4 +31,12 @@ class LabsError extends LabsState {
   final String message;
 
   LabsError(this.message);
+}
+
+class OrderPlacing extends LabsState {}
+
+class OrderPlaced extends LabsState {
+  final BookingEntity booking;
+
+  OrderPlaced(this.booking);
 }

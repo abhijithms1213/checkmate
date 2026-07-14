@@ -1,6 +1,7 @@
 import 'package:checkmate/features/bookings/domain/usecases/get_tests_by_pincode_uc.dart';
 import 'package:checkmate/features/bookings/domain/usecases/get_labs_by_testid_uc.dart';
 import 'package:checkmate/features/bookings/domain/usecases/get_slots_by_labid_uc.dart';
+import 'package:checkmate/features/bookings/domain/usecases/place_order_uc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'labs_event.dart';
 import 'labs_state.dart';
@@ -9,15 +10,18 @@ class LabsBloc extends Bloc<LabsEvent, LabsState> {
   final GetTestsByPincodeUseCase getTestsByPincodeUseCase;
   final GetLabsByTestIdUseCase getLabsByTestIdUseCase;
   final GetSlotsByLabIdUseCase getSlotsByLabIdUseCase;
+  final PlaceOrderUseCase placeOrderUseCase;
 
   LabsBloc({
     required this.getTestsByPincodeUseCase,
     required this.getLabsByTestIdUseCase,
     required this.getSlotsByLabIdUseCase,
+    required this.placeOrderUseCase,
   }) : super(LabsInitial()) {
     on<GetTestsEvent>(_onGetTests);
     on<GetLabsByTestIdEvent>(_onGetLabsByTestId);
     on<GetSlotsByLabIdEvent>(_onGetSlotsByLabId);
+    on<PlaceOrderEvent>(_onPlaceOrder);
   }
 
   Future<void> _onGetTests(GetTestsEvent event, Emitter<LabsState> emit) async {
@@ -45,6 +49,16 @@ class LabsBloc extends Bloc<LabsEvent, LabsState> {
     try {
       final slots = await getSlotsByLabIdUseCase(params: event.labId);
       emit(SlotsLoaded(slots));
+    } catch (e) {
+      emit(LabsError(e.toString()));
+    }
+  }
+
+  Future<void> _onPlaceOrder(PlaceOrderEvent event, Emitter<LabsState> emit) async {
+    emit(OrderPlacing());
+    try {
+      final booking = await placeOrderUseCase(params: event.request);
+      emit(OrderPlaced(booking));
     } catch (e) {
       emit(LabsError(e.toString()));
     }

@@ -26,7 +26,8 @@ class SelectSlotScreen extends StatefulWidget {
 class _SelectSlotScreenState extends State<SelectSlotScreen> {
   int selectedDate = 0;
 
-  String selectedTime = "12:30 PM";
+  String? selectedSlotId;
+  String? selectedTime;
 
   late List<Map<String, String>> dates;
 
@@ -58,17 +59,30 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
         child: Center(
           child: InkWell(
             onTap: () {
+              if (selectedTime == null || selectedSlotId == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please select a time slot')),
+                );
+                return;
+              }
               final phone = s1<LocalStorageService>().phone ?? '';
               Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) => BlocProvider(
-                    create: (_) => s1<UserBloc>()
-                      ..add(LoadAddressesEvent(phone)),
+                  builder: (context) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider(
+                        create: (_) => s1<UserBloc>()..add(LoadAddressesEvent(phone)),
+                      ),
+                      BlocProvider(
+                        create: (_) => s1<LabsBloc>(),
+                      ),
+                    ],
                     child: ReviewPayScreen(
                       labs: widget.labs,
                       test: widget.test,
                       selectedDate: dates[selectedDate]['fullDate']!,
-                      selectedTime: selectedTime,
+                      selectedTime: selectedTime!,
+                      selectedSlotId: selectedSlotId!,
                     ),
                   ),
                 ),
@@ -253,6 +267,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                                 : () {
                                     setState(() {
                                       selectedTime = timeStr;
+                                      selectedSlotId = slot["id"] as String;
                                     });
                                   },
                             child: Container(
@@ -316,7 +331,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
 
               const SizedBox(height: 8),
 
-              Text("Time: $selectedTime", style: const TextStyle(fontSize: 18)),
+              Text("Time: ${selectedTime ?? 'Not selected'}", style: const TextStyle(fontSize: 18)),
 
               const SizedBox(height: 8),
 

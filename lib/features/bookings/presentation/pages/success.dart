@@ -1,10 +1,35 @@
+import 'package:checkmate/features/bookings/domain/entities/booking_entity.dart';
 import 'package:checkmate/features/bookings/presentation/pages/homepage.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class BookingSuccessScreen extends StatelessWidget {
-  const BookingSuccessScreen({super.key});
+  const BookingSuccessScreen({
+    super.key,
+    required this.booking,
+    required this.labName,
+    required this.testName,
+    required this.selectedTime,
+  });
+
+  final BookingEntity booking;
+  final String labName;
+  final String testName;
+  final String selectedTime;
 
   static const Color primaryColor = Color(0xFF006D67);
+
+  String get _formattedDate {
+    try {
+      return DateFormat('EEE, MMM d yyyy').format(booking.bookingDate);
+    } catch (_) {
+      return booking.bookingDate.toString();
+    }
+  }
+
+  /// Short reference ID: last 8 chars of booking UUID, uppercased
+  // String get _referenceId =>
+  //     '#CKM-${booking.id.replaceAll('-', '').substring(0, 8).toUpperCase()}';
 
   @override
   Widget build(BuildContext context) {
@@ -19,9 +44,9 @@ class BookingSuccessScreen extends StatelessWidget {
               decoration: const BoxDecoration(
                 border: Border(bottom: BorderSide(color: Color(0xFFE5E7EB))),
               ),
-              child: Row(
+              child: const Row(
                 children: [
-                  const Text(
+                  Text(
                     "CheckMate",
                     style: TextStyle(
                       fontSize: 20,
@@ -77,10 +102,10 @@ class BookingSuccessScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
 
                     Text(
-                      "Your lab appointment has been successfully\nscheduled. A confirmation email has been\nsent to your registered address.",
+                      "Your lab appointment has been successfully\nscheduled. We'll see you on $_formattedDate.",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         height: 1.5,
@@ -101,16 +126,25 @@ class BookingSuccessScreen extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
+                          _infoRow("TEST", testName),
+                          const Divider(height: 28),
+
+                          _infoRow("LABORATORY", labName),
+                          const Divider(height: 28),
+
+                          _infoRow("DATE", _formattedDate),
+                          const Divider(height: 28),
+
+                          _infoRow("TIME", selectedTime),
+                          const Divider(height: 28),
+
                           _infoRow(
-                            "LABORATORY",
-                            "Precision Diagnostics Central",
+                            "AMOUNT",
+                            "₹ ${booking.totalAmount.toStringAsFixed(0)}",
                           ),
                           const Divider(height: 28),
 
-                          _infoRow("DATE", "Oct 24, 2023"),
-                          const Divider(height: 28),
-
-                          _infoRow("TIME", "09:30 AM"),
+                          _infoRow("STATUS", booking.status.toUpperCase()),
                           const Divider(height: 28),
 
                           Row(
@@ -124,12 +158,14 @@ class BookingSuccessScreen extends StatelessWidget {
                                 ),
                               ),
                               const Spacer(),
-                              const Text(
-                                "#CKM-88219",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w600,
-                                  color: primaryColor,
+                              Expanded(
+                                child: Text(
+                                  booking.id,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w600,
+                                    color: primaryColor,
+                                  ),
                                 ),
                               ),
                             ],
@@ -165,8 +201,6 @@ class BookingSuccessScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-
-
                   ],
                 ),
               ),
@@ -189,11 +223,12 @@ class BookingSuccessScreen extends StatelessWidget {
           ),
         ),
         const Spacer(),
-        Expanded(
+        Flexible(
           child: Text(
             value,
+            textAlign: TextAlign.right,
             style: const TextStyle(
-              fontSize: 18,
+              fontSize: 16,
               fontWeight: FontWeight.w600,
               color: Color(0xFF10243A),
             ),
