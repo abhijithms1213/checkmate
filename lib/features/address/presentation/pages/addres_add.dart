@@ -257,7 +257,9 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboardType,
+      
       decoration: InputDecoration(
+        hintStyle: TextStyle(color: Colors.black38),
         hintText: hint,
         filled: true,
         fillColor: const Color(0xFFF1F3F5),
