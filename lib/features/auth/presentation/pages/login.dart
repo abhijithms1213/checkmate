@@ -185,7 +185,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
-                          "Verification code will be sent via SMS.",
+                          "Verification code will be sent via Whatsapp.",
                           style: TextStyle(color: Colors.grey.shade600),
                         ),
                       ),

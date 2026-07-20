@@ -2,6 +2,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'dart:developer';
 
 import 'package:checkmate/core/widgets/button.dart';
+import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
+import 'package:checkmate/features/address/presentation/bloc/user_state.dart';
 import 'package:checkmate/features/bookings/presentation/pages/book_lab.dart';
 import 'package:checkmate/features/bookings/presentation/widgets/home_category_row.dart';
 import 'package:checkmate/features/bookings/presentation/widgets/home_lab_tests_tile.dart';
@@ -25,15 +27,33 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int selectedCategory = 0;
   String searchQuery = '';
+  String? _lastPincode;
 
   final List<String> categories = ["All", "Blood", "Heart", "Skin", "Hormone"];
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) {
-        final pincode = s1<LocalStorageService>().pincode ?? '';
-        return s1<LabsBloc>()..add(GetTestsEvent(pincode));
+    return BlocListener<UserBloc, UserState>(
+      listener: (context, state) {
+        if (state is AddressesLoaded) {
+          // Find the default address pincode
+          String? newPincode;
+          try {
+            final defaultAddr = state.addresses.firstWhere((a) => a.isDefault);
+            newPincode = defaultAddr.pincode;
+          } catch (_) {
+            newPincode = state.addresses.isNotEmpty
+                ? state.addresses.first.pincode
+                : null;
+          }
+
+          // Only reload tests if the pincode actually changed
+          if (newPincode != null && newPincode != _lastPincode) {
+            _lastPincode = newPincode;
+            s1<LocalStorageService>().setPincode(newPincode);
+            context.read<LabsBloc>().add(GetTestsEvent(newPincode));
+          }
+        }
       },
       child: Scaffold(
         body: SafeArea(

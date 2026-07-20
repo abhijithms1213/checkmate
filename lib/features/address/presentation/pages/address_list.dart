@@ -1,3 +1,5 @@
+import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_bloc.dart';
+import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_event.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/services/local_storage_service.dart';
 import 'package:checkmate/core/widgets/button.dart';
@@ -21,19 +23,14 @@ class AddressScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final phone = s1<LocalStorageService>().phone ?? '';
 
-    return BlocProvider(
-      create: (_) => s1<UserBloc>()..add(LoadAddressesEvent(phone)),
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF8F9FB),
-        body: SafeArea(
-          child: Column(
-            children: [
+    return Scaffold(
+      backgroundColor: const Color(0xFFF8F9FB),
+      body: SafeArea(
+        child: Column(
+          children: [
               // Header
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 child: Row(
                   children: [
                     const SizedBox(width: 40), // balance the logout icon
@@ -168,6 +165,12 @@ class AddressScreen extends StatelessWidget {
                                         LoadAddressesEvent(phone),
                                       );
                                     });
+
+                                context.read<LabsBloc>().add(
+                                  GetTestsEvent(
+                                    s1<LocalStorageService>().pincode ?? '',
+                                  ),
+                                );
                               },
                               label: Text(
                                 "Add New Address",
@@ -179,8 +182,6 @@ class AddressScreen extends StatelessWidget {
                             ),
                           ),
 
-
-
                           const SizedBox(height: 24),
                         ],
                       ),
@@ -191,8 +192,8 @@ class AddressScreen extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
+      )
+    ;
   }
 }
 
