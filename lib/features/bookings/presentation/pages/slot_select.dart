@@ -29,6 +29,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
 
   String? selectedSlotId;
   String? selectedTime;
+  bool? _isHomeCollection; // null = not answered, true = Home Collection, false = Walk-in
 
   late List<Map<String, String>> dates;
 
@@ -66,6 +67,12 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                 );
                 return;
               }
+              if (_isHomeCollection == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Please select a sample collection type')),
+                );
+                return;
+              }
               final phone = s1<LocalStorageService>().phone ?? '';
               Navigator.of(context).push(
                 MaterialPageRoute(
@@ -84,6 +91,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                       selectedDate: dates[selectedDate]['fullDate']!,
                       selectedTime: selectedTime!,
                       selectedSlotId: selectedSlotId!,
+                      collectionType: _isHomeCollection! ? 'Home Collection' : 'Walk-in',
                     ),
                   ),
                 ),
@@ -305,6 +313,147 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
               ),
 
               const SizedBox(height: 30),
+
+              Divider(color: Colors.grey.shade300),
+
+              const SizedBox(height: 20),
+
+              //--------------------------------------------------
+              // SAMPLE COLLECTION TYPE WIDGET
+              //--------------------------------------------------
+              Text(
+                "SAMPLE COLLECTION",
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 14.spMin,
+                  letterSpacing: 1,
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              Text(
+                "Do you need sample collection at home?",
+                style: TextStyle(
+                  fontSize: 18.spMin,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF081E36),
+                ),
+              ),
+
+              const SizedBox(height: 14),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => _isHomeCollection = true),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          color: _isHomeCollection == true
+                              ? AppColors.primary
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: _isHomeCollection == true
+                                ? AppColors.primary
+                                : Colors.grey.shade300,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.home_outlined,
+                              color: _isHomeCollection == true
+                                  ? Colors.white
+                                  : Colors.grey.shade600,
+                              size: 28,
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              "Yes",
+                              style: TextStyle(
+                                fontSize: 16.spMin,
+                                fontWeight: FontWeight.w600,
+                                color: _isHomeCollection == true
+                                    ? Colors.white
+                                    : Colors.black87,
+                              ),
+                            ),
+                            Text(
+                              "Home Collection",
+                              style: TextStyle(
+                                fontSize: 13.spMin,
+                                color: _isHomeCollection == true
+                                    ? Colors.white70
+                                    : Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () => setState(() => _isHomeCollection = false),
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          color: _isHomeCollection == false
+                              ? AppColors.primary
+                              : Colors.white,
+                          borderRadius: BorderRadius.circular(14),
+                          border: Border.all(
+                            color: _isHomeCollection == false
+                                ? AppColors.primary
+                                : Colors.grey.shade300,
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.local_hospital_outlined,
+                              color: _isHomeCollection == false
+                                  ? Colors.white
+                                  : Colors.grey.shade600,
+                              size: 28,
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              "No",
+                              style: TextStyle(
+                                fontSize: 16.spMin,
+                                fontWeight: FontWeight.w600,
+                                color: _isHomeCollection == false
+                                    ? Colors.white
+                                    : Colors.black87,
+                              ),
+                            ),
+                            Text(
+                              "Walk-in",
+                              style: TextStyle(
+                                fontSize: 13.spMin,
+                                color: _isHomeCollection == false
+                                    ? Colors.white70
+                                    : Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 20),
 
               Divider(color: Colors.grey.shade300),
 

@@ -27,12 +27,14 @@ class ReviewPayScreen extends StatefulWidget {
     required this.selectedDate,
     required this.selectedTime,
     required this.selectedSlotId,
+    required this.collectionType,
   });
   final LabEntity labs;
   final TestEntity test;
   final String selectedDate; // ISO8601 string
   final String selectedTime;
   final String selectedSlotId;
+  final String collectionType; // 'Home Collection' or 'Walk-in'
 
   @override
   State<ReviewPayScreen> createState() => _ReviewPayScreenState();
@@ -96,6 +98,7 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
         slotId: widget.selectedSlotId,
         bookingDate: DateTime.parse(widget.selectedDate),
         totalAmount: widget.labs.price,
+        type: widget.collectionType,
         tests: [
           BookingTestItem(testId: widget.test.id, price: widget.labs.price),
         ],
@@ -328,6 +331,14 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                             Icons.access_time_outlined,
                             "Time Slot",
                             widget.selectedTime,
+                          ),
+                          const Divider(height: 24),
+                          _infoRow(
+                            widget.collectionType == 'Home Collection'
+                                ? Icons.home_outlined
+                                : Icons.local_hospital_outlined,
+                            "Collection Type",
+                            widget.collectionType,
                           ),
                         ],
                       ),

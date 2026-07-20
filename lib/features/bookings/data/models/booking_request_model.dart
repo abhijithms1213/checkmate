@@ -8,6 +8,7 @@ class BookingRequestModel {
   final List<BookingTestItem> tests;
   final String? transactionId;
   final String? paymentStatus;
+  final String type;
 
   const BookingRequestModel({
     required this.userId,
@@ -18,7 +19,7 @@ class BookingRequestModel {
     required this.totalAmount,
     required this.tests,
     this.transactionId,
-    this.paymentStatus,
+    this.paymentStatus, required this.type,
   });
 }
 

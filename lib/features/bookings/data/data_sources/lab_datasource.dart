@@ -80,6 +80,7 @@ class LabsRemoteDataSource {
           'slot_id': request.slotId,
           'booking_date': request.bookingDate.toIso8601String(),
           'total_amount': request.totalAmount,
+          'type': request.type
         })
         .select()
         .single();
