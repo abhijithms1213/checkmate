@@ -39,7 +39,7 @@ class AddressScreen extends StatelessWidget {
                     const SizedBox(width: 40), // balance the logout icon
                     Expanded(
                       child: Text(
-                        "Lab Services",
+                        "My Profile",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 18.spMin,
@@ -262,22 +262,24 @@ class _AddressCard extends StatelessWidget {
                     ),
                   ),
                 ),
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: () => _showDeleteConfirm(context, address.id!, phone),
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.delete_outline,
-                    color: Colors.red.shade400,
-                    size: 20,
+              if (!address.isDefault) ...[
+                const SizedBox(width: 8),
+                GestureDetector(
+                  onTap: () => _showDeleteConfirm(context, address.id!, phone),
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.red.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.delete_outline,
+                      color: Colors.red.shade400,
+                      size: 20,
+                    ),
                   ),
                 ),
-              ),
+              ],
             ],
           ),
 
