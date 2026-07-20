@@ -38,6 +38,7 @@ class BookingFullDetailsEntity {
   final String? labPhone;
   final String? labEmail;
   final String? labAddress;
+  final String createdAt;
 
   // Slot
   final String slotTime;
@@ -61,5 +62,6 @@ class BookingFullDetailsEntity {
     required this.slotTime,
     this.address,
     required this.tests,
+    required this.createdAt,
   });
 }

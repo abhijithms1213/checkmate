@@ -14,6 +14,7 @@ class BookingFullDetailsModel extends BookingFullDetailsEntity {
     required super.slotTime,
     super.address,
     required super.tests,
+    required super.createdAt
   });
 
   factory BookingFullDetailsModel.fromJson(Map<String, dynamic> json) {
@@ -53,7 +54,8 @@ class BookingFullDetailsModel extends BookingFullDetailsEntity {
       labAddress: lab['address'] as String?,
       slotTime: slot['slot_time'] as String,
       address: address,
-      tests: tests,
+      tests: tests, createdAt: json['created_at'],
+
     );
   }
 }

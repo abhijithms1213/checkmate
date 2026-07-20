@@ -43,7 +43,7 @@ class AppointmentsRemoteDataSource {
         ''')
         .eq('id', bookingId)
         .single();
-  // log('details of a rec: $result');
+  log('details of a rec: $result');
 
     return BookingFullDetailsModel.fromJson(result);
   }

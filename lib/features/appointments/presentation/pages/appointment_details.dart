@@ -1,3 +1,5 @@
+
+import 'package:checkmate/core/utils/date_extract.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/features/appointments/presentation/bloc/appointments_bloc.dart';
@@ -74,10 +76,12 @@ class _BookingDetailsView extends StatelessWidget {
 
             if (state is BookingDetailsLoaded) {
               final booking = state.bookingDetails;
+              final formattedCreatedDate = formatDate(
+                booking.createdAt,
+              );
               final formattedDate = DateFormat(
                 'EEE, MMM d, yyyy',
               ).format(booking.bookingDate);
-
               return Column(
                 children: [
                   Expanded(
@@ -174,6 +178,12 @@ class _BookingDetailsView extends StatelessWidget {
                           ),
 
                           const SizedBox(height: 32),
+
+                          /// order placed
+                          _card(
+                            child: Text('ORDER PLACED : $formattedCreatedDate'),
+                          ),
+                          const SizedBox(height: 18),
 
                           /// Schedule Card
                           _card(
