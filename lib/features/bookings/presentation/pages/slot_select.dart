@@ -8,6 +8,9 @@ import 'package:checkmate/features/bookings/domain/entities/lab_entity.dart';
 import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_bloc.dart';
 import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_event.dart';
 import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_state.dart';
+import 'package:checkmate/features/bookings/presentation/bloc/collection_type/collection_type_bloc.dart';
+import 'package:checkmate/features/bookings/presentation/bloc/collection_type/collection_type_event.dart';
+import 'package:checkmate/features/bookings/presentation/bloc/collection_type/collection_type_state.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_event.dart';
 import 'package:checkmate/core/services/local_storage_service.dart';
@@ -29,7 +32,6 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
 
   String? selectedSlotId;
   String? selectedTime;
-  bool? _isHomeCollection; // null = not answered, true = Home Collection, false = Walk-in
 
   late List<Map<String, String>> dates;
 
@@ -46,6 +48,48 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
       };
     });
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => CollectionTypeBloc(),
+      child: _SelectSlotBody(
+        labs: widget.labs,
+        test: widget.test,
+        dates: dates,
+        selectedDate: selectedDate,
+        selectedSlotId: selectedSlotId,
+        selectedTime: selectedTime,
+        onDateChanged: (i) => setState(() => selectedDate = i),
+        onSlotChanged: (id, time) => setState(() {
+          selectedSlotId = id;
+          selectedTime = time;
+        }),
+      ),
+    );
+  }
+}
+
+class _SelectSlotBody extends StatelessWidget {
+  const _SelectSlotBody({
+    required this.labs,
+    required this.test,
+    required this.dates,
+    required this.selectedDate,
+    required this.selectedSlotId,
+    required this.selectedTime,
+    required this.onDateChanged,
+    required this.onSlotChanged,
+  });
+
+  final LabEntity labs;
+  final TestEntity test;
+  final List<Map<String, String>> dates;
+  final int selectedDate;
+  final String? selectedSlotId;
+  final String? selectedTime;
+  final void Function(int) onDateChanged;
+  final void Function(String id, String time) onSlotChanged;
 
   static const Color darkBlue = Color(0xFF081E36);
 
@@ -67,7 +111,8 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                 );
                 return;
               }
-              if (_isHomeCollection == null) {
+              final collectionState = context.read<CollectionTypeBloc>().state;
+              if (collectionState is! CollectionTypeSelected) {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('Please select a sample collection type')),
                 );
@@ -86,12 +131,12 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                       ),
                     ],
                     child: ReviewPayScreen(
-                      labs: widget.labs,
-                      test: widget.test,
+                      labs: labs,
+                      test: test,
                       selectedDate: dates[selectedDate]['fullDate']!,
                       selectedTime: selectedTime!,
                       selectedSlotId: selectedSlotId!,
-                      collectionType: _isHomeCollection! ? 'Home Collection' : 'Walk-in',
+                      collectionType: collectionState.label,
                     ),
                   ),
                 ),
@@ -173,22 +218,12 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                           final selected = selectedDate == index;
 
                           return GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                selectedDate = index;
-                              });
-                            },
+                            onTap: () => onDateChanged(index),
                             child: DateTileWidget(
                               selected: selected,
                               dates: dates,
                               index: index,
                             ),
-                            // child: Container(
-                            //   width: 72,
-                            //   decoration: BoxDecoration(
-                            //     color: selected ? darkBlue : Colors.white,
-                            //     borderRadius: BorderRadius.circular(12),
-                            //     border: Border.all(color: Colors.grey.shade300),
                             //   ),
                             //   child: Column(
                             //     mainAxisAlignment: MainAxisAlignment.center,
@@ -273,12 +308,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
                           return GestureDetector(
                             onTap: disabled
                                 ? null
-                                : () {
-                                    setState(() {
-                                      selectedTime = timeStr;
-                                      selectedSlotId = slot["id"] as String;
-                                    });
-                                  },
+                                : () => onSlotChanged(slot["id"] as String, timeStr),
                             child: Container(
                               decoration: BoxDecoration(
                                 color: selected
@@ -343,114 +373,125 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
 
               const SizedBox(height: 14),
 
-              Row(
-                children: [
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _isHomeCollection = true),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        decoration: BoxDecoration(
-                          color: _isHomeCollection == true
-                              ? AppColors.primary
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: _isHomeCollection == true
-                                ? AppColors.primary
-                                : Colors.grey.shade300,
-                            width: 1.5,
+              BlocBuilder<CollectionTypeBloc, CollectionTypeState>(
+                builder: (context, collectionState) {
+                  final isHome = collectionState is CollectionTypeSelected
+                      ? collectionState.isHomeCollection
+                      : null;
+                  return Row(
+                    children: [
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => context
+                              .read<CollectionTypeBloc>()
+                              .add(SelectCollectionTypeEvent(true)),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            decoration: BoxDecoration(
+                              color: isHome == true
+                                  ? AppColors.primary
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: isHome == true
+                                    ? AppColors.primary
+                                    : Colors.grey.shade300,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.home_outlined,
+                                  color: isHome == true
+                                      ? Colors.white
+                                      : Colors.grey.shade600,
+                                  size: 28,
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  "Yes",
+                                  style: TextStyle(
+                                    fontSize: 16.spMin,
+                                    fontWeight: FontWeight.w600,
+                                    color: isHome == true
+                                        ? Colors.white
+                                        : Colors.black87,
+                                  ),
+                                ),
+                                Text(
+                                  "Home Collection",
+                                  style: TextStyle(
+                                    fontSize: 13.spMin,
+                                    color: isHome == true
+                                        ? Colors.white70
+                                        : Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.home_outlined,
-                              color: _isHomeCollection == true
-                                  ? Colors.white
-                                  : Colors.grey.shade600,
-                              size: 28,
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              "Yes",
-                              style: TextStyle(
-                                fontSize: 16.spMin,
-                                fontWeight: FontWeight.w600,
-                                color: _isHomeCollection == true
-                                    ? Colors.white
-                                    : Colors.black87,
-                              ),
-                            ),
-                            Text(
-                              "Home Collection",
-                              style: TextStyle(
-                                fontSize: 13.spMin,
-                                color: _isHomeCollection == true
-                                    ? Colors.white70
-                                    : Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: GestureDetector(
-                      onTap: () => setState(() => _isHomeCollection = false),
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        decoration: BoxDecoration(
-                          color: _isHomeCollection == false
-                              ? AppColors.primary
-                              : Colors.white,
-                          borderRadius: BorderRadius.circular(14),
-                          border: Border.all(
-                            color: _isHomeCollection == false
-                                ? AppColors.primary
-                                : Colors.grey.shade300,
-                            width: 1.5,
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () => context
+                              .read<CollectionTypeBloc>()
+                              .add(SelectCollectionTypeEvent(false)),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(vertical: 16),
+                            decoration: BoxDecoration(
+                              color: isHome == false
+                                  ? AppColors.primary
+                                  : Colors.white,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(
+                                color: isHome == false
+                                    ? AppColors.primary
+                                    : Colors.grey.shade300,
+                                width: 1.5,
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.local_hospital_outlined,
+                                  color: isHome == false
+                                      ? Colors.white
+                                      : Colors.grey.shade600,
+                                  size: 28,
+                                ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  "No",
+                                  style: TextStyle(
+                                    fontSize: 16.spMin,
+                                    fontWeight: FontWeight.w600,
+                                    color: isHome == false
+                                        ? Colors.white
+                                        : Colors.black87,
+                                  ),
+                                ),
+                                Text(
+                                  "Walk-in",
+                                  style: TextStyle(
+                                    fontSize: 13.spMin,
+                                    color: isHome == false
+                                        ? Colors.white70
+                                        : Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        child: Column(
-                          children: [
-                            Icon(
-                              Icons.local_hospital_outlined,
-                              color: _isHomeCollection == false
-                                  ? Colors.white
-                                  : Colors.grey.shade600,
-                              size: 28,
-                            ),
-                            const SizedBox(height: 6),
-                            Text(
-                              "No",
-                              style: TextStyle(
-                                fontSize: 16.spMin,
-                                fontWeight: FontWeight.w600,
-                                color: _isHomeCollection == false
-                                    ? Colors.white
-                                    : Colors.black87,
-                              ),
-                            ),
-                            Text(
-                              "Walk-in",
-                              style: TextStyle(
-                                fontSize: 13.spMin,
-                                color: _isHomeCollection == false
-                                    ? Colors.white70
-                                    : Colors.grey,
-                              ),
-                            ),
-                          ],
-                        ),
                       ),
-                    ),
-                  ),
-                ],
+                    ],
+                  );
+                },
               ),
 
               const SizedBox(height: 20),
@@ -470,7 +511,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
 
               SizedBox(height: 18),
 
-              Text("Lab: ${widget.labs.name}", style: TextStyle(fontSize: 18.spMin)),
+              Text("Lab: ${labs.name}", style: TextStyle(fontSize: 18.spMin)),
 
               const SizedBox(height: 8),
 
@@ -486,7 +527,7 @@ class _SelectSlotScreenState extends State<SelectSlotScreen> {
               const SizedBox(height: 8),
 
               Text(
-                "Total: ${widget.labs.price} Rs",
+                "Total: ${labs.price} Rs",
                 style: TextStyle(fontSize: 18.spMin),
               ),
 
