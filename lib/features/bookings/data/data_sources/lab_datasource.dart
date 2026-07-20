@@ -3,13 +3,16 @@ import 'package:checkmate/features/bookings/data/models/booking_model.dart';
 import 'package:checkmate/features/bookings/data/models/booking_request_model.dart';
 import 'package:checkmate/features/bookings/data/models/slot_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:dio/dio.dart';
 import 'package:checkmate/features/bookings/data/models/test_model.dart';
 import 'package:checkmate/features/bookings/data/models/lab_model.dart';
+import 'package:checkmate/features/bookings/data/models/whatsapp_notification_model.dart';
 
 class LabsRemoteDataSource {
   final SupabaseClient client;
+  final Dio dio;
 
-  LabsRemoteDataSource(this.client);
+  LabsRemoteDataSource(this.client, this.dio);
 
   Future<List<TestModel>> getTestsByPincode(String pincode) async {
     log('pi $pincode');
@@ -109,5 +112,20 @@ class LabsRemoteDataSource {
     });
 
     return BookingModel.fromJson(booking);
+  }
+
+  Future<void> sendWhatsAppNotification(WhatsAppNotificationModel payload) async {
+    try {
+      await dio.post(
+        'https://ysrkkgbnezarxzdyawyo.supabase.co/functions/v1/smooth-worker',
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+        data: payload.toJson(),
+      );
+      log('WhatsApp notification sent via smooth-worker');
+    } catch (e) {
+      log('Error sending WhatsApp notification: $e');
+    }
   }
 }

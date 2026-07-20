@@ -1,6 +1,11 @@
 import 'package:checkmate/features/bookings/data/models/booking_request_model.dart';
+import 'package:checkmate/features/bookings/data/models/whatsapp_notification_model.dart';
+import 'package:equatable/equatable.dart';
 
-abstract class LabsEvent {}
+abstract class LabsEvent extends Equatable {
+  @override
+  List<Object?> get props => [];
+}
 
 class GetTestsEvent extends LabsEvent {
   final String pincode;
@@ -24,4 +29,16 @@ class PlaceOrderEvent extends LabsEvent {
   final BookingRequestModel request;
 
   PlaceOrderEvent(this.request);
+
+  @override
+  List<Object?> get props => [request];
+}
+
+class SendWhatsAppNotificationEvent extends LabsEvent {
+  final WhatsAppNotificationModel payload;
+
+  SendWhatsAppNotificationEvent(this.payload);
+
+  @override
+  List<Object?> get props => [payload];
 }

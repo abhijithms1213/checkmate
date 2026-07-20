@@ -28,6 +28,8 @@ import 'package:checkmate/features/bookings/domain/usecases/get_tests_by_pincode
 import 'package:checkmate/features/bookings/domain/usecases/get_labs_by_testid_uc.dart';
 import 'package:checkmate/features/bookings/domain/usecases/get_slots_by_labid_uc.dart';
 import 'package:checkmate/features/bookings/domain/usecases/place_order_uc.dart';
+import 'package:checkmate/features/bookings/domain/usecases/send_whatsapp_notification_uc.dart';
+import 'package:checkmate/features/bookings/presentation/bloc/collection_type/collection_type_bloc.dart';
 import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_bloc.dart';
 import 'package:checkmate/features/appointments/data/data_sources/appointments_datasource.dart';
 import 'package:checkmate/features/appointments/data/repository/appointments_repository_impl.dart';
@@ -66,7 +68,7 @@ Future<void> initializeDependencies() async {
   s1.registerSingleton<SupabaseClient>(Supabase.instance.client);
 
   // Datasource
-  s1.registerLazySingleton<AuthDatasource>(() => AuthDatasource(s1()));
+  s1.registerLazySingleton<AuthDatasource>(() => AuthDatasource(s1(), s1()));
 
   // Repository
   s1.registerLazySingleton<AuthRepository>(() => AuthRepoImplementation(s1()));
@@ -123,18 +125,20 @@ Future<void> initializeDependencies() async {
   // BOOKINGS
   //=====================================================
 
-  s1.registerLazySingleton<LabsRemoteDataSource>(() => LabsRemoteDataSource(s1()));
+  s1.registerLazySingleton<LabsRemoteDataSource>(() => LabsRemoteDataSource(s1(), s1()));
   s1.registerLazySingleton<LabsRepository>(() => LabsRepositoryImpl(s1()));
   s1.registerLazySingleton(() => GetTestsByPincodeUseCase(s1()));
   s1.registerLazySingleton(() => GetLabsByTestIdUseCase(s1()));
   s1.registerLazySingleton(() => GetSlotsByLabIdUseCase(s1()));
   s1.registerLazySingleton(() => PlaceOrderUseCase(s1()));
+  s1.registerLazySingleton(() => SendWhatsAppNotificationUseCase(s1()));
 
   s1.registerFactory(() => LabsBloc(
         getTestsByPincodeUseCase: s1(),
         getLabsByTestIdUseCase: s1(),
         getSlotsByLabIdUseCase: s1(),
         placeOrderUseCase: s1(),
+        sendWhatsAppNotificationUseCase: s1(),
       ));
 
   //=====================================================

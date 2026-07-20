@@ -1,11 +1,14 @@
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/constants/constants.dart';
 import 'package:checkmate/core/widgets/logo_with_back_btn.dart';
+import 'package:checkmate/core/services/local_storage_service.dart';
 import 'package:checkmate/features/address/domain/entities/address_entity.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_state.dart';
 import 'package:checkmate/features/bookings/data/data_sources/lab_datasource.dart';
 import 'package:checkmate/features/bookings/data/models/booking_request_model.dart';
+import 'package:checkmate/features/bookings/data/models/whatsapp_notification_model.dart';
+import 'package:checkmate/features/bookings/domain/entities/booking_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/lab_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
 import 'package:checkmate/features/bookings/presentation/pages/success.dart';
@@ -127,6 +130,41 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
     }
   }
 
+  Future<void> _sendWhatsAppNotification(BookingEntity booking) async {
+    try {
+      final userState = context.read<UserBloc>().state;
+      AddressEntity? defaultAddress;
+      if (userState is AddressesLoaded && userState.addresses.isNotEmpty) {
+        try {
+          defaultAddress = userState.addresses.firstWhere((a) => a.isDefault);
+        } catch (_) {
+          defaultAddress = userState.addresses.first;
+        }
+      }
+
+      final phone = s1<LocalStorageService>().phone ?? '';
+      
+      final payload = WhatsAppNotificationModel(
+        customerName: defaultAddress?.fullName ?? 'Customer',
+        customerPhone: phone,
+        labName: widget.labs.name,
+        labAddress: widget.labs.address ?? 'Trivandrum',
+        labPhone: widget.labs.phone,
+        tests: widget.test.name,
+        date: _formattedDate,
+        timeSlot: widget.selectedTime,
+        type: widget.collectionType,
+        amount: widget.labs.price,
+        bookingId: booking.id,
+      );
+      
+      context.read<LabsBloc>().add(SendWhatsAppNotificationEvent(payload));
+      log('WhatsApp notification event dispatched');
+    } catch (e) {
+      log('Error preparing WhatsApp payload: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final price = widget.labs.price;
@@ -140,6 +178,7 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
             builder: (ctx) => const Center(child: CircularProgressIndicator()),
           );
         } else if (state is OrderPlaced) {
+          _sendWhatsAppNotification(state.booking); // Trigger WhatsApp notification
           Navigator.of(context, rootNavigator: true).pop(); // dismiss dialog
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(

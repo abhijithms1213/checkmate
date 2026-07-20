@@ -7,8 +7,9 @@ import 'package:supabase_flutter/supabase_flutter.dart' hide Headers;
 
 class AuthDatasource {
   final SupabaseClient client;
+  final Dio dio;
 
-  AuthDatasource(this.client);
+  AuthDatasource(this.client, this.dio);
 
   Future<void> otpSendAndAddToDbDS(OtpVerificationModel otp) async {
     try {
@@ -21,32 +22,15 @@ class AuthDatasource {
         'verified': false,
       });
 
-      // Twilio SMS Integration
-      // final dio = Dio();
-
-      // if (otp.phone == '9188129607') {
-      //   final basicAuth =
-      //       'Basic ${base64Encode(utf8.encode('$twilioAccountSid:$twiloAuthToken'))}';
-
-      //   final formattedPhone = '+91${otp.phone}';
-
-      //   await dio.post(
-      //     'https://api.twilio.com/2010-04-01/Accounts/$twilioAccountSid/Messages.json',
-      //     data: {
-      //       'To': formattedPhone, // Dynamic phone number
-      //       'From': '+14782762920', // Your Twilio phone number
-      //       'Body': 'your otp is ${otp.otp}', // Dynamic OTP
-      //     },
-      //     options: Options(
-      //       headers: {
-      //         'Authorization': basicAuth,
-      //         Headers.contentTypeHeader: Headers.formUrlEncodedContentType,
-      //       },
-      //     ),
-      //   );
-      // } else {
-      //   log('skipped sms');
-      // }
+      // WhatsApp OTP API
+      await dio.post(
+        'https://ysrkkgbnezarxzdyawyo.supabase.co/functions/v1/otp_whealthier',
+        data: {
+          'phone': otp.phone,
+          'otp': otp.otp,
+        },
+      );
+      log('WhatsApp OTP sent via otp_whealthier');
     } on DioException {
       rethrow;
     } catch (e) {
