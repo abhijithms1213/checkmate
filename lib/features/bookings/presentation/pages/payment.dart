@@ -146,10 +146,10 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
       
       final payload = WhatsAppNotificationModel(
         customerName: defaultAddress?.fullName ?? 'Customer',
-        customerPhone: phone,
+        customerPhone: '91$phone',
         labName: widget.labs.name,
         labAddress: widget.labs.address ?? 'Trivandrum',
-        labPhone: widget.labs.phone,
+        labPhone: '91${widget.labs.phone}',
         tests: widget.test.name,
         date: _formattedDate,
         timeSlot: widget.selectedTime,

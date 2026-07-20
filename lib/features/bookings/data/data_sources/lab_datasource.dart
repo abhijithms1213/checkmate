@@ -116,12 +116,9 @@ class LabsRemoteDataSource {
 
   Future<void> sendWhatsAppNotification(WhatsAppNotificationModel payload) async {
     try {
-      await dio.post(
-        'https://ysrkkgbnezarxzdyawyo.supabase.co/functions/v1/smooth-worker',
-        options: Options(
-          headers: {'Content-Type': 'application/json'},
-        ),
-        data: payload.toJson(),
+      await client.functions.invoke(
+        'smooth-worker',
+        body: payload.toJson(),
       );
       log('WhatsApp notification sent via smooth-worker');
     } catch (e) {

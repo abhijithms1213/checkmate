@@ -23,12 +23,9 @@ class AuthDatasource {
       });
 
       // WhatsApp OTP API
-      await dio.post(
-        'https://ysrkkgbnezarxzdyawyo.supabase.co/functions/v1/otp_whealthier',
-        data: {
-          'phone': otp.phone,
-          'otp': otp.otp,
-        },
+      await client.functions.invoke(
+        'otp_whealthier',
+        body: {'phone': '91${otp.phone}', 'otp': otp.otp},
       );
       log('WhatsApp OTP sent via otp_whealthier');
     } on DioException {
