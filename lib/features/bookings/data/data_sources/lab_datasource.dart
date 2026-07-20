@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:checkmate/features/bookings/data/models/booking_model.dart';
 import 'package:checkmate/features/bookings/data/models/booking_request_model.dart';
 import 'package:checkmate/features/bookings/data/models/slot_model.dart';
+import 'package:checkmate/features/bookings/domain/entities/get_labs_request_entity.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:dio/dio.dart';
 import 'package:checkmate/features/bookings/data/models/test_model.dart';
@@ -43,21 +44,30 @@ class LabsRemoteDataSource {
     return uniqueTests.values.toList();
   }
 
-  Future<List<LabModel>> getLabsByTestId(String testId) async {
+  Future<List<LabModel>> getLabsByTestId(GetLabsRequestEntity req) async {
     final result = await client
         .from('lab_tests')
         .select('''
-          price,
-          labs(*)
-        ''')
-        .eq('test_id', testId)
-        .eq('is_available', true);
+        price,
+        labs!inner(
+          *,
+          lab_pincodes!inner(
+            pincode
+          )
+        )
+      ''')
+        .eq('test_id', req.testId)
+        .eq('is_available', true)
+        .eq('labs.lab_pincodes.pincode', req.pincode);
 
     return result.map<LabModel>((e) {
       final labsData = Map<String, dynamic>.from(
         e['labs'] as Map<String, dynamic>,
       );
+
+      labsData.remove('lab_pincodes'); // optional
       labsData['price'] = e['price'];
+
       return LabModel.fromJson(labsData);
     }).toList();
   }
@@ -83,7 +93,7 @@ class LabsRemoteDataSource {
           'slot_id': request.slotId,
           'booking_date': request.bookingDate.toIso8601String(),
           'total_amount': request.totalAmount,
-          'type': request.type
+          'type': request.type,
         })
         .select()
         .single();
@@ -108,18 +118,18 @@ class LabsRemoteDataSource {
       'booking_id': bookingId,
       'amount': request.totalAmount,
       'status': request.paymentStatus ?? 'pending',
-      if (request.transactionId != null) 'transaction_id': request.transactionId,
+      if (request.transactionId != null)
+        'transaction_id': request.transactionId,
     });
 
     return BookingModel.fromJson(booking);
   }
 
-  Future<void> sendWhatsAppNotification(WhatsAppNotificationModel payload) async {
+  Future<void> sendWhatsAppNotification(
+    WhatsAppNotificationModel payload,
+  ) async {
     try {
-      await client.functions.invoke(
-        'smooth-worker',
-        body: payload.toJson(),
-      );
+      await client.functions.invoke('smooth-worker', body: payload.toJson());
       log('WhatsApp notification sent via smooth-worker');
     } catch (e) {
       log('Error sending WhatsApp notification: $e');

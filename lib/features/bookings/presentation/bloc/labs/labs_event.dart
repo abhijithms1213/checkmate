@@ -15,8 +15,9 @@ class GetTestsEvent extends LabsEvent {
 
 class GetLabsByTestIdEvent extends LabsEvent {
   final String testId;
+  final String pincode;
 
-  GetLabsByTestIdEvent(this.testId);
+  GetLabsByTestIdEvent(this.testId, {required this.pincode});
 }
 
 class GetSlotsByLabIdEvent extends LabsEvent {

@@ -1,3 +1,5 @@
+import 'package:checkmate/core/services/local_storage_service.dart';
+import 'package:checkmate/injection_container.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/features/bookings/presentation/widgets/lab_card.dart';
 import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
@@ -16,17 +18,17 @@ class LabBookingScreen extends StatefulWidget {
 }
 
 class _LabBookingScreenState extends State<LabBookingScreen> {
-
   @override
   void initState() {
     super.initState();
-    context.read<LabsBloc>().add(GetLabsByTestIdEvent(widget.test.id));
+    final pincode = s1<LocalStorageService>().pincode ?? '';
+    context.read<LabsBloc>().add(
+      GetLabsByTestIdEvent(widget.test.id, pincode: pincode),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-
-
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -65,7 +67,7 @@ class _LabBookingScreenState extends State<LabBookingScreen> {
               padding: const EdgeInsets.all(16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children:  [
+                children: [
                   BlocBuilder<LabsBloc, LabsState>(
                     builder: (context, state) {
                       int count = 0;
@@ -74,7 +76,10 @@ class _LabBookingScreenState extends State<LabBookingScreen> {
                       }
                       return Text(
                         "$count Labs available near you",
-                        style: TextStyle(fontSize: 22.spMin, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontSize: 22.spMin,
+                          fontWeight: FontWeight.w600,
+                        ),
                       );
                     },
                   ),
@@ -91,7 +96,9 @@ class _LabBookingScreenState extends State<LabBookingScreen> {
                     return Center(child: Text(state.message));
                   } else if (state is LabsForTestLoaded) {
                     if (state.labs.isEmpty) {
-                      return const Center(child: Text("No labs available for this test."));
+                      return const Center(
+                        child: Text("No labs available for this test."),
+                      );
                     }
                     return ListView.separated(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -99,10 +106,7 @@ class _LabBookingScreenState extends State<LabBookingScreen> {
                       separatorBuilder: (_, __) => const SizedBox(height: 16),
                       itemBuilder: (_, index) {
                         final lab = state.labs[index];
-                        return LabCard(
-                          lab: lab,
-                          test: widget.test,
-                        );
+                        return LabCard(lab: lab, test: widget.test);
                       },
                     );
                   }
@@ -116,5 +120,3 @@ class _LabBookingScreenState extends State<LabBookingScreen> {
     );
   }
 }
-
-

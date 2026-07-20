@@ -1,3 +1,4 @@
+import 'package:checkmate/features/bookings/domain/entities/get_labs_request_entity.dart';
 import 'package:checkmate/features/bookings/domain/usecases/get_tests_by_pincode_uc.dart';
 import 'package:checkmate/features/bookings/domain/usecases/get_labs_by_testid_uc.dart';
 import 'package:checkmate/features/bookings/domain/usecases/get_slots_by_labid_uc.dart';
@@ -41,7 +42,7 @@ class LabsBloc extends Bloc<LabsEvent, LabsState> {
   Future<void> _onGetLabsByTestId(GetLabsByTestIdEvent event, Emitter<LabsState> emit) async {
     emit(LabsLoading());
     try {
-      final labs = await getLabsByTestIdUseCase(params: event.testId);
+      final labs = await getLabsByTestIdUseCase(params: GetLabsRequestEntity(pincode: event.pincode, testId: event.testId));
       emit(LabsForTestLoaded(labs));
     } catch (e) {
       emit(LabsError(e.toString()));

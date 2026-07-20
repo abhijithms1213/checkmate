@@ -1,4 +1,5 @@
 import 'package:checkmate/features/bookings/data/data_sources/lab_datasource.dart';
+import 'package:checkmate/features/bookings/domain/entities/get_labs_request_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/lab_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/slot_entity.dart';
@@ -13,8 +14,8 @@ class LabsRepositoryImpl implements LabsRepository {
   LabsRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<List<LabEntity>> getLabsByTestId(String testId) async {
-    return await remoteDataSource.getLabsByTestId(testId);
+  Future<List<LabEntity>> getLabsByTestId(GetLabsRequestEntity getLabsByTestId) async {
+    return await remoteDataSource.getLabsByTestId(getLabsByTestId);
   }
 
   @override
