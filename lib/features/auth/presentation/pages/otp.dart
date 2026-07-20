@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:checkmate/core/utils/otp_gen.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/constants/app_assets.dart';
 import 'package:checkmate/core/constants/app_colors.dart';
@@ -62,7 +63,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   void _resendOtp() {
     if (!_canResend) return;
-    const otp = '123456'; // TODO: use generateOtp()
+    final String otp = generateOtp();
     context.read<OtpBloc>().add(
       AddOtpEvent(
         OtpVerificationEntity(

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:checkmate/features/appointments/data/models/booking_details_model.dart';
 import 'package:checkmate/features/appointments/data/models/booking_full_details_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -41,6 +43,7 @@ class AppointmentsRemoteDataSource {
         ''')
         .eq('id', bookingId)
         .single();
+  // log('details of a rec: $result');
 
     return BookingFullDetailsModel.fromJson(result);
   }

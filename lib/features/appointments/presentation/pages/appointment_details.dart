@@ -77,7 +77,6 @@ class _BookingDetailsView extends StatelessWidget {
               final formattedDate = DateFormat(
                 'EEE, MMM d, yyyy',
               ).format(booking.bookingDate);
-              final statusColor = _statusColor(booking.status);
 
               return Column(
                 children: [
