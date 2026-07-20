@@ -7,7 +7,7 @@ import 'package:checkmate/features/address/domain/repository/user_repo.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_event.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_state.dart';
-import 'package:checkmate/features/bookings/presentation/pages/homepage.dart';
+import 'package:checkmate/features/main/presentation/pages/main_layout.dart';
 import 'package:checkmate/core/services/local_storage_service.dart';
 import 'package:checkmate/injection_container.dart';
 import 'package:flutter/material.dart';
@@ -110,10 +110,9 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
             // Coming from registration — log in and go to home
             s1<LocalStorageService>().setLoggedIn(true);
             s1<LocalStorageService>().setPhone(widget.phone!);
-            Navigator.pushAndRemoveUntil(
+            Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
-              (route) => false,
+              MaterialPageRoute(builder: (_) => const MainLayout()),
             );
           } else {
             // Coming from profile — just go back

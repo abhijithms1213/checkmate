@@ -1,6 +1,6 @@
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/features/bookings/domain/entities/booking_entity.dart';
-import 'package:checkmate/features/bookings/presentation/pages/homepage.dart';
+import 'package:checkmate/features/main/presentation/pages/main_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -191,7 +191,7 @@ class BookingSuccessScreen extends StatelessWidget {
                         onPressed: () {
                           Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
-                              builder: (context) => const HomeScreen(),
+                              builder: (context) => const MainLayout(),
                             ),
                             (route) => false,
                           );

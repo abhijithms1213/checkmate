@@ -45,7 +45,6 @@ class _MyAppointmentsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FB),
-      bottomNavigationBar: const CustomBottomNavBar(currentIndex: 1),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

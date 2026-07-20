@@ -36,8 +36,6 @@ class _HomeScreenState extends State<HomeScreen> {
         return s1<LabsBloc>()..add(GetTestsEvent(pincode));
       },
       child: Scaffold(
-        bottomNavigationBar: const CustomBottomNavBar(currentIndex: 0),
-
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),

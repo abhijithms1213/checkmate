@@ -25,7 +25,6 @@ class AddressScreen extends StatelessWidget {
       create: (_) => s1<UserBloc>()..add(LoadAddressesEvent(phone)),
       child: Scaffold(
         backgroundColor: const Color(0xFFF8F9FB),
-        bottomNavigationBar: const CustomBottomNavBar(currentIndex: 2),
         body: SafeArea(
           child: Column(
             children: [

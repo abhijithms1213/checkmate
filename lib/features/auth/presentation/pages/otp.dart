@@ -8,8 +8,8 @@ import 'package:checkmate/features/auth/domain/entities/otp_verify.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_bloc.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_event.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_state.dart';
+import 'package:checkmate/features/main/presentation/pages/main_layout.dart';
 import 'package:checkmate/features/auth/presentation/pages/login.dart';
-import 'package:checkmate/features/bookings/presentation/pages/homepage.dart';
 import 'package:checkmate/core/services/local_storage_service.dart';
 import 'package:checkmate/injection_container.dart';
 import 'package:flutter/material.dart';
@@ -127,7 +127,7 @@ class _OtpScreenState extends State<OtpScreen> {
             }
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
+              MaterialPageRoute(builder: (_) => const MainLayout()),
             );
           }
 
