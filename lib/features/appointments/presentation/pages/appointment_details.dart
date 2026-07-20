@@ -1,5 +1,5 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:checkmate/features/appointments/domain/entities/booking_full_details_entity.dart';
 import 'package:checkmate/features/appointments/presentation/bloc/appointments_bloc.dart';
 import 'package:checkmate/features/appointments/presentation/bloc/appointments_event.dart';
 import 'package:checkmate/features/appointments/presentation/bloc/appointments_state.dart';
@@ -122,19 +122,17 @@ class _BookingDetailsView extends StatelessWidget {
                           //     ],
                           //   ),
                           // ),
-
                           const SizedBox(height: 16),
 
+                          Text(
+                            "Booking ID:",
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 14.spMin,
+                            ),
+                          ),
                           Row(
                             children: [
-                              Text(
-                                "Booking ID:",
-                                style: TextStyle(
-                                  color: Colors.grey.shade600,
-                                  fontSize: 14.spMin,
-                                ),
-                              ),
-                              const SizedBox(width: 8),
                               Expanded(
                                 child: SelectableText(
                                   booking.id,
@@ -144,6 +142,22 @@ class _BookingDetailsView extends StatelessWidget {
                                     fontSize: 12.spMin,
                                   ),
                                 ),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.copy, size: 18),
+                                tooltip: "Copy Booking ID",
+                                onPressed: () async {
+                                  await Clipboard.setData(
+                                    ClipboardData(text: booking.id),
+                                  );
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("Booking ID copied"),
+                                      duration: Duration(seconds: 1),
+                                    ),
+                                  );
+                                },
                               ),
                             ],
                           ),
@@ -349,7 +363,9 @@ class _BookingDetailsView extends StatelessWidget {
   static Widget _priceRow(String title, String value) {
     return Row(
       children: [
-        Expanded(child: Text(title, style: TextStyle(fontSize: 16.spMin))),
+        Expanded(
+          child: Text(title, style: TextStyle(fontSize: 16.spMin)),
+        ),
         Text(value, style: TextStyle(fontSize: 16.spMin)),
       ],
     );

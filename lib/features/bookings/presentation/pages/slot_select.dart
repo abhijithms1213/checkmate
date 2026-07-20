@@ -99,56 +99,60 @@ class _SelectSlotBody extends StatelessWidget {
       backgroundColor: const Color(0xffF8F9FB),
 
       bottomNavigationBar: Container(
-        height: 72,
-        padding: const EdgeInsets.all(12),
         color: AppColors.primary,
-        child: Center(
-          child: InkWell(
-            onTap: () {
-              if (selectedTime == null || selectedSlotId == null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please select a time slot')),
-                );
-                return;
-              }
-              final collectionState = context.read<CollectionTypeBloc>().state;
-              if (collectionState is! CollectionTypeSelected) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Please select a sample collection type')),
-                );
-                return;
-              }
-              final phone = s1<LocalStorageService>().phone ?? '';
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => MultiBlocProvider(
-                    providers: [
-                      BlocProvider(
-                        create: (_) => s1<UserBloc>()..add(LoadAddressesEvent(phone)),
+        child: SafeArea(
+          child: Container(
+            height: 72,
+            padding: const EdgeInsets.all(12),
+            child: Center(
+              child: InkWell(
+                onTap: () {
+                  if (selectedTime == null || selectedSlotId == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Please select a time slot')),
+                    );
+                    return;
+                  }
+                  final collectionState = context.read<CollectionTypeBloc>().state;
+                  if (collectionState is! CollectionTypeSelected) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Please select a sample collection type')),
+                    );
+                    return;
+                  }
+                  final phone = s1<LocalStorageService>().phone ?? '';
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => MultiBlocProvider(
+                        providers: [
+                          BlocProvider(
+                            create: (_) => s1<UserBloc>()..add(LoadAddressesEvent(phone)),
+                          ),
+                          BlocProvider(
+                            create: (_) => s1<LabsBloc>(),
+                          ),
+                        ],
+                        child: ReviewPayScreen(
+                          labs: labs,
+                          test: test,
+                          selectedDate: dates[selectedDate]['fullDate']!,
+                          selectedTime: selectedTime!,
+                          selectedSlotId: selectedSlotId!,
+                          collectionType: collectionState.label,
+                        ),
                       ),
-                      BlocProvider(
-                        create: (_) => s1<LabsBloc>(),
-                      ),
-                    ],
-                    child: ReviewPayScreen(
-                      labs: labs,
-                      test: test,
-                      selectedDate: dates[selectedDate]['fullDate']!,
-                      selectedTime: selectedTime!,
-                      selectedSlotId: selectedSlotId!,
-                      collectionType: collectionState.label,
                     ),
+                  );
+                },
+                child: Text(
+                  "CONFIRM APPOINTMENT",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20.spMin,
+                    letterSpacing: 1,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-              );
-            },
-            child: Text(
-              "CONFIRM APPOINTMENT",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20.spMin,
-                letterSpacing: 1,
-                fontWeight: FontWeight.w500,
               ),
             ),
           ),
