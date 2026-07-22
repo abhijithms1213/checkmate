@@ -156,6 +156,7 @@ Future<void> initializeDependencies() async {
     () => AppointmentsBloc(
       getUserBookingsUseCase: s1(),
       getBookingDetailsUseCase: s1(),
+      userRepository: s1(),
     ),
   );
 }
