@@ -22,12 +22,7 @@ class MyAppointmentsScreen extends StatelessWidget {
       create: (_) {
         final phone = s1<LocalStorageService>().phone ?? '';
         final bloc = s1<AppointmentsBloc>();
-        // fetch userId from DB then load bookings
-        s1<UserRepository>().getUserIdByPhone(phone).then((userId) {
-          if (userId != null) {
-            bloc.add(LoadUserBookingsEvent(userId));
-          }
-        });
+        bloc.add(LoadUserBookingsByPhoneEvent(phone));
         return bloc;
       },
       child: const _MyAppointmentsView(),

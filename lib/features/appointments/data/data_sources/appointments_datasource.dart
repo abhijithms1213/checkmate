@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:async';
 
 import 'package:checkmate/features/appointments/data/models/booking_details_model.dart';
 import 'package:checkmate/features/appointments/data/models/booking_full_details_model.dart';
@@ -24,11 +25,14 @@ class AppointmentsRemoteDataSource {
             )
           ''')
           .eq('user_id', userId)
-          .order('created_at', ascending: false);
+          .order('created_at', ascending: false)
+          .timeout(const Duration(seconds: 10));
 
       return result
           .map<BookingDetailsModel>((e) => BookingDetailsModel.fromJson(e))
           .toList();
+    } on TimeoutException {
+      throw NetworkException("Connection timed out. Please check your internet connection.");
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } on DioException {
@@ -53,10 +57,13 @@ class AppointmentsRemoteDataSource {
             )
           ''')
           .eq('id', bookingId)
-          .single();
+          .single()
+          .timeout(const Duration(seconds: 10));
       log('details of a rec: $result');
 
       return BookingFullDetailsModel.fromJson(result);
+    } on TimeoutException {
+      throw NetworkException("Connection timed out. Please check your internet connection.");
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } on DioException {

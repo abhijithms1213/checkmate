@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:async';
 import 'package:checkmate/features/auth/data/models/otp_varify_model.dart';
 import 'package:checkmate/core/errors/exceptions.dart';
 import 'package:dio/dio.dart';
@@ -19,14 +20,16 @@ class AuthDatasource {
             .add(const Duration(minutes: 5))
             .toIso8601String(),
         'verified': false,
-      });
+      }).timeout(const Duration(seconds: 10));
 
       // WhatsApp OTP API
       await client.functions.invoke(
         'otp_whealthier',
         body: {'phone': '91${otp.phone}', 'otp': otp.otp},
-      );
+      ).timeout(const Duration(seconds: 10));
       log('WhatsApp OTP sent via otp_whealthier');
+    } on TimeoutException {
+      throw NetworkException("Connection timed out. Please check your internet connection.");
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } on DioException {
@@ -38,7 +41,10 @@ class AuthDatasource {
 
   Future<void> otpDeleteFromDbDS(String phone) async {
     try {
-      await client.from('otp_verifications').delete().eq('phone', phone);
+      await client.from('otp_verifications').delete().eq('phone', phone)
+          .timeout(const Duration(seconds: 10));
+    } on TimeoutException {
+      throw NetworkException("Connection timed out. Please check your internet connection.");
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } on DioException {
@@ -59,7 +65,8 @@ class AuthDatasource {
           .eq('phone', phone)
           .eq('otp', otp)
           .eq('verified', false)
-          .gt('expires_at', DateTime.now().toIso8601String());
+          .gt('expires_at', DateTime.now().toIso8601String())
+          .timeout(const Duration(seconds: 10));
 
       if (result.isEmpty) {
         return {'verified': false, 'userExists': false};
@@ -68,12 +75,14 @@ class AuthDatasource {
       await client
           .from('otp_verifications')
           .update({'verified': true})
-          .eq('id', result.first['id']);
+          .eq('id', result.first['id'])
+          .timeout(const Duration(seconds: 10));
 
       final userResult = await client
           .from('users')
           .select('id')
-          .eq('phone', phone);
+          .eq('phone', phone)
+          .timeout(const Duration(seconds: 10));
 
       bool userExists = userResult.isNotEmpty;
       String? defaultPincode;
@@ -85,7 +94,8 @@ class AuthDatasource {
             .select('pincode')
             .eq('user_id', userId)
             .eq('is_default', true)
-            .limit(1);
+            .limit(1)
+            .timeout(const Duration(seconds: 10));
 
         if (addressResult.isNotEmpty) {
           defaultPincode = addressResult.first['pincode'].toString();
@@ -97,6 +107,8 @@ class AuthDatasource {
         'userExists': userExists,
         'defaultPincode': defaultPincode,
       };
+    } on TimeoutException {
+      throw NetworkException("Connection timed out. Please check your internet connection.");
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } on DioException {
@@ -106,3 +118,4 @@ class AuthDatasource {
     }
   }
 }
+

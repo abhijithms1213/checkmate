@@ -63,23 +63,42 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     } else {
       // Adding from profile — get userId from DB directly
       final phone = s1<LocalStorageService>().phone ?? '';
-      s1<UserRepository>().getUserIdByPhone(phone).then((userId) {
-        if (userId == null) return;
-        context.read<UserBloc>().add(
-          AddAddressEvent(
-            AddressEntity(
-              userId: userId,
-              fullName: _nameController.text.trim(),
-              houseNumber: _houseController.text.trim(),
-              fullAddress: _addressController.text.trim(),
-              pincode: _pincodeController.text.trim(),
-              latitude: null,
-              longitude: null,
-              isDefault: false,
-            ),
+      _saveAddressFromProfile(phone);
+    }
+  }
+
+  Future<void> _saveAddressFromProfile(String phone) async {
+    try {
+      final userId = await s1<UserRepository>().getUserIdByPhone(phone);
+      if (userId == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('User not found.')),
+          );
+        }
+        return;
+      }
+      if (!mounted) return;
+      context.read<UserBloc>().add(
+        AddAddressEvent(
+          AddressEntity(
+            userId: userId,
+            fullName: _nameController.text.trim(),
+            houseNumber: _houseController.text.trim(),
+            fullAddress: _addressController.text.trim(),
+            pincode: _pincodeController.text.trim(),
+            latitude: null,
+            longitude: null,
+            isDefault: false,
           ),
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to load user: ${e.toString()}')),
         );
-      });
+      }
     }
   }
 

@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 import 'package:checkmate/core/errors/exceptions.dart';
 import 'package:checkmate/features/bookings/data/models/booking_model.dart';
 import 'package:checkmate/features/bookings/data/models/booking_request_model.dart';
@@ -49,7 +50,11 @@ class LabsRemoteDataSource {
     } on DioException {
       throw NetworkException("Please check your internet connection.");
     } catch (e) {
-      throw ServerException("Something went wrong.");
+      if (e is SocketException) {
+        throw NetworkException("No internet connection.");
+      } else {
+        throw ServerException("Something went wrong.");
+      }
     }
   }
 

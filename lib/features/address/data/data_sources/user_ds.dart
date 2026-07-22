@@ -3,6 +3,7 @@ import 'package:checkmate/features/address/domain/entities/user_entity.dart';
 import 'package:checkmate/core/errors/exceptions.dart';
 import 'package:dio/dio.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:async';
 
 class UserDs {
   final SupabaseClient client;
@@ -14,9 +15,12 @@ class UserDs {
           .from('users')
           .insert({'phone': user.phone, 'name': user.name})
           .select()
-          .single();
+          .single()
+          .timeout(const Duration(seconds: 10));
 
       return result['id'];
+    } on TimeoutException {
+      throw NetworkException("Connection timed out. Please check your internet connection.");
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } on DioException {
@@ -37,7 +41,9 @@ class UserDs {
         'latitude': address.latitude,
         'longitude': address.longitude,
         'is_default': address.isDefault,
-      });
+      }).timeout(const Duration(seconds: 10));
+    } on TimeoutException {
+      throw NetworkException("Connection timed out. Please check your internet connection.");
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } on DioException {
@@ -49,8 +55,10 @@ class UserDs {
 
   Future<bool> userExistsDS(String phone) async {
     try {
-      final result = await client.from('users').select().eq('phone', phone);
+      final result = await client.from('users').select().eq('phone', phone).timeout(const Duration(seconds: 10));
       return result.isNotEmpty;
+    } on TimeoutException {
+      throw NetworkException("Connection timed out. Please check your internet connection.");
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } on DioException {
@@ -66,15 +74,19 @@ class UserDs {
           .from('users')
           .select('id')
           .eq('phone', phone)
-          .single();
+          .single()
+          .timeout(const Duration(seconds: 10));
       final userId = userResult['id'];
       final result = await client
           .from('addresses')
           .select()
           .eq('user_id', userId)
           .eq('is_deleted', false)
-          .order('is_default', ascending: false);
+          .order('is_default', ascending: false)
+          .timeout(const Duration(seconds: 10));
       return List<Map<String, dynamic>>.from(result);
+    } on TimeoutException {
+      throw NetworkException("Connection timed out. Please check your internet connection.");
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } on DioException {
@@ -90,12 +102,16 @@ class UserDs {
       await client
           .from('addresses')
           .update({'is_default': false})
-          .eq('user_id', userId);
+          .eq('user_id', userId)
+          .timeout(const Duration(seconds: 10));
       // Set new default
       await client
           .from('addresses')
           .update({'is_default': true})
-          .eq('id', addressId);
+          .eq('id', addressId)
+          .timeout(const Duration(seconds: 10));
+    } on TimeoutException {
+      throw NetworkException("Connection timed out. Please check your internet connection.");
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } on DioException {
@@ -110,7 +126,10 @@ class UserDs {
       await client
           .from('addresses')
           .update({'is_deleted': true})
-          .eq('id', addressId);
+          .eq('id', addressId)
+          .timeout(const Duration(seconds: 10));
+    } on TimeoutException {
+      throw NetworkException("Connection timed out. Please check your internet connection.");
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } on DioException {
@@ -126,8 +145,11 @@ class UserDs {
           .from('users')
           .select('id')
           .eq('phone', phone)
-          .maybeSingle();
+          .maybeSingle()
+          .timeout(const Duration(seconds: 10));
       return result?['id'];
+    } on TimeoutException {
+      throw NetworkException("Connection timed out. Please check your internet connection.");
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } on DioException {
@@ -145,7 +167,8 @@ class UserDs {
           .from('users')
           .select('id, phone, name')
           .eq('phone', phone)
-          .maybeSingle();
+          .maybeSingle()
+          .timeout(const Duration(seconds: 10));
 
       if (userResult == null) return null;
 
@@ -157,13 +180,16 @@ class UserDs {
           .select('pincode')
           .eq('user_id', userId)
           .eq('is_default', true)
-          .maybeSingle();
+          .maybeSingle()
+          .timeout(const Duration(seconds: 10));
 
       return {
         'phone': userResult['phone'] ?? '',
         'name': userResult['name'] ?? '',
         'pincode': addressResult?['pincode']?.toString() ?? '',
       };
+    } on TimeoutException {
+      throw NetworkException("Connection timed out. Please check your internet connection.");
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } on DioException {

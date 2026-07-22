@@ -2,18 +2,22 @@ import 'package:checkmate/features/appointments/domain/usecases/get_user_booking
 import 'package:checkmate/features/appointments/domain/usecases/get_booking_details_uc.dart';
 import 'package:checkmate/features/appointments/presentation/bloc/appointments_event.dart';
 import 'package:checkmate/features/appointments/presentation/bloc/appointments_state.dart';
+import 'package:checkmate/features/address/domain/repository/user_repo.dart';
 import 'package:checkmate/core/errors/exceptions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AppointmentsBloc extends Bloc<AppointmentsEvent, AppointmentsState> {
   final GetUserBookingsUseCase getUserBookingsUseCase;
   final GetBookingDetailsUseCase getBookingDetailsUseCase;
+  final UserRepository userRepository;
 
   AppointmentsBloc({
     required this.getUserBookingsUseCase,
     required this.getBookingDetailsUseCase,
+    required this.userRepository,
   }) : super(AppointmentsInitial()) {
     on<LoadUserBookingsEvent>(_onLoadUserBookings);
+    on<LoadUserBookingsByPhoneEvent>(_onLoadUserBookingsByPhone);
     on<GetBookingDetailsEvent>(_onGetBookingDetails);
   }
 
@@ -24,6 +28,28 @@ class AppointmentsBloc extends Bloc<AppointmentsEvent, AppointmentsState> {
     emit(AppointmentsLoading());
     try {
       final bookings = await getUserBookingsUseCase(params: event.userId);
+      emit(AppointmentsLoaded(bookings));
+    } on NetworkException catch (e) {
+      emit(AppointmentsError(e.message));
+    } on ServerException catch (e) {
+      emit(AppointmentsError(e.message));
+    } catch (_) {
+      emit(AppointmentsError('Something went wrong.'));
+    }
+  }
+
+  Future<void> _onLoadUserBookingsByPhone(
+    LoadUserBookingsByPhoneEvent event,
+    Emitter<AppointmentsState> emit,
+  ) async {
+    emit(AppointmentsLoading());
+    try {
+      final userId = await userRepository.getUserIdByPhone(event.phone);
+      if (userId == null) {
+        emit(AppointmentsError("User not found."));
+        return;
+      }
+      final bookings = await getUserBookingsUseCase(params: userId);
       emit(AppointmentsLoaded(bookings));
     } on NetworkException catch (e) {
       emit(AppointmentsError(e.message));
