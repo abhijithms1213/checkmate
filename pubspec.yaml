@@ -45,7 +45,6 @@ dependencies:
   floor: ^1.5.0
   dio: ^5.10.0
 
-  retrofit: ^4.9.0
   json_annotation: ^4.9.0
   supabase_flutter: ^2.16.0
   shared_preferences: ^2.5.5
@@ -63,7 +62,6 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
     
-  retrofit_generator: ^10.0.1
   build_runner: ^2.6.0
   json_serializable: ^6.10.0
 
