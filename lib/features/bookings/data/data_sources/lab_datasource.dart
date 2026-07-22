@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:checkmate/core/errors/exceptions.dart';
 import 'package:checkmate/features/bookings/data/models/booking_model.dart';
 import 'package:checkmate/features/bookings/data/models/booking_request_model.dart';
 import 'package:checkmate/features/bookings/data/models/slot_model.dart';
@@ -16,38 +17,47 @@ class LabsRemoteDataSource {
   LabsRemoteDataSource(this.client, this.dio);
 
   Future<List<TestModel>> getTestsByPincode(String pincode) async {
-    log('pi $pincode');
-    // Step 1
-    final labPincodes = await client
-        .from('lab_pincodes')
-        .select('lab_id')
-        .eq('pincode', pincode);
-    log('pincodes:$labPincodes');
+    try {
+      log('pi $pincode');
+      // Step 1
+      final labPincodes = await client
+          .from('lab_pincodes')
+          .select('lab_id')
+          .eq('pincode', pincode);
+      log('pincodes:$labPincodes');
 
-    final labIds = labPincodes.map((e) => e['lab_id']).toList();
+      final labIds = labPincodes.map((e) => e['lab_id']).toList();
 
-    // Step 2
-    final result = await client
-        .from('lab_tests')
-        .select('tests(*)')
-        .inFilter('lab_id', labIds);
-    log('result:$result');
+      // Step 2
+      final result = await client
+          .from('lab_tests')
+          .select('tests(*)')
+          .inFilter('lab_id', labIds);
+      log('result:$result');
 
-    final Map<String, TestModel> uniqueTests = {};
+      final Map<String, TestModel> uniqueTests = {};
 
-    for (final item in result) {
-      final test = TestModel.fromJson(item['tests']);
+      for (final item in result) {
+        final test = TestModel.fromJson(item['tests']);
 
-      uniqueTests[test.id] = test;
+        uniqueTests[test.id] = test;
+      }
+
+      return uniqueTests.values.toList();
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
+    } on DioException {
+      throw NetworkException("Please check your internet connection.");
+    } catch (e) {
+      throw ServerException("Something went wrong.");
     }
-
-    return uniqueTests.values.toList();
   }
 
   Future<List<LabModel>> getLabsByTestId(GetLabsRequestEntity req) async {
-    final result = await client
-        .from('lab_tests')
-        .select('''
+    try {
+      final result = await client
+          .from('lab_tests')
+          .select('''
         price,
         labs!inner(
           *,
@@ -56,73 +66,96 @@ class LabsRemoteDataSource {
           )
         )
       ''')
-        .eq('test_id', req.testId)
-        .eq('is_available', true)
-        .eq('labs.lab_pincodes.pincode', req.pincode);
+          .eq('test_id', req.testId)
+          .eq('is_available', true)
+          .eq('labs.lab_pincodes.pincode', req.pincode);
 
-    return result.map<LabModel>((e) {
-      final labsData = Map<String, dynamic>.from(
-        e['labs'] as Map<String, dynamic>,
-      );
+      return result.map<LabModel>((e) {
+        final labsData = Map<String, dynamic>.from(
+          e['labs'] as Map<String, dynamic>,
+        );
 
-      labsData.remove('lab_pincodes'); // optional
-      labsData['price'] = e['price'];
+        labsData.remove('lab_pincodes'); // optional
+        labsData['price'] = e['price'];
 
-      return LabModel.fromJson(labsData);
-    }).toList();
+        return LabModel.fromJson(labsData);
+      }).toList();
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
+    } on DioException {
+      throw NetworkException("Please check your internet connection.");
+    } catch (e) {
+      throw ServerException("Something went wrong.");
+    }
   }
 
   Future<List<SlotModel>> getSlotsByLabId(String labId) async {
-    final result = await client
-        .from('lab_slots')
-        .select()
-        .eq('lab_id', labId)
-        .eq('is_active', true)
-        .order('slot_time');
+    try {
+      final result = await client
+          .from('lab_slots')
+          .select()
+          .eq('lab_id', labId)
+          .eq('is_active', true)
+          .order('slot_time');
 
-    return result.map<SlotModel>((e) => SlotModel.fromJson(e)).toList();
+      return result.map<SlotModel>((e) => SlotModel.fromJson(e)).toList();
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
+    } on DioException {
+      throw NetworkException("Please check your internet connection.");
+    } catch (e) {
+      throw ServerException("Something went wrong.");
+    }
   }
 
   Future<BookingModel> placeOrder(BookingRequestModel request) async {
-    final booking = await client
-        .from('bookings')
-        .insert({
-          'user_id': request.userId,
-          'address_id': request.addressId,
-          'lab_id': request.labId,
-          'slot_id': request.slotId,
-          'booking_date': request.bookingDate.toIso8601String(),
-          'total_amount': request.totalAmount,
-          'type': request.type,
-        })
-        .select()
-        .single();
+    try {
+      final booking = await client
+          .from('bookings')
+          .insert({
+            'user_id': request.userId,
+            'address_id': request.addressId,
+            'lab_id': request.labId,
+            'slot_id': request.slotId,
+            'booking_date': request.bookingDate.toIso8601String(),
+            'total_amount': request.totalAmount,
+            'type': request.type,
+          })
+          .select()
+          .single();
 
-    final bookingId = booking['id'];
+      final bookingId = booking['id'];
 
-    await client
-        .from('booking_tests')
-        .insert(
-          request.tests
-              .map(
-                (e) => {
-                  'booking_id': bookingId,
-                  'test_id': e.testId,
-                  'price': e.price,
-                },
-              )
-              .toList(),
-        );
+      await client
+          .from('booking_tests')
+          .insert(
+            request.tests
+                .map(
+                  (e) => {
+                    'booking_id': bookingId,
+                    'test_id': e.testId,
+                    'price': e.price,
+                  },
+                )
+                .toList(),
+          );
 
-    await client.from('payments').insert({
-      'booking_id': bookingId,
-      'amount': request.totalAmount,
-      'status': request.paymentStatus ?? 'pending',
-      if (request.transactionId != null)
-        'transaction_id': request.transactionId,
-    });
+      await client.from('payments').insert({
+        'booking_id': bookingId,
+        'amount': request.totalAmount,
+        'status': request.paymentStatus ?? 'pending',
+        if (request.transactionId != null)
+          'transaction_id': request.transactionId,
+      });
 
-    return BookingModel.fromJson(booking);
+      return BookingModel.fromJson(booking);
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
+    } on DioException {
+      throw NetworkException("Please check your internet connection.");
+    } catch (e) {
+      throw ServerException("Something went wrong.");
+    }
   }
 
   Future<void> sendWhatsAppNotification(
@@ -131,8 +164,10 @@ class LabsRemoteDataSource {
     try {
       await client.functions.invoke('smooth-worker', body: payload.toJson());
       log('WhatsApp notification sent via smooth-worker');
+    } on DioException {
+      throw NetworkException("Please check your internet connection.");
     } catch (e) {
-      log('Error sending WhatsApp notification: $e');
+      throw ServerException("Something went wrong.");
     }
   }
 }

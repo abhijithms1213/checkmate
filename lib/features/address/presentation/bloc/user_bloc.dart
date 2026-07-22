@@ -3,6 +3,7 @@ import 'package:checkmate/features/address/domain/usecases/create_user_uc.dart';
 import 'package:checkmate/features/address/domain/repository/user_repo.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_event.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_state.dart';
+import 'package:checkmate/core/errors/exceptions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
@@ -30,8 +31,12 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     try {
       final userId = await createUserUseCase(params: event.user);
       emit(UserCreated(userId));
-    } catch (e) {
-      emit(UserFailure(e.toString()));
+    } on NetworkException catch (e) {
+      emit(UserFailure(e.message));
+    } on ServerException catch (e) {
+      emit(UserFailure(e.message));
+    } catch (_) {
+      emit(UserFailure('Something went wrong.'));
     }
   }
 
@@ -43,8 +48,12 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     try {
       await addAddressUseCase(params: event.address);
       emit(AddressAdded());
-    } catch (e) {
-      emit(UserFailure(e.toString()));
+    } on NetworkException catch (e) {
+      emit(UserFailure(e.message));
+    } on ServerException catch (e) {
+      emit(UserFailure(e.message));
+    } catch (_) {
+      emit(UserFailure('Something went wrong.'));
     }
   }
 
@@ -56,8 +65,12 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     try {
       final addresses = await userRepository.getAddresses(event.phone);
       emit(AddressesLoaded(addresses));
-    } catch (e) {
-      emit(UserFailure(e.toString()));
+    } on NetworkException catch (e) {
+      emit(UserFailure(e.message));
+    } on ServerException catch (e) {
+      emit(UserFailure(e.message));
+    } catch (_) {
+      emit(UserFailure('Something went wrong.'));
     }
   }
 
@@ -80,11 +93,18 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       // 3. Re-fetch to confirm (in case DB made any corrections)
       final addresses = await userRepository.getAddresses(event.phone);
       emit(AddressesLoaded(addresses));
-    } catch (e) {
-      // 4. Revert on error
+    } on NetworkException catch (e) {
       final addresses = await userRepository.getAddresses(event.phone);
       emit(AddressesLoaded(addresses));
-      emit(UserFailure(e.toString()));
+      emit(UserFailure(e.message));
+    } on ServerException catch (e) {
+      final addresses = await userRepository.getAddresses(event.phone);
+      emit(AddressesLoaded(addresses));
+      emit(UserFailure(e.message));
+    } catch (_) {
+      final addresses = await userRepository.getAddresses(event.phone);
+      emit(AddressesLoaded(addresses));
+      emit(UserFailure('Something went wrong.'));
     }
   }
 
@@ -97,16 +117,22 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       await userRepository.deleteAddress(event.addressId);
       final addresses = await userRepository.getAddresses(event.phone);
       emit(AddressesLoaded(addresses));
-    } catch (e) {
-      // Reload addresses so the UI doesn't get stuck in a weird state
+    } on NetworkException catch (e) {
       final addresses = await userRepository.getAddresses(event.phone);
       emit(AddressesLoaded(addresses));
-      
-      if (e.toString().contains('violates foreign key constraint')) {
+      emit(UserFailure(e.message));
+    } on ServerException catch (e) {
+      final addresses = await userRepository.getAddresses(event.phone);
+      emit(AddressesLoaded(addresses));
+      if (e.message.contains('violates foreign key constraint')) {
         emit(UserFailure('Cannot delete this address because it is associated with an existing booking.'));
       } else {
-        emit(UserFailure('Failed to delete address. Please try again.'));
+        emit(UserFailure(e.message));
       }
+    } catch (_) {
+      final addresses = await userRepository.getAddresses(event.phone);
+      emit(AddressesLoaded(addresses));
+      emit(UserFailure('Something went wrong.'));
     }
   }
 }

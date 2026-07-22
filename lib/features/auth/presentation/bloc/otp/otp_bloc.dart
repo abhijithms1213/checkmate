@@ -4,6 +4,7 @@ import 'package:checkmate/features/auth/domain/entities/vaiidate_otp_model.dart'
 import 'package:checkmate/features/auth/domain/usecases/add_otp_to_db.dart';
 import 'package:checkmate/features/auth/domain/usecases/delete_existing_otp_fr_db.dart';
 import 'package:checkmate/features/auth/domain/usecases/verify_otp.dart';
+import 'package:checkmate/core/errors/exceptions.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'otp_event.dart';
@@ -33,8 +34,12 @@ class OtpBloc extends Bloc<OtpEvent, OtpState> {
       log('sended');
 
       emit(OtpSuccess());
-    } catch (e) {
-      emit(OtpFailure(e.toString()));
+    } on NetworkException catch (e) {
+      emit(OtpFailure(e.message));
+    } on ServerException catch (e) {
+      emit(OtpFailure(e.message));
+    } catch (_) {
+      emit(OtpFailure('Something went wrong.'));
     }
   }
 
@@ -60,8 +65,12 @@ class OtpBloc extends Bloc<OtpEvent, OtpState> {
       } else {
         emit(NewUser());
       }
-    } catch (e) {
-      emit(OtpFailure(e.toString()));
+    } on NetworkException catch (e) {
+      emit(OtpFailure(e.message));
+    } on ServerException catch (e) {
+      emit(OtpFailure(e.message));
+    } catch (_) {
+      emit(OtpFailure('Something went wrong.'));
     }
   }
 }

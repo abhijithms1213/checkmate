@@ -1,9 +1,8 @@
-import 'dart:convert';
 import 'dart:developer';
-import 'package:checkmate/core/constants/constants.dart';
 import 'package:checkmate/features/auth/data/models/otp_varify_model.dart';
+import 'package:checkmate/core/errors/exceptions.dart';
 import 'package:dio/dio.dart';
-import 'package:supabase_flutter/supabase_flutter.dart' hide Headers;
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthDatasource {
   final SupabaseClient client;
@@ -28,26 +27,24 @@ class AuthDatasource {
         body: {'phone': '91${otp.phone}', 'otp': otp.otp},
       );
       log('WhatsApp OTP sent via otp_whealthier');
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
     } on DioException {
-      rethrow;
+      throw NetworkException("Please check your internet connection.");
     } catch (e) {
-      throw DioException(
-        requestOptions: RequestOptions(path: ''),
-        error: e.toString(),
-      );
+      throw ServerException("Something went wrong.");
     }
   }
 
   Future<void> otpDeleteFromDbDS(String phone) async {
     try {
       await client.from('otp_verifications').delete().eq('phone', phone);
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
     } on DioException {
-      rethrow;
+      throw NetworkException("Please check your internet connection.");
     } catch (e) {
-      throw DioException(
-        requestOptions: RequestOptions(path: ''),
-        error: e.toString(),
-      );
+      throw ServerException("Something went wrong.");
     }
   }
 
@@ -100,11 +97,12 @@ class AuthDatasource {
         'userExists': userExists,
         'defaultPincode': defaultPincode,
       };
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
+    } on DioException {
+      throw NetworkException("Please check your internet connection.");
     } catch (e) {
-      throw DioException(
-        requestOptions: RequestOptions(path: ''),
-        error: e.toString(),
-      );
+      throw ServerException("Something went wrong.");
     }
   }
 }
