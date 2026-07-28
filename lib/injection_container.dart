@@ -3,6 +3,7 @@ import 'package:checkmate/features/address/data/repository/user_repo_impl.dart';
 import 'package:checkmate/features/address/domain/repository/user_repo.dart';
 import 'package:checkmate/features/address/domain/usecases/add_address_uc.dart';
 import 'package:checkmate/features/address/domain/usecases/create_user_uc.dart';
+import 'package:checkmate/features/address/domain/usecases/edit_address_uc.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
 import 'package:checkmate/features/auth/data/data_sources/auth_datasource.dart';
 import 'package:checkmate/features/auth/data/repository/auth_impl.dart';
@@ -105,14 +106,15 @@ Future<void> initializeDependencies() async {
   // UseCases
 
   s1.registerLazySingleton(() => CreateUserUseCase(s1()));
-
   s1.registerLazySingleton(() => AddAddressUseCase(s1()));
+  s1.registerLazySingleton(() => EditAddressUseCase(s1()));
 
   // Bloc
   s1.registerFactory(
     () => UserBloc(
       createUserUseCase: s1(),
       addAddressUseCase: s1(),
+      editAddressUseCase: s1(),
       userRepository: s1(),
     ),
   );
