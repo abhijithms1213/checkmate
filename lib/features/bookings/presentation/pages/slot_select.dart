@@ -109,14 +109,20 @@ class _SelectSlotBody extends StatelessWidget {
                 onTap: () {
                   if (selectedTime == null || selectedSlotId == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Please select a time slot')),
+                      const SnackBar(
+                        content: Text('Please select a time slot'),
+                      ),
                     );
                     return;
                   }
-                  final collectionState = context.read<CollectionTypeBloc>().state;
+                  final collectionState = context
+                      .read<CollectionTypeBloc>()
+                      .state;
                   if (collectionState is! CollectionTypeSelected) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Please select a sample collection type')),
+                      const SnackBar(
+                        content: Text('Please select a sample collection type'),
+                      ),
                     );
                     return;
                   }
@@ -126,11 +132,10 @@ class _SelectSlotBody extends StatelessWidget {
                       builder: (context) => MultiBlocProvider(
                         providers: [
                           BlocProvider(
-                            create: (_) => s1<UserBloc>()..add(LoadAddressesEvent(phone)),
+                            create: (_) =>
+                                s1<UserBloc>()..add(LoadAddressesEvent(phone)),
                           ),
-                          BlocProvider(
-                            create: (_) => s1<LabsBloc>(),
-                          ),
+                          BlocProvider(create: (_) => s1<LabsBloc>()),
                         ],
                         child: ReviewPayScreen(
                           labs: labs,
@@ -181,8 +186,11 @@ class _SelectSlotBody extends StatelessWidget {
               const SizedBox(height: 8),
 
               Text(
-                "Full Blood Count & Lipid Profile",
-                style: TextStyle(color: Colors.grey.shade700, fontSize: 18.spMin),
+                test.name,
+                style: TextStyle(
+                  color: Colors.grey.shade700,
+                  fontSize: 18.spMin,
+                ),
               ),
 
               const SizedBox(height: 28),
@@ -312,7 +320,10 @@ class _SelectSlotBody extends StatelessWidget {
                           return GestureDetector(
                             onTap: disabled
                                 ? null
-                                : () => onSlotChanged(slot["id"] as String, timeStr),
+                                : () => onSlotChanged(
+                                    slot["id"] as String,
+                                    timeStr,
+                                  ),
                             child: Container(
                               decoration: BoxDecoration(
                                 color: selected
@@ -386,9 +397,9 @@ class _SelectSlotBody extends StatelessWidget {
                     children: [
                       Expanded(
                         child: GestureDetector(
-                          onTap: () => context
-                              .read<CollectionTypeBloc>()
-                              .add(SelectCollectionTypeEvent(true)),
+                          onTap: () => context.read<CollectionTypeBloc>().add(
+                            SelectCollectionTypeEvent(true),
+                          ),
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
                             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -441,9 +452,9 @@ class _SelectSlotBody extends StatelessWidget {
                       const SizedBox(width: 12),
                       Expanded(
                         child: GestureDetector(
-                          onTap: () => context
-                              .read<CollectionTypeBloc>()
-                              .add(SelectCollectionTypeEvent(false)),
+                          onTap: () => context.read<CollectionTypeBloc>().add(
+                            SelectCollectionTypeEvent(false),
+                          ),
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
                             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -526,7 +537,10 @@ class _SelectSlotBody extends StatelessWidget {
 
               SizedBox(height: 8),
 
-              Text("Time: ${selectedTime ?? 'Not selected'}", style: TextStyle(fontSize: 18.spMin)),
+              Text(
+                "Time: ${selectedTime ?? 'Not selected'}",
+                style: TextStyle(fontSize: 18.spMin),
+              ),
 
               const SizedBox(height: 8),
 

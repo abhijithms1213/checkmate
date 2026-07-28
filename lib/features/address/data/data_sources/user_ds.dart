@@ -139,6 +139,29 @@ class UserDs {
     }
   }
 
+  Future<void> editAddressDS(AddressEntity address) async {
+    try {
+      await client
+          .from('addresses')
+          .update({
+            'full_name': address.fullName,
+            'house_number': address.houseNumber,
+            'full_address': address.fullAddress,
+            'pincode': address.pincode,
+          })
+          .eq('id', address.id!)
+          .timeout(const Duration(seconds: 10));
+    } on TimeoutException {
+      throw NetworkException("Connection timed out. Please check your internet connection.");
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
+    } on DioException {
+      throw NetworkException("Please check your internet connection.");
+    } catch (e) {
+      throw ServerException("Something went wrong.");
+    }
+  }
+
   Future<String?> getUserIdByPhone(String phone) async {
     try {
       final result = await client

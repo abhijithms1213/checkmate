@@ -1,5 +1,6 @@
 import 'package:checkmate/features/address/domain/usecases/add_address_uc.dart';
 import 'package:checkmate/features/address/domain/usecases/create_user_uc.dart';
+import 'package:checkmate/features/address/domain/usecases/edit_address_uc.dart';
 import 'package:checkmate/features/address/domain/repository/user_repo.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_event.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_state.dart';
@@ -9,11 +10,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class UserBloc extends Bloc<UserEvent, UserState> {
   final CreateUserUseCase createUserUseCase;
   final AddAddressUseCase addAddressUseCase;
+  final EditAddressUseCase editAddressUseCase;
   final UserRepository userRepository;
 
   UserBloc({
     required this.createUserUseCase,
     required this.addAddressUseCase,
+    required this.editAddressUseCase,
     required this.userRepository,
   }) : super(UserInitial()) {
     on<CreateUserEvent>(_onCreateUser);
@@ -21,6 +24,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<LoadAddressesEvent>(_onLoadAddresses);
     on<SetDefaultAddressEvent>(_onSetDefaultAddress);
     on<DeleteAddressEvent>(_onDeleteAddress);
+    on<EditAddressEvent>(_onEditAddress);
   }
 
   Future<void> _onCreateUser(
@@ -129,6 +133,29 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       } else {
         emit(UserFailure(e.message));
       }
+    } catch (_) {
+      final addresses = await userRepository.getAddresses(event.phone);
+      emit(AddressesLoaded(addresses));
+      emit(UserFailure('Something went wrong.'));
+    }
+  }
+
+  Future<void> _onEditAddress(
+    EditAddressEvent event,
+    Emitter<UserState> emit,
+  ) async {
+    emit(UserLoading());
+    try {
+      await editAddressUseCase(params: event.address);
+      emit(AddressUpdated());
+    } on NetworkException catch (e) {
+      final addresses = await userRepository.getAddresses(event.phone);
+      emit(AddressesLoaded(addresses));
+      emit(UserFailure(e.message));
+    } on ServerException catch (e) {
+      final addresses = await userRepository.getAddresses(event.phone);
+      emit(AddressesLoaded(addresses));
+      emit(UserFailure(e.message));
     } catch (_) {
       final addresses = await userRepository.getAddresses(event.phone);
       emit(AddressesLoaded(addresses));

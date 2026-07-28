@@ -8,4 +8,5 @@ abstract class UserRepository {
   Future<void> setDefaultAddress(String addressId, String userId);
   Future<void> deleteAddress(String addressId);
   Future<String?> getUserIdByPhone(String phone);
+  Future<void> editAddress(AddressEntity address);
 }

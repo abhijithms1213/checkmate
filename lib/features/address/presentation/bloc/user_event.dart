@@ -66,3 +66,13 @@ class DeleteAddressEvent extends UserEvent {
   @override
   List<Object?> get props => [addressId, phone];
 }
+
+class EditAddressEvent extends UserEvent {
+  final AddressEntity address;
+  final String phone;
+
+  const EditAddressEvent({required this.address, required this.phone});
+
+  @override
+  List<Object?> get props => [address, phone];
+}

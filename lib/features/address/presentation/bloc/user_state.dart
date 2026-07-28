@@ -30,6 +30,8 @@ class AddressDefaultSet extends UserState {}
 
 class AddressDeleted extends UserState {}
 
+class AddressUpdated extends UserState {}
+
 class UserFailure extends UserState {
   final String message;
 

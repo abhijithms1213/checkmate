@@ -2,12 +2,12 @@ import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_bloc.dar
 import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_event.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/services/local_storage_service.dart';
-import 'package:checkmate/core/widgets/button.dart';
 import 'package:checkmate/features/address/domain/entities/address_entity.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_event.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_state.dart';
 import 'package:checkmate/features/address/presentation/pages/addres_add.dart';
+import 'package:checkmate/features/address/presentation/pages/address_edit.dart';
 import 'package:checkmate/features/auth/presentation/pages/login.dart';
 import 'package:checkmate/injection_container.dart';
 import 'package:flutter/material.dart';
@@ -266,6 +266,31 @@ class _AddressCard extends StatelessWidget {
               if (!address.isDefault) ...[
                 const SizedBox(width: 8),
                 GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => EditAddressScreen(address: address),
+                      ),
+                    ).then((_) {
+                      context.read<UserBloc>().add(LoadAddressesEvent(phone));
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.edit_outlined,
+                      color: Colors.blue.shade400,
+                      size: 20,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                GestureDetector(
                   onTap: () => _showDeleteConfirm(context, address.id!, phone),
                   child: Container(
                     padding: const EdgeInsets.all(6),
@@ -276,6 +301,32 @@ class _AddressCard extends StatelessWidget {
                     child: Icon(
                       Icons.delete_outline,
                       color: Colors.red.shade400,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ] else ...[
+                 const SizedBox(width: 8),
+                 GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => EditAddressScreen(address: address),
+                      ),
+                    ).then((_) {
+                      context.read<UserBloc>().add(LoadAddressesEvent(phone));
+                    });
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.edit_outlined,
+                      color: Colors.blue.shade400,
                       size: 20,
                     ),
                   ),

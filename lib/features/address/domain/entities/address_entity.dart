@@ -25,16 +25,26 @@ class AddressEntity {
     this.isDefault = false,
   });
 
-  AddressEntity copyWith({bool? isDefault}) {
+  AddressEntity copyWith({
+    String? id,
+    String? userId,
+    String? fullName,
+    String? houseNumber,
+    String? fullAddress,
+    String? pincode,
+    double? latitude,
+    double? longitude,
+    bool? isDefault,
+  }) {
     return AddressEntity(
-      id: id,
-      userId: userId,
-      fullName: fullName,
-      houseNumber: houseNumber,
-      fullAddress: fullAddress,
-      pincode: pincode,
-      latitude: latitude,
-      longitude: longitude,
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      fullName: fullName ?? this.fullName,
+      houseNumber: houseNumber ?? this.houseNumber,
+      fullAddress: fullAddress ?? this.fullAddress,
+      pincode: pincode ?? this.pincode,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
       isDefault: isDefault ?? this.isDefault,
     );
   }
