@@ -184,10 +184,25 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       Align(
                         alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Verification code will be sent via Whatsapp.",
-                          style: TextStyle(color: Colors.grey.shade600),
+                        child: RichText(
+                          text: TextSpan(
+                            text: "Verification code will be sent via ",
+                            style: TextStyle(color: Colors.grey.shade600),
+                            children: [
+                              TextSpan(
+                                text: 'Whatsapp',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
+                        // child: Text(
+                        //   "Verification code will be sent via Whatsapp.",
+                        //   style: TextStyle(color: Colors.grey.shade600),
+                        // ),
                       ),
 
                       const SizedBox(height: 25),
@@ -206,7 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       const Spacer(),
 
-                      _bottom(),
+                      // _bottom(),
                     ],
                   ),
                 ),

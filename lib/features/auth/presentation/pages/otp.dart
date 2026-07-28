@@ -211,8 +211,22 @@ class _OtpScreenState extends State<OtpScreen> {
 
                     const SizedBox(height: 14),
 
-                    Text(
-                      "Enter the 6-digit code sent to\n$maskedPhone",
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text:
+                                "Enter the 6-digit code sent to\n$maskedPhone on ",
+                          ),
+                          const TextSpan(
+                            text: "Whatsapp",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xff10243A),
+                            ),
+                          ),
+                        ],
+                      ),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 17.spMin,
