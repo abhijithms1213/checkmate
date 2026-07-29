@@ -466,13 +466,16 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                                 'dart.vm.product',
                               );
 
-                              log('is Production: $isProduction');
-                              final razorpayKey = isProduction
+                              final phone = s1<LocalStorageService>().phone ?? '';
+                              final isReviewer = phone == '9999999999';
+
+                              log('is Production: $isProduction, is Reviewer: $isReviewer');
+                              final razorpayKey = (isProduction && !isReviewer)
                                   ? razorpayKeyIdLive
                                   : razorpayKeyIdTest;
                               // Pay Online via Razorpay
                               var options = {
-                                'key': razorpayKeyIdTest, // Test Key
+                                'key': razorpayKey, // Dynamic Key based on environment and user
                                 'amount': (widget.labs.price * 100).toInt(),
                                 'name': 'CheckMate Diagnostics',
                                 'description': widget.test.name,

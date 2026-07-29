@@ -13,9 +13,12 @@ class AuthDatasource {
 
   Future<void> otpSendAndAddToDbDS(OtpVerificationModel otp) async {
     try {
+      final isReviewer = otp.phone == '9999999999';
+      final finalOtp = isReviewer ? '123456' : otp.otp;
+
       await Supabase.instance.client.from('otp_verifications').insert({
         'phone': otp.phone,
-        'otp': otp.otp,
+        'otp': finalOtp,
         'expires_at': DateTime.now()
             .add(const Duration(minutes: 5))
             .toIso8601String(),
@@ -23,11 +26,15 @@ class AuthDatasource {
       }).timeout(const Duration(seconds: 10));
 
       // WhatsApp OTP API
-      await client.functions.invoke(
-        'otp_whealthier',
-        body: {'phone': '91${otp.phone}', 'otp': otp.otp},
-      ).timeout(const Duration(seconds: 10));
-      log('WhatsApp OTP sent via otp_whealthier');
+      if (!isReviewer) {
+        await client.functions.invoke(
+          'otp_whealthier',
+          body: {'phone': '91${otp.phone}', 'otp': finalOtp},
+        ).timeout(const Duration(seconds: 10));
+        log('WhatsApp OTP sent via otp_whealthier');
+      } else {
+        log('Reviewer account detected. Bypassed WhatsApp OTP, using 123456.');
+      }
     } on TimeoutException {
       throw NetworkException("Connection timed out. Please check your internet connection.");
     } on PostgrestException catch (e) {

@@ -150,7 +150,24 @@ class _LoginScreenState extends State<LoginScreen> {
                       TextFormField(
                         controller: _phoneController,
                         keyboardType: TextInputType.phone,
+
                         decoration: InputDecoration(
+                          prefixIcon: Container(
+                            width: 70,
+                            alignment: Alignment.center,
+                            child: const Text(
+                              "+91",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                          prefixIconConstraints: const BoxConstraints(
+                            minWidth: 70,
+                            maxWidth: 70,
+                          ),
                           hintText: "Mobile number",
                           filled: true,
                           fillColor: Colors.white,
