@@ -10,3 +10,4 @@ linux/flutter/generated_plugins.cmake
 windows/flutter/generated_plugins.cmake
 build/
 .dart_tool/
+upload-keystore.jks
