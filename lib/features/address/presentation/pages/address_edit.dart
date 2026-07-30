@@ -8,6 +8,7 @@ import 'package:checkmate/features/address/presentation/bloc/user_state.dart';
 import 'package:checkmate/core/services/local_storage_service.dart';
 import 'package:checkmate/injection_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class EditAddressScreen extends StatefulWidget {
@@ -203,11 +204,15 @@ class _EditAddressScreenState extends State<EditAddressScreen> {
     int maxLines = 1,
     TextInputType keyboardType = TextInputType.text,
   }) {
+    final isNumber = keyboardType == TextInputType.number;
     return TextField(
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboardType,
+      maxLength: isNumber ? 6 : null,
+      inputFormatters: isNumber ? [FilteringTextInputFormatter.digitsOnly] : null,
       decoration: InputDecoration(
+        counterText: "", // Hide the character counter below the field
         hintStyle: const TextStyle(color: Colors.black38),
         hintText: hint,
         filled: true,

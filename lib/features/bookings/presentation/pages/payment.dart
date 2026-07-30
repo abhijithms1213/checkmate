@@ -44,8 +44,11 @@ class ReviewPayScreen extends StatefulWidget {
 }
 
 class _ReviewPayScreenState extends State<ReviewPayScreen> {
-  String selectedPayment = "Pay Online (Razorpay)";
+  String selectedPayment = "Pay Online";
   late Razorpay _razorpay;
+  bool isDiscountApplied = false;
+
+  double get finalPrice => isDiscountApplied ? widget.labs.price * 0.9 : widget.labs.price;
 
   static const Color primaryColor = Color(0xFF006D67);
 
@@ -100,10 +103,10 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
         labId: widget.labs.id,
         slotId: widget.selectedSlotId,
         bookingDate: DateTime.parse(widget.selectedDate),
-        totalAmount: widget.labs.price,
+        totalAmount: finalPrice,
         type: widget.collectionType,
         tests: [
-          BookingTestItem(testId: widget.test.id, price: widget.labs.price),
+          BookingTestItem(testId: widget.test.id, price: finalPrice),
         ],
         transactionId: transactionId,
         paymentStatus: transactionId != null ? 'completed' : 'pending',
@@ -154,7 +157,7 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
         date: _formattedDate,
         timeSlot: widget.selectedTime,
         type: widget.collectionType,
-        amount: widget.labs.price,
+        amount: finalPrice,
         bookingId: booking.id,
       );
       
@@ -399,8 +402,54 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                       // _paymentTile("Pay at Lab", Icons.account_balance_outlined),
                       const SizedBox(height: 10),
                       _paymentTile(
-                        "Pay Online (Razorpay)",
+                        "Pay Online",
                         Icons.qr_code_outlined,
+                      ),
+
+                      const SizedBox(height: 40),
+
+                      const SizedBox(height: 30),
+
+                      //--------------------------------------------------
+                      // APPLY DISCOUNT
+                      //--------------------------------------------------
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isDiscountApplied = !isDiscountApplied;
+                          });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          decoration: BoxDecoration(
+                            color: isDiscountApplied ? Colors.green.shade50 : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isDiscountApplied ? Colors.green : Colors.grey.shade300,
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.local_offer_outlined,
+                                color: isDiscountApplied ? Colors.green : primaryColor,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  isDiscountApplied ? "10% Discount Applied!" : "Apply 10% Off",
+                                  style: TextStyle(
+                                    fontSize: 16.spMin,
+                                    fontWeight: FontWeight.w600,
+                                    color: isDiscountApplied ? Colors.green : Colors.black87,
+                                  ),
+                                ),
+                              ),
+                              if (isDiscountApplied)
+                                const Icon(Icons.check_circle, color: Colors.green),
+                            ],
+                          ),
+                        ),
                       ),
 
                       const SizedBox(height: 40),
@@ -418,7 +467,11 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
 
                       const SizedBox(height: 20),
 
-                      _priceRow(widget.test.name, "₹ $price"),
+                      _priceRow(widget.test.name, "₹ ${widget.labs.price.toStringAsFixed(2)}"),
+                      if (isDiscountApplied) ...[
+                        const SizedBox(height: 12),
+                        _priceRow("Discount (10%)", "- ₹ ${(widget.labs.price * 0.1).toStringAsFixed(2)}", color: Colors.green),
+                      ],
                       const SizedBox(height: 12),
                       const Divider(),
                       const SizedBox(height: 12),
@@ -433,7 +486,7 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                           ),
                           const Spacer(),
                           Text(
-                            "₹ $price",
+                            "₹ ${finalPrice.toStringAsFixed(2)}",
                             style: TextStyle(
                               fontSize: 18.spMin,
                               fontWeight: FontWeight.bold,
@@ -476,7 +529,7 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                               // Pay Online via Razorpay
                               var options = {
                                 'key': razorpayKey, // Dynamic Key based on environment and user
-                                'amount': (widget.labs.price * 100).toInt(),
+                                'amount': (finalPrice * 100).toInt(),
                                 'name': 'CheckMate Diagnostics',
                                 'description': widget.test.name,
                                 'timeout': 300,
@@ -624,20 +677,20 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
     );
   }
 
-  static Widget _priceRow(String title, String value) {
+  static Widget _priceRow(String title, String value, {Color? color}) {
     return Row(
       children: [
         Expanded(
           child: Text(
             title,
-            style: TextStyle(fontSize: 15.spMin, color: Colors.black87),
+            style: TextStyle(fontSize: 15.spMin, color: color ?? Colors.black87),
           ),
         ),
         Text(
           value,
           style: TextStyle(
             fontSize: 15.spMin,
-            color: Colors.black87,
+            color: color ?? Colors.black87,
             fontWeight: FontWeight.w500,
           ),
         ),

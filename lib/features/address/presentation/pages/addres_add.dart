@@ -11,6 +11,7 @@ import 'package:checkmate/features/main/presentation/pages/main_layout.dart';
 import 'package:checkmate/core/services/local_storage_service.dart';
 import 'package:checkmate/injection_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddAddressScreen extends StatefulWidget {
@@ -272,13 +273,16 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
     int maxLines = 1,
     TextInputType keyboardType = TextInputType.text,
   }) {
+    final isNumber = keyboardType == TextInputType.number;
     return TextField(
       controller: controller,
       maxLines: maxLines,
       keyboardType: keyboardType,
-      
+      maxLength: isNumber ? 6 : null,
+      inputFormatters: isNumber ? [FilteringTextInputFormatter.digitsOnly] : null,
       decoration: InputDecoration(
-        hintStyle: TextStyle(color: Colors.black38),
+        counterText: "", // Hide the character counter below the field
+        hintStyle: const TextStyle(color: Colors.black38),
         hintText: hint,
         filled: true,
         fillColor: const Color(0xFFF1F3F5),

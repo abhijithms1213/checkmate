@@ -290,12 +290,34 @@ class _SelectSlotBody extends StatelessWidget {
                         return const Center(child: Text("No slots available"));
                       }
 
+                      // Sort slots chronologically
+                      final sortedSlots = List.of(state.slots)
+                        ..sort((a, b) => a.slotTime.compareTo(b.slotTime));
+
                       // Format slots
-                      final formattedSlots = state.slots.map((s) {
+                      final formattedSlots = sortedSlots.map((s) {
+                        String formattedTime = s.slotTime;
+                        try {
+                          final parts = s.slotTime.split(':');
+                          if (parts.length >= 2) {
+                            int hour = int.parse(parts[0]);
+                            final int minute = int.parse(parts[1]);
+                            final String ampm = hour >= 12 ? 'PM' : 'AM';
+                            
+                            if (hour == 0) hour = 12;
+                            else if (hour > 12) hour -= 12;
+                            
+                            final String hrStr = hour.toString().padLeft(2, '0');
+                            final String minStr = minute.toString().padLeft(2, '0');
+                            formattedTime = "$hrStr:$minStr $ampm";
+                          }
+                        } catch (_) {
+                          // Fallback to original if parsing fails
+                        }
+
                         return {
                           "id": s.id,
-                          "time": s
-                              .slotTime, // Assuming it's already a formatted string or easily displayable
+                          "time": formattedTime,
                           "isActive": s.isActive,
                         };
                       }).toList();

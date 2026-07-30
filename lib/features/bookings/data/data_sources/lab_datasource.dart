@@ -11,6 +11,9 @@ import 'package:checkmate/features/bookings/data/models/test_model.dart';
 import 'package:checkmate/features/bookings/data/models/lab_model.dart';
 import 'package:checkmate/features/bookings/data/models/whatsapp_notification_model.dart';
 
+import 'package:checkmate/core/services/local_storage_service.dart';
+import 'package:checkmate/injection_container.dart';
+
 class LabsRemoteDataSource {
   final SupabaseClient client;
   final Dio dio;
@@ -20,6 +23,14 @@ class LabsRemoteDataSource {
   Future<List<TestModel>> getTestsByPincode(String pincode) async {
     try {
       log('pi $pincode');
+      
+      final phone = s1<LocalStorageService>().phone ?? '';
+      final isReviewer = phone == '9999999999';
+
+      if (pincode == '695000' && !isReviewer) {
+        return []; // Normal users cannot see mock test labs
+      }
+
       // Step 1
       final labPincodes = await client
           .from('lab_pincodes')
@@ -60,6 +71,13 @@ class LabsRemoteDataSource {
 
   Future<List<LabModel>> getLabsByTestId(GetLabsRequestEntity req) async {
     try {
+      final phone = s1<LocalStorageService>().phone ?? '';
+      final isReviewer = phone == '9999999999';
+
+      if (req.pincode == '695000' && !isReviewer) {
+        return [];
+      }
+
       final result = await client
           .from('lab_tests')
           .select('''
