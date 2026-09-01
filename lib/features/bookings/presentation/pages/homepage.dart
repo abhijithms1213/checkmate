@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:checkmate/features/bookings/domain/entities/get_lab_search_req_entity.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
@@ -24,6 +26,28 @@ class _HomeScreenState extends State<HomeScreen> {
   int selectedCategory = 0;
   String searchQuery = '';
   String? _lastPincode;
+  Timer? _debounce;
+  @override
+  void dispose() {
+    _debounce!.cancel();
+
+    super.dispose();
+  }
+
+  void onSearch(String query) {
+    _debounce?.cancel();
+    if (query.isEmpty) {
+      context.read<LabsBloc>().add(
+        GetTestsEvent(s1<LocalStorageService>().pincode ?? ""),
+      );
+      return;
+    }
+    _debounce = Timer(Duration(milliseconds: 400), () {
+      context.read<LabsBloc>().add(
+        SearchTestsEvent(GetSearchResultRequestEntity(query: query)),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,22 +80,23 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               children: [
                 HomeTopWidget(
-                  onSearchChanged: (value) {
-                    setState(() {
-                      searchQuery = value;
-                    });
-                    if (value.isEmpty) {
-                      context.read<LabsBloc>().add(
-                        GetTestsEvent(s1<LocalStorageService>().pincode ?? ""),
-                      );
-                      return;
-                    }
-                    context.read<LabsBloc>().add(
-                      SearchTestsEvent(
-                        GetSearchResultRequestEntity(query: value.trim()),
-                      ),
-                    );
-                  },
+                  onSearchChanged: onSearch,
+                  // (value) {
+                  //   setState(() {
+                  //     searchQuery = value;
+                  //   });
+                  //   if (value.isEmpty) {
+                  //     context.read<LabsBloc>().add(
+                  //       GetTestsEvent(s1<LocalStorageService>().pincode ?? ""),
+                  //     );
+                  //     return;
+                  //   }
+                  //   context.read<LabsBloc>().add(
+                  //     SearchTestsEvent(
+                  //       GetSearchResultRequestEntity(query: value.trim()),
+                  //     ),
+                  //   );
+                  // },
                 ),
 
                 /// Categories
@@ -149,11 +174,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           );
                         }
-                        final allCategories = state.tests
-                            .map((test) => test.category)
-                            .whereType<String>()
-                            .toSet()
-                            .toList();
+                        final allCategories = [
+                          'All',
+                          ...state.tests
+                              .map((test) => test.category)
+                              .whereType<String>()
+                              .toSet(),
+                        ];
 
                         // 1. Filter by category
                         final selectedCatName = allCategories[selectedCategory];
