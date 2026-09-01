@@ -1,4 +1,5 @@
 import 'package:checkmate/features/bookings/data/data_sources/lab_datasource.dart';
+import 'package:checkmate/features/bookings/domain/entities/get_lab_search_req_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/get_labs_request_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/lab_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
@@ -36,5 +37,12 @@ class LabsRepositoryImpl implements LabsRepository {
   @override
   Future<void> sendWhatsAppNotification(WhatsAppNotificationModel payload) async {
     return await remoteDataSource.sendWhatsAppNotification(payload);
+  }
+
+  @override
+  Future<List<TestEntity>> getSearchByQuery(
+    GetSearchResultRequestEntity request,
+  ) async {
+    return await remoteDataSource.searchTest(request);
   }
 }

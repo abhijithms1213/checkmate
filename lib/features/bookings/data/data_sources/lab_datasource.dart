@@ -4,7 +4,9 @@ import 'package:checkmate/core/errors/exceptions.dart';
 import 'package:checkmate/features/bookings/data/models/booking_model.dart';
 import 'package:checkmate/features/bookings/data/models/booking_request_model.dart';
 import 'package:checkmate/features/bookings/data/models/slot_model.dart';
+import 'package:checkmate/features/bookings/domain/entities/get_lab_search_req_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/get_labs_request_entity.dart';
+import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:dio/dio.dart';
 import 'package:checkmate/features/bookings/data/models/test_model.dart';
@@ -23,7 +25,7 @@ class LabsRemoteDataSource {
   Future<List<TestModel>> getTestsByPincode(String pincode) async {
     try {
       log('pi $pincode');
-      
+
       final phone = s1<LocalStorageService>().phone ?? '';
       final isReviewer = phone == '9999999999';
 
@@ -191,6 +193,34 @@ class LabsRemoteDataSource {
       throw NetworkException("Please check your internet connection.");
     } catch (e) {
       throw ServerException("Something went wrong.");
+    }
+  }
+
+  Future<List<TestModel>> searchTest(
+    GetSearchResultRequestEntity request,
+  ) async {
+    try {
+      final String? pincode = s1<LocalStorageService>().pincode;
+      final tests = await getTestsByPincode(pincode!);
+      final matchedTests = tests
+          .where(
+            (test) =>
+                test.name.toLowerCase().contains(request.query.toLowerCase()),
+          )
+          .toList();
+      final response = await client.rpc(
+        'search_tests_by_pincode',
+
+        params: {'search_term': request.query, 'user_pincode': pincode},
+      );
+      final List<TestModel> search_result = response
+          .map<TestModel>((e) => TestModel.fromJson(e))
+          .toList();
+      search_result.addAll(matchedTests);
+      return search_result;
+    } catch (e) {
+      log('searchTest error: $e');
+      rethrow;
     }
   }
 }

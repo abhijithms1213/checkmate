@@ -13,6 +13,7 @@ import 'package:checkmate/features/auth/domain/usecases/add_otp_to_db.dart';
 import 'package:checkmate/features/auth/domain/usecases/delete_existing_otp_fr_db.dart';
 import 'package:checkmate/features/auth/domain/usecases/verify_otp.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_bloc.dart';
+import 'package:checkmate/features/bookings/domain/usecases/search_tests.dart';
 import 'package:checkmate/features/news/data/data_sources/remote/news_api_service.dart';
 import 'package:checkmate/features/news/data/repository/article_repo_impl.dart';
 import 'package:checkmate/features/news/domain/repository/article_repo.dart';
@@ -137,6 +138,7 @@ Future<void> initializeDependencies() async {
   s1.registerLazySingleton(() => GetSlotsByLabIdUseCase(s1()));
   s1.registerLazySingleton(() => PlaceOrderUseCase(s1()));
   s1.registerLazySingleton(() => SendWhatsAppNotificationUseCase(s1()));
+  s1.registerLazySingleton(() => SearchTestsUseCase(s1()));
 
   s1.registerFactory(() => LabsBloc(
         getTestsByPincodeUseCase: s1(),
@@ -144,6 +146,7 @@ Future<void> initializeDependencies() async {
         getSlotsByLabIdUseCase: s1(),
         placeOrderUseCase: s1(),
         sendWhatsAppNotificationUseCase: s1(),
+        searchTestsUseCase: s1(),
       ));
 
   //=====================================================
