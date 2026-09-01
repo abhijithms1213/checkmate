@@ -1,9 +1,14 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:checkmate/core/errors/exceptions.dart';
+import 'package:checkmate/features/bookings/domain/entities/get_lab_search_req_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/get_labs_request_entity.dart';
 import 'package:checkmate/features/bookings/domain/usecases/get_labs_by_testid_uc.dart';
 import 'package:checkmate/features/bookings/domain/usecases/get_slots_by_labid_uc.dart';
 import 'package:checkmate/features/bookings/domain/usecases/get_tests_by_pincode_uc.dart';
 import 'package:checkmate/features/bookings/domain/usecases/place_order_uc.dart';
+import 'package:checkmate/features/bookings/domain/usecases/search_tests.dart';
 import 'package:checkmate/features/bookings/domain/usecases/send_whatsapp_notification_uc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -16,6 +21,7 @@ class LabsBloc extends Bloc<LabsEvent, LabsState> {
   final GetSlotsByLabIdUseCase getSlotsByLabIdUseCase;
   final PlaceOrderUseCase placeOrderUseCase;
   final SendWhatsAppNotificationUseCase sendWhatsAppNotificationUseCase;
+  final SearchTestsUseCase searchTestsUseCase;
 
   LabsBloc({
     required this.getTestsByPincodeUseCase,
@@ -23,12 +29,14 @@ class LabsBloc extends Bloc<LabsEvent, LabsState> {
     required this.getSlotsByLabIdUseCase,
     required this.placeOrderUseCase,
     required this.sendWhatsAppNotificationUseCase,
+    required this.searchTestsUseCase,
   }) : super(LabsInitial()) {
     on<GetTestsEvent>(_onGetTests);
     on<GetLabsByTestIdEvent>(_onGetLabsByTestId);
     on<GetSlotsByLabIdEvent>(_onGetSlotsByLabId);
     on<PlaceOrderEvent>(_onPlaceOrder);
     on<SendWhatsAppNotificationEvent>(_onSendWhatsAppNotification);
+    on<SearchTestsEvent>(_searchTests);
   }
 
   Future<void> _onGetTests(GetTestsEvent event, Emitter<LabsState> emit) async {
@@ -115,6 +123,7 @@ class LabsBloc extends Bloc<LabsEvent, LabsState> {
   ) async {
     try {
       await sendWhatsAppNotificationUseCase(event.payload);
+      // sendWhatsAppNotificationUseCase(event.payload);
     } on NetworkException {
       // Optional: log or show a snackbar.
       // Do not interrupt the booking flow.
@@ -122,6 +131,25 @@ class LabsBloc extends Bloc<LabsEvent, LabsState> {
       // Optional: log the error.
     } catch (_) {
       // Ignore unknown errors.
+    }
+  }
+
+  Future<void> _searchTests(
+    SearchTestsEvent event,
+    Emitter<LabsState> emit,
+  ) async {
+    try {
+      log('called bloc');
+      emit(LabsLoading());
+      final result = await searchTestsUseCase(params: event.getSearchResultRequestEntity);
+      log('result: $result');
+      emit(LabsLoaded(result));
+    } on NetworkException catch (e) {
+      emit(LabsError(e.message));
+    } on ServerException catch (e) {
+      emit(LabsError(e.message));
+    } catch (_) {
+      emit(LabsError('Something went wrong.'));
     }
   }
 }

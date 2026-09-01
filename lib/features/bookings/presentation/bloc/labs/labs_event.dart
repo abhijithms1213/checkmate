@@ -1,5 +1,6 @@
 import 'package:checkmate/features/bookings/data/models/booking_request_model.dart';
 import 'package:checkmate/features/bookings/data/models/whatsapp_notification_model.dart';
+import 'package:checkmate/features/bookings/domain/entities/get_lab_search_req_entity.dart';
 import 'package:equatable/equatable.dart';
 
 abstract class LabsEvent extends Equatable {
@@ -42,4 +43,13 @@ class SendWhatsAppNotificationEvent extends LabsEvent {
 
   @override
   List<Object?> get props => [payload];
+}
+
+class SearchTestsEvent extends LabsEvent {
+  final GetSearchResultRequestEntity getSearchResultRequestEntity;
+
+  SearchTestsEvent(this.getSearchResultRequestEntity);
+
+  @override
+  List<Object?> get props => [getSearchResultRequestEntity];
 }

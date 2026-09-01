@@ -1,17 +1,13 @@
+import 'package:checkmate/features/bookings/domain/entities/get_lab_search_req_entity.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'dart:developer';
-
-import 'package:checkmate/core/widgets/button.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_state.dart';
-import 'package:checkmate/features/bookings/presentation/pages/book_lab.dart';
 import 'package:checkmate/features/bookings/presentation/widgets/home_category_row.dart';
 import 'package:checkmate/features/bookings/presentation/widgets/home_lab_tests_tile.dart';
 import 'package:checkmate/features/bookings/presentation/widgets/home_top_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:checkmate/core/services/local_storage_service.dart';
-import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
 import 'package:checkmate/injection_container.dart';
 import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_bloc.dart';
 import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_event.dart';
@@ -28,8 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
   int selectedCategory = 0;
   String searchQuery = '';
   String? _lastPincode;
-
-  final List<String> categories = ["All", "Blood", "Heart", "Skin", "Hormone"];
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +60,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     setState(() {
                       searchQuery = value;
                     });
+                    if (value.isEmpty) {
+                      context.read<LabsBloc>().add(
+                        GetTestsEvent(s1<LocalStorageService>().pincode ?? ""),
+                      );
+                      return;
+                    }
+                    context.read<LabsBloc>().add(
+                      SearchTestsEvent(
+                        GetSearchResultRequestEntity(query: value.trim()),
+                      ),
+                    );
                   },
                 ),
 
@@ -75,14 +80,19 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (state is LabsLoading) {
                       return Text('Loading....');
                     } else if (state is LabsLoaded) {
-                      final allCategories = ['All',...state.tests.map((test)=>test.category).whereType<String>().toSet()];
+                      final allCategories = [
+                        'All',
+                        ...state.tests
+                            .map((test) => test.category)
+                            .whereType<String>()
+                            .toSet(),
+                      ];
                       return SizedBox(
                         height: 40.h,
                         child: ListView.separated(
                           scrollDirection: Axis.horizontal,
                           itemCount: allCategories.length,
-                          separatorBuilder: (_, __) =>
-                              const SizedBox(width: 10),
+                          separatorBuilder: (_, _) => const SizedBox(width: 10),
                           itemBuilder: (context, index) {
                             final selected = selectedCategory == index;
 
@@ -131,8 +141,19 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (state is LabsLoading) {
                         return const Center(child: CircularProgressIndicator());
                       } else if (state is LabsLoaded) {
-                      final allCategories = state.tests.map((test)=>test.category).whereType<String>().toSet().toList();
                         var tests = state.tests;
+                        if (tests.isEmpty) {
+                          return const Center(
+                            child: Text(
+                              "No tests found for your location or search criteria.",
+                            ),
+                          );
+                        }
+                        final allCategories = state.tests
+                            .map((test) => test.category)
+                            .whereType<String>()
+                            .toSet()
+                            .toList();
 
                         // 1. Filter by category
                         final selectedCatName = allCategories[selectedCategory];
@@ -147,28 +168,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               )
                               .toList();
                         }
-
-                        // 2. Filter by search query
-                        if (searchQuery.trim().isNotEmpty) {
-                          final query = searchQuery.trim().toLowerCase();
-                          tests = tests
-                              .where(
-                                (test) =>
-                                    test.name.toLowerCase().contains(query),
-                              )
-                              .toList();
-                        }
-
-                        if (tests.isEmpty) {
-                          return const Center(
-                            child: Text(
-                              "No tests found for your location or search criteria.",
-                            ),
-                          );
-                        }
                         return ListView.separated(
                           itemCount: tests.length,
-                          separatorBuilder: (_, __) =>
+                          separatorBuilder: (_, _) =>
                               const SizedBox(height: 12),
                           itemBuilder: (context, index) {
                             return TestTileWidget(test: tests[index]);
