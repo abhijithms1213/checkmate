@@ -23,7 +23,11 @@ class HomeTestCategoriesRowWidget extends StatelessWidget {
       child: Center(
         child: Text(
           categories[index],
+          textAlign: TextAlign.center,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: TextStyle(
+            fontSize: 12,
             color: selected ? Colors.white : Colors.black87,
             fontWeight: FontWeight.w500,
           ),
