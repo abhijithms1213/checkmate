@@ -32,6 +32,8 @@ class AddressDeleted extends UserState {}
 
 class AddressUpdated extends UserState {}
 
+class UserDeleted extends UserState {}
+
 class UserFailure extends UserState {
   final String message;
 

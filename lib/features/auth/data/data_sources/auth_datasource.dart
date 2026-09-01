@@ -87,25 +87,41 @@ class AuthDatasource {
 
       final userResult = await client
           .from('users')
-          .select('id')
+          .select('id, is_deleted')
           .eq('phone', phone)
+          .maybeSingle()
           .timeout(const Duration(seconds: 10));
 
-      bool userExists = userResult.isNotEmpty;
+      bool userExists = false;
       String? defaultPincode;
 
-      if (userExists) {
-        final userId = userResult.first['id'];
-        final addressResult = await client
-            .from('addresses')
-            .select('pincode')
-            .eq('user_id', userId)
-            .eq('is_default', true)
-            .limit(1)
-            .timeout(const Duration(seconds: 10));
+      if (userResult != null) {
+        final String userId = userResult['id'];
 
-        if (addressResult.isNotEmpty) {
-          defaultPincode = addressResult.first['pincode'].toString();
+        if (userResult['is_deleted'] == true) {
+          // Restore account
+          await client
+              .from('users')
+              .update({'is_deleted': false, 'deleted_at': null})
+              .eq('id', userId);
+
+          // Treat as a new user
+          userExists = false;
+        } else {
+          userExists = true;
+
+          final addressResult = await client
+              .from('addresses')
+              .select('pincode')
+              .eq('user_id', userId)
+              .eq('is_deleted', false)
+              .eq('is_default', true)
+              .limit(1)
+              .timeout(const Duration(seconds: 10));
+
+          if (addressResult.isNotEmpty) {
+            defaultPincode = addressResult.first['pincode'].toString();
+          }
         }
       }
 

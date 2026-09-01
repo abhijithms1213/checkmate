@@ -11,6 +11,29 @@ class UserDs {
 
   Future<String> createUserDS(UserEntity user) async {
     try {
+      final existingUser = await client
+          .from('users')
+          .select('id, is_deleted')
+          .eq('phone', user.phone)
+          .maybeSingle()
+          .timeout(const Duration(seconds: 10));
+
+      if (existingUser != null) {
+        // Restore/update existing user
+        await client
+            .from('users')
+            .update({
+              'name': user.name,
+              'is_deleted': false,
+              'deleted_at': null,
+            })
+            .eq('id', existingUser['id'])
+            .timeout(const Duration(seconds: 10));
+
+        return existingUser['id'] as String;
+      }
+
+      // First-time user
       final result = await client
           .from('users')
           .insert({'phone': user.phone, 'name': user.name})
@@ -18,9 +41,11 @@ class UserDs {
           .single()
           .timeout(const Duration(seconds: 10));
 
-      return result['id'];
+      return result['id'] as String;
     } on TimeoutException {
-      throw NetworkException("Connection timed out. Please check your internet connection.");
+      throw NetworkException(
+        "Connection timed out. Please check your internet connection.",
+      );
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } on DioException {
@@ -211,6 +236,40 @@ class UserDs {
         'name': userResult['name'] ?? '',
         'pincode': addressResult?['pincode']?.toString() ?? '',
       };
+    } on TimeoutException {
+      throw NetworkException("Connection timed out. Please check your internet connection.");
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
+    } on DioException {
+      throw NetworkException("Please check your internet connection.");
+    } catch (e) {
+      throw ServerException("Something went wrong.");
+    }
+  }
+
+  Future<void> deleteUserDS(String phone) async {
+    try {
+      final user = await client
+          .from('users')
+          .select('id')
+          .eq('phone', phone)
+          .single();
+
+      final userId = user['id'];
+
+      await client
+          .from('users')
+          .update({
+            'is_deleted': true,
+            'deleted_at': DateTime.now().toUtc().toIso8601String(),
+          })
+          .eq('id', userId);
+
+      await client
+          .from('addresses')
+          .update({'is_deleted': true})
+          .eq('user_id', userId)
+          .timeout(Duration(seconds: 10));
     } on TimeoutException {
       throw NetworkException("Connection timed out. Please check your internet connection.");
     } on PostgrestException catch (e) {

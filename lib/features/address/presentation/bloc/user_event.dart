@@ -57,6 +57,15 @@ class SetDefaultAddressEvent extends UserEvent {
   List<Object?> get props => [addressId, userId, phone];
 }
 
+class DeleteUserEvent extends UserEvent {
+  final String phone;
+
+  const DeleteUserEvent(this.phone);
+
+  @override
+  List<Object?> get props => [phone];
+}
+
 class DeleteAddressEvent extends UserEvent {
   final String addressId;
   final String phone;

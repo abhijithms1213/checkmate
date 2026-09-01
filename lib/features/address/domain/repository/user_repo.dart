@@ -9,4 +9,5 @@ abstract class UserRepository {
   Future<void> deleteAddress(String addressId);
   Future<String?> getUserIdByPhone(String phone);
   Future<void> editAddress(AddressEntity address);
+  Future<void> deleteUser(String phone);
 }

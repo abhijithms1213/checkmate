@@ -51,4 +51,9 @@ class UserRepoImpl extends UserRepository {
   Future<void> editAddress(AddressEntity address) async {
     return _userDs.editAddressDS(address);
   }
+
+  @override
+  Future<void> deleteUser(String phone) async {
+    return _userDs.deleteUserDS(phone);
+  }
 }
