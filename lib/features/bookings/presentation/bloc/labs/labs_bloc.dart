@@ -69,6 +69,28 @@ class LabsBloc extends Bloc<LabsEvent, LabsState> {
         ),
       );
 
+      final priorityLabs = [
+        "Atlas Labs & Scans",
+        "Anugraha Diagnostic Centre",
+        "Rejath Clinical Laboratory",
+        "Med Life Plus"
+      ];
+
+      labs.sort((a, b) {
+        final aIndex = priorityLabs.indexWhere((p) => a.name.toLowerCase().contains(p.toLowerCase()));
+        final bIndex = priorityLabs.indexWhere((p) => b.name.toLowerCase().contains(p.toLowerCase()));
+
+        if (aIndex != -1 && bIndex != -1) {
+          return aIndex.compareTo(bIndex);
+        } else if (aIndex != -1) {
+          return -1;
+        } else if (bIndex != -1) {
+          return 1;
+        } else {
+          return a.name.compareTo(b.name);
+        }
+      });
+
       emit(LabsForTestLoaded(labs));
     } on NetworkException catch (e) {
       emit(LabsError(e.message));

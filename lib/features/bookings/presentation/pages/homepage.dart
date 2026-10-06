@@ -168,9 +168,34 @@ class _HomeScreenState extends State<HomeScreen> {
                       } else if (state is LabsLoaded) {
                         var tests = state.tests;
                         if (tests.isEmpty) {
-                          return const Center(
-                            child: Text(
-                              "No tests found for your location or search criteria.",
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.location_off_outlined,
+                                  size: 64,
+                                  color: Colors.grey.shade400,
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  "No Labs Found",
+                                  style: TextStyle(
+                                    fontSize: 20.spMin,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey.shade800,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  "We are coming soon to this location",
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontSize: 14.spMin,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                              ],
                             ),
                           );
                         }

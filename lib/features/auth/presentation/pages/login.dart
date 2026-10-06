@@ -57,9 +57,9 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return BlocListener<OtpBloc, OtpState>(
       listener: (context, state) {
+        if (!context.mounted) return;
+
         if (state is OtpSuccess) {
-          // pushReplacement: Login is removed from the stack, so resend
-          // can never push a second OtpScreen on top of an existing one.
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(

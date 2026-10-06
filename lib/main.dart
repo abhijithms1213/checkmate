@@ -1,3 +1,4 @@
+import 'package:checkmate/features/bookings/presentation/pages/sarch.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/constants/constants.dart';
 import 'package:checkmate/core/theme/app_theme.dart';
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light,
             home: const SplashScreen(),
+            // home: const WrapperScreen(),
           );
         },
       ),
