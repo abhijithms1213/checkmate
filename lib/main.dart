@@ -1,4 +1,5 @@
 import 'package:checkmate/features/bookings/presentation/pages/sarch.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/constants/constants.dart';
 import 'package:checkmate/core/theme/app_theme.dart';
@@ -12,6 +13,11 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final facebookAppEvents = FacebookAppEvents();
+
+await facebookAppEvents.setAutoLogAppEventsEnabled(true);
+// await facebookAppEvents.logact
+  // await facebookAppEvents.setAutoLogAppEventsEnabled(true);
 
   await Supabase.initialize(
     url: supabaseUrl,
