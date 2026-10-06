@@ -130,9 +130,10 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
             // Coming from registration — log in and go to home
             s1<LocalStorageService>().setLoggedIn(true);
             s1<LocalStorageService>().setPhone(widget.phone!);
-            Navigator.pushReplacement(
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (_) => const MainLayout()),
+              (route) => false,
             );
           } else {
             // Coming from profile — just go back
@@ -156,10 +157,13 @@ class _AddAddressScreenState extends State<AddAddressScreen> {
             "Add Address",
             style: TextStyle(color: darkText, fontWeight: FontWeight.w600),
           ),
-          leading: IconButton(
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back_ios_new, color: darkText),
-          ),
+          automaticallyImplyLeading: false,
+          leading: widget.phone == null
+              ? IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: const Icon(Icons.arrow_back_ios_new, color: darkText),
+                )
+              : null,
         ),
         body: SafeArea(
           child: Column(

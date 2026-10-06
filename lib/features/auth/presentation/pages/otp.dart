@@ -106,19 +106,7 @@ class _OtpScreenState extends State<OtpScreen> {
       border: Border.all(color: AppColors.primary, width: 2),
     );
 
-    void goBack() {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
-    }
-
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) goBack();
-      },
-      child: BlocListener<OtpBloc, OtpState>(
+    return BlocListener<OtpBloc, OtpState>(
         listener: (context, state) {
           if (state is UserAlreadyExists) {
             s1<LocalStorageService>().setLoggedIn(true);
@@ -126,18 +114,20 @@ class _OtpScreenState extends State<OtpScreen> {
             if (state.pincode != null && state.pincode!.isNotEmpty) {
               s1<LocalStorageService>().setPincode(state.pincode!);
             }
-            Navigator.pushReplacement(
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (_) => const MainLayout()),
+              (route) => false,
             );
           }
 
           if (state is NewUser) {
-            Navigator.pushReplacement(
+            Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
                 builder: (_) => AddAddressScreen(phone: widget.phone),
               ),
+              (route) => false,
             );
           }
 
@@ -171,7 +161,7 @@ class _OtpScreenState extends State<OtpScreen> {
                     Row(
                       children: [
                         IconButton(
-                          onPressed: goBack,
+                          onPressed: () => Navigator.pop(context),
                           icon: const Icon(Icons.arrow_back_ios_new),
                         ),
                         const SizedBox(width: 8),
@@ -325,7 +315,6 @@ class _OtpScreenState extends State<OtpScreen> {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 }
