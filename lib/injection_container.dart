@@ -40,6 +40,11 @@ import 'package:checkmate/features/appointments/domain/repository/appointments_r
 import 'package:checkmate/features/appointments/domain/usecases/get_user_bookings_uc.dart';
 import 'package:checkmate/features/appointments/domain/usecases/get_booking_details_uc.dart';
 import 'package:checkmate/features/appointments/presentation/bloc/appointments_bloc.dart';
+import 'package:checkmate/features/reviews/data/data_sources/review_datasource.dart';
+import 'package:checkmate/features/reviews/data/repository/review_repository_impl.dart';
+import 'package:checkmate/features/reviews/domain/repository/review_repository.dart';
+import 'package:checkmate/features/reviews/domain/usecases/review_usecases.dart';
+import 'package:checkmate/features/reviews/presentation/bloc/review_bloc.dart';
 
 final s1 = GetIt.instance;
 
@@ -165,6 +170,29 @@ Future<void> initializeDependencies() async {
       getUserBookingsUseCase: s1(),
       getBookingDetailsUseCase: s1(),
       userRepository: s1(),
+    ),
+  );
+
+  //=====================================================
+  // REVIEWS
+  //=====================================================
+  s1.registerLazySingleton<ReviewRemoteDataSource>(
+    () => ReviewRemoteDataSource(s1()),
+  );
+  s1.registerLazySingleton<ReviewRepository>(
+    () => ReviewRepositoryImpl(s1()),
+  );
+  s1.registerLazySingleton(() => SubmitLabReviewUseCase(s1()));
+  s1.registerLazySingleton(() => SubmitLabTestReviewUseCase(s1()));
+  s1.registerLazySingleton(() => GetMyLabReviewUseCase(s1()));
+  s1.registerLazySingleton(() => GetMyLabTestReviewUseCase(s1()));
+  s1.registerFactory(
+    () => ReviewBloc(
+      reviewRepository: s1(),
+      submitLabReviewUseCase: s1(),
+      submitLabTestReviewUseCase: s1(),
+      getMyLabReviewUseCase: s1(),
+      getMyLabTestReviewUseCase: s1(),
     ),
   );
 }
