@@ -51,7 +51,7 @@ class LabsRemoteDataSource {
           .from('lab_tests')
           .select('tests(*)')
           .inFilter('lab_id', labIds);
-      log('result:$result');
+      // log('result:$result');
 
       final Map<String, TestModel> uniqueTests = {};
 
