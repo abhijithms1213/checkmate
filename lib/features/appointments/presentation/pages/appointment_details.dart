@@ -1,4 +1,4 @@
-
+import 'dart:developer';
 import 'package:checkmate/core/utils/date_extract.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_bloc.dart';
 import 'package:checkmate/features/address/presentation/bloc/user_state.dart';
@@ -33,7 +33,8 @@ class BookingDetailsScreen extends StatelessWidget {
               s1<AppointmentsBloc>()..add(GetBookingDetailsEvent(bookingId)),
         ),
         BlocProvider(
-          create: (_) => s1<ReviewBloc>(),
+          create: (_) =>
+              s1<ReviewBloc>()..add(LoadBookingReviewEvent(bookingId)),
         ),
       ],
       child: const _BookingDetailsView(),
@@ -46,7 +47,6 @@ class _BookingDetailsView extends StatelessWidget {
 
   static const Color primaryColor = Color(0xFF006D67);
   static const Color darkText = Color(0xFF10243A);
-  static const Color starColor = Color(0xFFFFB800);
 
   Color _statusColor(String status) {
     switch (status.toLowerCase()) {
@@ -59,35 +59,6 @@ class _BookingDetailsView extends StatelessWidget {
       default:
         return Colors.grey;
     }
-  }
-
-  /// Load reviews once the booking details are available
-  Future<void> _loadReviews(
-    BuildContext context,
-    BookingFullDetailsEntity booking,
-  ) async {
-    String? userId;
-    final userState = context.read<UserBloc>().state;
-    if (userState is AddressesLoaded && userState.addresses.isNotEmpty) {
-      userId = userState.addresses.first.userId;
-    }
-    if (userId == null) {
-      final phone = s1<LocalStorageService>().phone;
-      if (phone != null && phone.isNotEmpty) {
-        userId = await s1<UserRepository>().getUserIdByPhone(phone);
-      }
-    }
-    if (userId == null || !context.mounted) return;
-
-    context.read<ReviewBloc>().add(
-          LoadReviewsEvent(
-            labId: booking.labId,
-            userId: userId,
-            tests: booking.tests
-                .map((t) => {'testId': t.testId, 'testName': t.testName})
-                .toList(),
-          ),
-        );
   }
 
   @override
@@ -110,12 +81,7 @@ class _BookingDetailsView extends StatelessWidget {
         ),
       ),
       body: SafeArea(
-        child: BlocConsumer<AppointmentsBloc, AppointmentsState>(
-          listener: (context, state) {
-            if (state is BookingDetailsLoaded) {
-              _loadReviews(context, state.bookingDetails);
-            }
-          },
+        child: BlocBuilder<AppointmentsBloc, AppointmentsState>(
           builder: (context, state) {
             if (state is AppointmentsLoading || state is AppointmentsInitial) {
               return const Center(child: CircularProgressIndicator());
@@ -127,9 +93,10 @@ class _BookingDetailsView extends StatelessWidget {
 
             if (state is BookingDetailsLoaded) {
               final booking = state.bookingDetails;
-              final formattedCreatedDate = formatDate(
-                booking.createdAt,
+              log(
+                '[BookingDetails] id=${booking.id} | type=${booking.type} | status=${booking.status}',
               );
+              final formattedCreatedDate = formatDate(booking.createdAt);
               final formattedDate = DateFormat(
                 'EEE, MMM d, yyyy',
               ).format(booking.bookingDate);
@@ -173,7 +140,6 @@ class _BookingDetailsView extends StatelessWidget {
                                   await Clipboard.setData(
                                     ClipboardData(text: booking.id),
                                   );
-
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text("Booking ID copied"),
@@ -201,8 +167,7 @@ class _BookingDetailsView extends StatelessWidget {
 
                           /// order placed
                           _card(
-                            child:
-                                Text('ORDER PLACED : $formattedCreatedDate'),
+                            child: Text('ORDER PLACED : $formattedCreatedDate'),
                           ),
                           const SizedBox(height: 18),
 
@@ -320,8 +285,7 @@ class _BookingDetailsView extends StatelessWidget {
                                 const SizedBox(height: 24),
                                 ...booking.tests.map(
                                   (test) => Padding(
-                                    padding:
-                                        const EdgeInsets.only(bottom: 14),
+                                    padding: const EdgeInsets.only(bottom: 14),
                                     child: _priceRow(
                                       test.testName,
                                       "₹ ${test.price.toStringAsFixed(0)}",
@@ -357,7 +321,7 @@ class _BookingDetailsView extends StatelessWidget {
                           const SizedBox(height: 28),
 
                           /// ── REVIEW SECTION ──────────────────────────────
-                          _ReviewSection(booking: booking),
+                          _BookingReviewSection(booking: booking),
                         ],
                       ),
                     ),
@@ -409,13 +373,13 @@ class _BookingDetailsView extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// REVIEW SECTION
+// BOOKING REVIEW SECTION
 // ═══════════════════════════════════════════════════════════════
 
-class _ReviewSection extends StatelessWidget {
+class _BookingReviewSection extends StatelessWidget {
   final BookingFullDetailsEntity booking;
 
-  const _ReviewSection({required this.booking});
+  const _BookingReviewSection({required this.booking});
 
   static const Color primaryColor = Color(0xFF006D67);
   static const Color darkText = Color(0xFF10243A);
@@ -440,7 +404,7 @@ class _ReviewSection extends StatelessWidget {
         if (state is ReviewSubmitted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message),
+              content: const Text('Review submitted successfully!'),
               backgroundColor: primaryColor,
               behavior: SnackBarBehavior.floating,
               duration: const Duration(seconds: 2),
@@ -457,6 +421,12 @@ class _ReviewSection extends StatelessWidget {
         }
       },
       builder: (context, state) {
+        final bool isLoading = state is ReviewLoading;
+        final bool isSubmitting = state is ReviewSubmitting;
+        final BookingReviewEntity? existingReview = state is BookingReviewLoaded
+            ? state.review
+            : null;
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -478,99 +448,55 @@ class _ReviewSection extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               "Your feedback helps others make better choices.",
-              style: TextStyle(
-                fontSize: 13.spMin,
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(fontSize: 13.spMin, color: Colors.grey.shade600),
             ),
             const SizedBox(height: 18),
 
-            if (state is ReviewLoading)
+            if (isLoading)
               const Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 24),
                   child: CircularProgressIndicator(),
                 ),
               )
-            else ...[
-              // Lab review card
-              _ReviewCard(
-                title: booking.labName,
-                subtitle: "Lab Rating",
-                icon: Icons.science_rounded,
-                existingRating: state is ReviewsLoaded
-                    ? state.labReview?.rating
-                    : null,
-                existingText: state is ReviewsLoaded
-                    ? state.labReview?.review
-                    : null,
-                isSubmitting: state is ReviewSubmitting,
-                onSubmit: (rating, text) async {
+            else
+              _BookingReviewForm(
+                booking: booking,
+                existingReview: existingReview,
+                isSubmitting: isSubmitting,
+                onSubmit: (params) async {
                   final userId = await _getUserId(context);
                   if (!context.mounted) return;
                   if (userId == null) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                          content: Text("User not found. Please re-login.")),
+                        content: Text("User not found. Please re-login."),
+                      ),
                     );
                     return;
                   }
                   context.read<ReviewBloc>().add(
-                        SubmitLabReviewEvent(
-                          SubmitLabReviewParams(
-                            labId: booking.labId,
-                            userId: userId,
-                            rating: rating,
-                            review: text.isNotEmpty ? text : null,
-                          ),
-                        ),
-                      );
+                    SubmitBookingReviewEvent(
+                      SubmitBookingReviewParams(
+                        bookingId: params.bookingId,
+                        userId: userId,
+                        bookingType: params.bookingType,
+                        labExperienceRating: params.labExperienceRating,
+                        resultAccuracyRating: params.resultAccuracyRating,
+                        resultTurnaroundRating: params.resultTurnaroundRating,
+                        review: params.review,
+                        waitingTimeRating: params.waitingTimeRating,
+                        collectorRating: params.collectorRating,
+                        collectorPunctualityRating:
+                            params.collectorPunctualityRating,
+                        sampleCollectionRating: params.sampleCollectionRating,
+                        sampleHandlingRating: params.sampleHandlingRating,
+                        overallExperienceRating: params.overallExperienceRating,
+                      ),
+                    ),
+                  );
                 },
               ),
-
-              const SizedBox(height: 16),
-
-              // Per-test review cards
-              ...booking.tests.map((test) {
-                LabTestReviewEntity? existingReview;
-                if (state is ReviewsLoaded) {
-                  existingReview = state.testReviews[test.testId];
-                }
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: _ReviewCard(
-                    title: test.testName,
-                    subtitle: "Test Rating",
-                    icon: Icons.biotech_rounded,
-                    existingRating: existingReview?.rating,
-                    existingText: existingReview?.review,
-                    isSubmitting: state is ReviewSubmitting,
-                    onSubmit: (rating, text) async {
-                      final userId = await _getUserId(context);
-                      if (!context.mounted) return;
-                      if (userId == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                              content:
-                                  Text("User not found. Please re-login.")),
-                        );
-                        return;
-                      }
-                      context.read<ReviewBloc>().add(
-                            SubmitLabTestReviewEvent(
-                              labId: booking.labId,
-                              testId: test.testId,
-                              userId: userId,
-                              rating: rating,
-                              reviewText:
-                                  text.isNotEmpty ? text : null,
-                            ),
-                          );
-                    },
-                  ),
-                );
-              }),
-            ],
           ],
         );
       },
@@ -579,322 +505,1020 @@ class _ReviewSection extends StatelessWidget {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// INDIVIDUAL REVIEW CARD
+// BOOKING REVIEW FORM
 // ═══════════════════════════════════════════════════════════════
 
-class _ReviewCard extends StatefulWidget {
-  final String title;
-  final String subtitle;
-  final IconData icon;
-  final int? existingRating;
-  final String? existingText;
+class _BookingReviewForm extends StatefulWidget {
+  final BookingFullDetailsEntity booking;
+  final BookingReviewEntity? existingReview;
   final bool isSubmitting;
-  final void Function(int rating, String text) onSubmit;
+  final Future<void> Function(SubmitBookingReviewParams params) onSubmit;
 
-  const _ReviewCard({
-    required this.title,
-    required this.subtitle,
-    required this.icon,
-    required this.onSubmit,
+  const _BookingReviewForm({
+    required this.booking,
+    required this.existingReview,
     required this.isSubmitting,
-    this.existingRating,
-    this.existingText,
+    required this.onSubmit,
   });
 
   @override
-  State<_ReviewCard> createState() => _ReviewCardState();
+  State<_BookingReviewForm> createState() => _BookingReviewFormState();
 }
 
-class _ReviewCardState extends State<_ReviewCard> {
-  late int _selectedRating;
-  late TextEditingController _controller;
-  bool _isEditing = false;
-
+class _BookingReviewFormState extends State<_BookingReviewForm> {
   static const Color primaryColor = Color(0xFF006D67);
-  static const Color starColor = Color(0xFFFFB800);
-  static const Color darkText = Color(0xFF10243A);
+  static const Color darkText = Color(0xFF0C1A30);
+  static const Color cardBg = Colors.white;
+  static const Color iconBg = Color(0xFFE2F4F2);
+
+  bool _isEditing = false;
+  late TextEditingController _reviewController;
+
+  // Lab ratings (Common)
+  int _labExperienceRating = 0; // Lab Overall Rating
+  int _resultAccuracyRating = 0; // Result Accuracy
+  int _resultTurnaroundRating = 0; // On-Time Results
+
+  // Walk-in
+  int _waitingTimeRating = 0; // Waiting Time
+
+  // Home Collection (Phlebotomist ratings)
+  int _overallExperienceRating = 0; // Phlebotomist Overall Rating
+  int _collectorPunctualityRating = 0; // Punctuality
+  int _sampleCollectionRating = 0; // Sample Collection
+  int _sampleHandlingRating = 0; // Sample Handling
+
+  bool get _isHomeCollection =>
+      widget.booking.type.toLowerCase().contains('home');
 
   @override
   void initState() {
     super.initState();
-    _selectedRating = widget.existingRating ?? 0;
-    _controller = TextEditingController(text: widget.existingText ?? '');
-    _isEditing = widget.existingRating == null;
+    _initFromExisting();
   }
 
   @override
-  void didUpdateWidget(_ReviewCard oldWidget) {
+  void didUpdateWidget(_BookingReviewForm oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Sync from bloc state after a successful submit
-    if (oldWidget.existingRating != widget.existingRating && !_isEditing) {
-      _selectedRating = widget.existingRating ?? _selectedRating;
-      _controller.text = widget.existingText ?? _controller.text;
+    if (oldWidget.existingReview == null && widget.existingReview != null) {
+      _initFromExisting();
+    }
+  }
+
+  void _initFromExisting() {
+    final r = widget.existingReview;
+    _reviewController = TextEditingController(text: r?.review ?? '');
+    _isEditing = r == null;
+
+    if (r != null) {
+      _labExperienceRating = r.labExperienceRating;
+      _resultAccuracyRating = r.resultAccuracyRating;
+      _resultTurnaroundRating = r.resultTurnaroundRating;
+      _waitingTimeRating = r.waitingTimeRating ?? 0;
+      _overallExperienceRating = r.overallExperienceRating ?? (r.collectorRating ?? 0);
+      _collectorPunctualityRating = r.collectorPunctualityRating ?? 0;
+      _sampleCollectionRating = r.sampleCollectionRating ?? 0;
+      _sampleHandlingRating = r.sampleHandlingRating ?? 0;
     }
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _reviewController.dispose();
     super.dispose();
+  }
+
+  bool get _canSubmit {
+    if (_labExperienceRating == 0 ||
+        _resultAccuracyRating == 0 ||
+        _resultTurnaroundRating == 0) {
+      return false;
+    }
+    if (_isHomeCollection) {
+      return _overallExperienceRating > 0 &&
+          _collectorPunctualityRating > 0 &&
+          _sampleCollectionRating > 0 &&
+          _sampleHandlingRating > 0;
+    } else {
+      return _waitingTimeRating > 0;
+    }
+  }
+
+  void _submit() {
+    widget.onSubmit(
+      SubmitBookingReviewParams(
+        bookingId: widget.booking.id,
+        bookingType: widget.booking.type,
+        labExperienceRating: _labExperienceRating,
+        resultAccuracyRating: _resultAccuracyRating,
+        resultTurnaroundRating: _resultTurnaroundRating,
+        review: _reviewController.text.trim().isEmpty
+            ? null
+            : _reviewController.text.trim(),
+        waitingTimeRating: _isHomeCollection ? null : _waitingTimeRating,
+        collectorRating: _isHomeCollection ? _overallExperienceRating : null,
+        collectorPunctualityRating: _isHomeCollection
+            ? _collectorPunctualityRating
+            : null,
+        sampleCollectionRating: _isHomeCollection
+            ? _sampleCollectionRating
+            : null,
+        sampleHandlingRating: _isHomeCollection ? _sampleHandlingRating : null,
+        overallExperienceRating: _isHomeCollection
+            ? _overallExperienceRating
+            : null,
+      ),
+    );
+    setState(() => _isEditing = false);
+  }
+
+  Widget _buildCard({required Widget child}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: child,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final bool alreadyReviewed = widget.existingRating != null;
+    final bool alreadyReviewed = widget.existingReview != null;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: alreadyReviewed && !_isEditing
-              ? const Color(0xFF006D67).withOpacity(0.35)
-              : const Color(0xFFE5E7EB),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Card header
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: primaryColor.withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(widget.icon, color: primaryColor, size: 20),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.title,
-                        style: TextStyle(
-                          fontSize: 15.spMin,
-                          fontWeight: FontWeight.w600,
-                          color: darkText,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        widget.subtitle,
-                        style: TextStyle(
-                          fontSize: 12.spMin,
-                          color: Colors.grey.shade500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                // Edit toggle if already reviewed
-                if (alreadyReviewed)
-                  TextButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        _isEditing = !_isEditing;
-                      });
-                    },
-                    icon: Icon(
-                      _isEditing ? Icons.close : Icons.edit,
-                      size: 16,
-                    ),
-                    label: Text(_isEditing ? 'Cancel' : 'Edit'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: primaryColor,
-                      textStyle: TextStyle(fontSize: 13.spMin),
-                      padding: EdgeInsets.zero,
-                    ),
-                  ),
-              ],
-            ),
-
-            const SizedBox(height: 18),
-
-            // Star rating
-            if (_isEditing || !alreadyReviewed) ...[
-              Text(
-                "Tap to rate",
-                style: TextStyle(
-                  fontSize: 12.spMin,
-                  color: Colors.grey.shade500,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: List.generate(5, (index) {
-                  final starIndex = index + 1;
-                  return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedRating = starIndex;
-                      });
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 6),
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 200),
-                        child: Icon(
-                          starIndex <= _selectedRating
-                              ? Icons.star_rounded
-                              : Icons.star_outline_rounded,
-                          key: ValueKey('$starIndex-${_selectedRating >= starIndex}'),
-                          color: starIndex <= _selectedRating
-                              ? starColor
-                              : Colors.grey.shade300,
-                          size: 36,
-                        ),
-                      ),
-                    ),
-                  );
-                }),
-              ),
-              const SizedBox(height: 16),
-
-              // Review text field
-              TextField(
-                controller: _controller,
-                maxLines: 3,
-                minLines: 2,
-                style: TextStyle(fontSize: 14.spMin, color: darkText),
-                decoration: InputDecoration(
-                  hintText: "Write your review (optional)…",
-                  hintStyle: TextStyle(
-                    fontSize: 13.spMin,
-                    color: Colors.grey.shade400,
-                  ),
-                  filled: true,
-                  fillColor: const Color(0xFFF8F9FB),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        BorderSide(color: Colors.grey.shade200),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        BorderSide(color: Colors.grey.shade200),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide:
-                        const BorderSide(color: primaryColor, width: 1.5),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14, vertical: 12),
-                ),
-              ),
-
-              const SizedBox(height: 14),
-
-              // Submit button
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: widget.isSubmitting || _selectedRating == 0
-                      ? null
-                      : () {
-                          widget.onSubmit(
-                              _selectedRating, _controller.text.trim());
-                          setState(() => _isEditing = false);
-                        },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
-                    disabledBackgroundColor: Colors.grey.shade200,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: widget.isSubmitting
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: Colors.white,
-                          ),
-                        )
-                      : Text(
-                          alreadyReviewed ? "Update Review" : "Submit Review",
-                          style: TextStyle(
-                            fontSize: 15.spMin,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                ),
-              ),
-            ] else ...[
-              // Read-only display of submitted review
-              Row(
-                children: List.generate(
-                  5,
-                  (i) => Icon(
-                    i < (widget.existingRating ?? 0)
-                        ? Icons.star_rounded
-                        : Icons.star_outline_rounded,
-                    color: i < (widget.existingRating ?? 0)
-                        ? starColor
-                        : Colors.grey.shade300,
-                    size: 28,
-                  ),
-                ),
-              ),
-              if (widget.existingText != null &&
-                  widget.existingText!.isNotEmpty) ...[
-                const SizedBox(height: 10),
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8F9FB),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    widget.existingText!,
-                    style: TextStyle(
-                      fontSize: 14.spMin,
-                      color: Colors.grey.shade700,
-                      height: 1.5,
-                    ),
-                  ),
-                ),
-              ],
-              const SizedBox(height: 8),
+    if (alreadyReviewed && !_isEditing) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
               Row(
                 children: [
-                  Icon(Icons.check_circle,
-                      color: Colors.green.shade600, size: 16),
+                  Icon(Icons.check_circle, color: primaryColor, size: 18),
                   const SizedBox(width: 6),
                   Text(
-                    "Review submitted",
+                    "Review Submitted",
                     style: TextStyle(
-                      fontSize: 12.spMin,
-                      color: Colors.green.shade600,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 14.spMin,
+                      color: primaryColor,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ],
               ),
+              TextButton.icon(
+                onPressed: () => setState(() => _isEditing = true),
+                icon: const Icon(Icons.edit_outlined, size: 16),
+                label: const Text('Edit Review'),
+                style: TextButton.styleFrom(
+                  foregroundColor: primaryColor,
+                  textStyle: TextStyle(
+                    fontSize: 13.spMin,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  padding: EdgeInsets.zero,
+                ),
+              ),
             ],
+          ),
+          const SizedBox(height: 12),
+          _ReadOnlyReviewDisplay(
+            review: widget.existingReview!,
+            labName: widget.booking.labName,
+            isHomeCollection: _isHomeCollection,
+          ),
+        ],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (_isHomeCollection) ...[
+          // ── Card 1: Phlebotomist Overall Rating & Sub-criteria ───────
+          _buildCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: iconBg,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.medical_services_rounded,
+                          color: primaryColor,
+                          size: 28,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Phlebotomist Overall Rating",
+                            style: TextStyle(
+                              fontSize: 16.spMin,
+                              fontWeight: FontWeight.w700,
+                              color: darkText,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          _StarBar(
+                            value: _overallExperienceRating,
+                            size: 32,
+                            spacing: 4,
+                            alignment: MainAxisAlignment.spaceBetween,
+                            onChanged: (v) =>
+                                setState(() => _overallExperienceRating = v),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                _RatingRow(
+                  label: 'Punctuality',
+                  icon: Icons.access_time_rounded,
+                  value: _collectorPunctualityRating,
+                  onChanged: (v) =>
+                      setState(() => _collectorPunctualityRating = v),
+                ),
+                _RatingRow(
+                  label: 'Sample Collection',
+                  icon: Icons.vaccines_rounded,
+                  value: _sampleCollectionRating,
+                  onChanged: (v) =>
+                      setState(() => _sampleCollectionRating = v),
+                ),
+                _RatingRow(
+                  label: 'Sample Handling',
+                  icon: Icons.inventory_2_outlined,
+                  value: _sampleHandlingRating,
+                  isLast: true,
+                  onChanged: (v) =>
+                      setState(() => _sampleHandlingRating = v),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 14),
+
+          // ── Card 2: Lab Overall Rating & Sub-criteria ────────────────
+          _buildCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: iconBg,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.science_rounded,
+                          color: primaryColor,
+                          size: 28,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Lab Overall Rating",
+                            style: TextStyle(
+                              fontSize: 16.spMin,
+                              fontWeight: FontWeight.w700,
+                              color: darkText,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          _StarBar(
+                            value: _labExperienceRating,
+                            size: 32,
+                            spacing: 4,
+                            alignment: MainAxisAlignment.spaceBetween,
+                            onChanged: (v) =>
+                                setState(() => _labExperienceRating = v),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                _RatingRow(
+                  label: 'Result Accuracy',
+                  icon: Icons.fact_check_outlined,
+                  value: _resultAccuracyRating,
+                  onChanged: (v) =>
+                      setState(() => _resultAccuracyRating = v),
+                ),
+                _RatingRow(
+                  label: 'On-Time Results',
+                  icon: Icons.timer_outlined,
+                  value: _resultTurnaroundRating,
+                  isLast: true,
+                  onChanged: (v) =>
+                      setState(() => _resultTurnaroundRating = v),
+                ),
+              ],
+            ),
+          ),
+        ] else ...[
+          // ── Walk-in Card ─────────────────────────────────────────────
+          _buildCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: iconBg,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.science_rounded,
+                          color: primaryColor,
+                          size: 28,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            widget.booking.labName,
+                            style: TextStyle(
+                              fontSize: 16.spMin,
+                              fontWeight: FontWeight.w700,
+                              color: darkText,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: iconBg,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              'WALK-IN REVIEW',
+                              style: TextStyle(
+                                fontSize: 10.spMin,
+                                fontWeight: FontWeight.w700,
+                                color: primaryColor,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                _RatingRow(
+                  label: 'Lab Overall Rating',
+                  icon: Icons.star_rate_rounded,
+                  value: _labExperienceRating,
+                  starSize: 26,
+                  isProminent: true,
+                  onChanged: (v) => setState(() => _labExperienceRating = v),
+                ),
+                _RatingRow(
+                  label: 'Waiting Time',
+                  icon: Icons.hourglass_empty_rounded,
+                  value: _waitingTimeRating,
+                  starSize: 21,
+                  onChanged: (v) => setState(() => _waitingTimeRating = v),
+                ),
+                _RatingRow(
+                  label: 'Result Accuracy',
+                  icon: Icons.fact_check_outlined,
+                  value: _resultAccuracyRating,
+                  starSize: 21,
+                  onChanged: (v) => setState(() => _resultAccuracyRating = v),
+                ),
+                _RatingRow(
+                  label: 'On-Time Results',
+                  icon: Icons.access_time_rounded,
+                  value: _resultTurnaroundRating,
+                  starSize: 21,
+                  isLast: true,
+                  onChanged: (v) => setState(() => _resultTurnaroundRating = v),
+                ),
+              ],
+            ),
+          ),
+        ],
+
+        const SizedBox(height: 16),
+
+        // ── Review text input ──────────────────────────────────────────
+        Text(
+          "Write your review (optional)",
+          style: TextStyle(
+            fontSize: 13.spMin,
+            color: const Color(0xFF4A5568),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 8),
+
+        Stack(
+          children: [
+            TextField(
+              controller: _reviewController,
+              maxLength: 500,
+              maxLines: 3,
+              minLines: 3,
+              onChanged: (_) => setState(() {}),
+              style: TextStyle(fontSize: 14.spMin, color: darkText),
+              decoration: InputDecoration(
+                hintText: "Share your experience...",
+                hintStyle: TextStyle(
+                  fontSize: 13.spMin,
+                  color: const Color(0xFF9AA5B5),
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                counterText: "",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: primaryColor, width: 1.5),
+                ),
+                contentPadding: const EdgeInsets.fromLTRB(14, 12, 14, 28),
+              ),
+            ),
+            Positioned(
+              right: 12,
+              bottom: 8,
+              child: Text(
+                "${_reviewController.text.length}/500",
+                style: TextStyle(
+                  fontSize: 11.spMin,
+                  color: const Color(0xFF8C9BAE),
+                ),
+              ),
+            ),
           ],
         ),
+
+        const SizedBox(height: 16),
+
+        // ── Submit / Cancel Button ────────────────────────────────────
+        SizedBox(
+          width: double.infinity,
+          height: 48,
+          child: ElevatedButton(
+            onPressed: widget.isSubmitting || !_canSubmit ? null : _submit,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryColor,
+              disabledBackgroundColor: const Color(0xFFD2D8DF),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 0,
+            ),
+            child: widget.isSubmitting
+                ? const SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : Text(
+                    alreadyReviewed ? "Update Review" : "Submit Review",
+                    style: TextStyle(
+                      fontSize: 15.spMin,
+                      color: _canSubmit ? Colors.white : const Color(0xFF8F9CA9),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+          ),
+        ),
+
+        if (alreadyReviewed && _isEditing) ...[
+          const SizedBox(height: 8),
+          Center(
+            child: TextButton(
+              onPressed: () => setState(() => _isEditing = false),
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  fontSize: 14.spMin,
+                  color: Colors.grey.shade600,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STAR BAR HELPER
+// ═══════════════════════════════════════════════════════════════
+
+class _StarBar extends StatelessWidget {
+  final int value;
+  final double size;
+  final double spacing;
+  final MainAxisAlignment alignment;
+  final void Function(int)? onChanged;
+
+  static const Color starColor = Color(0xFFFFB800);
+  static const Color emptyStarColor = Color(0xFFB0B9C3);
+
+  const _StarBar({
+    required this.value,
+    this.size = 24,
+    this.spacing = 3,
+    this.alignment = MainAxisAlignment.end,
+    this.onChanged,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: alignment,
+      mainAxisSize: alignment == MainAxisAlignment.spaceBetween
+          ? MainAxisSize.max
+          : MainAxisSize.min,
+      children: List.generate(5, (i) {
+        final starIndex = i + 1;
+        final bool isFilled = starIndex <= value;
+        return GestureDetector(
+          onTap: onChanged != null ? () => onChanged!(starIndex) : null,
+          behavior: HitTestBehavior.opaque,
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: alignment == MainAxisAlignment.spaceBetween ? 0 : spacing,
+            ),
+            child: Icon(
+              isFilled ? Icons.star_rounded : Icons.star_outline_rounded,
+              color: isFilled ? starColor : emptyStarColor,
+              size: size,
+            ),
+          ),
+        );
+      }),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STAR RATING ROW
+// ═══════════════════════════════════════════════════════════════
+
+class _RatingRow extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final int value;
+  final void Function(int) onChanged;
+  final double starSize;
+  final bool isProminent;
+  final bool isLast;
+
+  static const Color primaryColor = Color(0xFF006D67);
+  static const Color darkText = Color(0xFF0C1A30);
+
+  const _RatingRow({
+    required this.label,
+    required this.icon,
+    required this.value,
+    required this.onChanged,
+    this.starSize = 22,
+    this.isProminent = false,
+    this.isLast = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: isLast ? 0 : 14),
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            color: primaryColor,
+            size: isProminent ? 22 : 19,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: isProminent ? 14.5.spMin : 13.5.spMin,
+                color: darkText,
+                fontWeight: isProminent ? FontWeight.w700 : FontWeight.w600,
+              ),
+            ),
+          ),
+          _StarBar(
+            value: value,
+            size: starSize,
+            spacing: 3,
+            onChanged: onChanged,
+          ),
+        ],
       ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// READ-ONLY REVIEW DISPLAY
+// ═══════════════════════════════════════════════════════════════
+
+class _ReadOnlyReviewDisplay extends StatelessWidget {
+  final BookingReviewEntity review;
+  final String labName;
+  final bool isHomeCollection;
+
+  const _ReadOnlyReviewDisplay({
+    required this.review,
+    required this.labName,
+    this.isHomeCollection = false,
+  });
+
+  static const Color primaryColor = Color(0xFF006D67);
+  static const Color darkText = Color(0xFF0C1A30);
+  static const Color iconBg = Color(0xFFE2F4F2);
+
+  bool get _isHomeCollection =>
+      isHomeCollection || review.bookingType.toLowerCase().contains('home');
+
+  Widget _buildCard({required Widget child}) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.04),
+            blurRadius: 12,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _readOnlyRow({
+    required String label,
+    required IconData icon,
+    required int rating,
+    double starSize = 21,
+    bool isProminent = false,
+    bool isLast = false,
+  }) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: isLast ? 0 : 12),
+      child: Row(
+        children: [
+          Icon(icon, color: primaryColor, size: isProminent ? 22 : 19),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: isProminent ? 14.5.spMin : 13.5.spMin,
+                color: darkText,
+                fontWeight: isProminent ? FontWeight.w700 : FontWeight.w600,
+              ),
+            ),
+          ),
+          _StarBar(
+            value: rating,
+            size: starSize,
+            spacing: 3,
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (_isHomeCollection) ...[
+          // Phlebotomist Card
+          _buildCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: iconBg,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.medical_services_rounded,
+                          color: primaryColor,
+                          size: 28,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Phlebotomist Overall Rating",
+                            style: TextStyle(
+                              fontSize: 16.spMin,
+                              fontWeight: FontWeight.w700,
+                              color: darkText,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          _StarBar(
+                            value: review.overallExperienceRating ??
+                                review.collectorRating ??
+                                0,
+                            size: 32,
+                            spacing: 4,
+                            alignment: MainAxisAlignment.spaceBetween,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                _readOnlyRow(
+                  label: 'Punctuality',
+                  icon: Icons.access_time_rounded,
+                  rating: review.collectorPunctualityRating ?? 0,
+                ),
+                _readOnlyRow(
+                  label: 'Sample Collection',
+                  icon: Icons.vaccines_rounded,
+                  rating: review.sampleCollectionRating ?? 0,
+                ),
+                _readOnlyRow(
+                  label: 'Sample Handling',
+                  icon: Icons.inventory_2_outlined,
+                  rating: review.sampleHandlingRating ?? 0,
+                  isLast: true,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+          // Lab Card
+          _buildCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: iconBg,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.science_rounded,
+                          color: primaryColor,
+                          size: 28,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Lab Overall Rating",
+                            style: TextStyle(
+                              fontSize: 16.spMin,
+                              fontWeight: FontWeight.w700,
+                              color: darkText,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          _StarBar(
+                            value: review.labExperienceRating,
+                            size: 32,
+                            spacing: 4,
+                            alignment: MainAxisAlignment.spaceBetween,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                _readOnlyRow(
+                  label: 'Result Accuracy',
+                  icon: Icons.fact_check_outlined,
+                  rating: review.resultAccuracyRating,
+                ),
+                _readOnlyRow(
+                  label: 'On-Time Results',
+                  icon: Icons.timer_outlined,
+                  rating: review.resultTurnaroundRating,
+                  isLast: true,
+                ),
+              ],
+            ),
+          ),
+        ] else ...[
+          // Walk-in Card
+          _buildCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 52,
+                      height: 52,
+                      decoration: BoxDecoration(
+                        color: iconBg,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Center(
+                        child: Icon(
+                          Icons.science_rounded,
+                          color: primaryColor,
+                          size: 28,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            labName,
+                            style: TextStyle(
+                              fontSize: 16.spMin,
+                              fontWeight: FontWeight.w700,
+                              color: darkText,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: iconBg,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              'WALK-IN REVIEW',
+                              style: TextStyle(
+                                fontSize: 10.spMin,
+                                fontWeight: FontWeight.w700,
+                                color: primaryColor,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                _readOnlyRow(
+                  label: 'Lab Overall Rating',
+                  icon: Icons.star_rate_rounded,
+                  rating: review.labExperienceRating,
+                  starSize: 26,
+                  isProminent: true,
+                ),
+                _readOnlyRow(
+                  label: 'Waiting Time',
+                  icon: Icons.hourglass_empty_rounded,
+                  rating: review.waitingTimeRating ?? 0,
+                ),
+                _readOnlyRow(
+                  label: 'Result Accuracy',
+                  icon: Icons.fact_check_outlined,
+                  rating: review.resultAccuracyRating,
+                ),
+                _readOnlyRow(
+                  label: 'On-Time Results',
+                  icon: Icons.access_time_rounded,
+                  rating: review.resultTurnaroundRating,
+                  isLast: true,
+                ),
+              ],
+            ),
+          ),
+        ],
+
+        if (review.review != null && review.review!.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          Text(
+            "Your Review",
+            style: TextStyle(
+              fontSize: 13.spMin,
+              color: const Color(0xFF4A5568),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: const Color(0xFFE2E8F0)),
+            ),
+            child: Text(
+              review.review!,
+              style: TextStyle(
+                fontSize: 14.spMin,
+                color: darkText,
+                height: 1.5,
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

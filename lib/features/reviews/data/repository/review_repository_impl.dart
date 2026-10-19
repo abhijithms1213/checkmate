@@ -8,30 +8,20 @@ class ReviewRepositoryImpl implements ReviewRepository {
   ReviewRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<String?> resolveLabTestId({required String labId, required String testId}) {
-    return remoteDataSource.resolveLabTestId(labId: labId, testId: testId);
-  }
+  Future<BookingReviewEntity> submitBookingReview(
+          SubmitBookingReviewParams params) =>
+      remoteDataSource.submitBookingReview(params);
 
   @override
-  Future<LabReviewEntity> submitLabReview(SubmitLabReviewParams params) {
-    return remoteDataSource.submitLabReview(params);
-  }
+  Future<BookingReviewEntity?> getBookingReview(String bookingId) =>
+      remoteDataSource.getBookingReview(bookingId);
 
   @override
-  Future<LabTestReviewEntity> submitLabTestReview(SubmitLabTestReviewParams params) {
-    return remoteDataSource.submitLabTestReview(params);
-  }
+  Future<List<BookingReviewWithUserEntity>> getAllLabBookingReviews(
+          String labId) =>
+      remoteDataSource.getAllLabBookingReviews(labId);
 
   @override
-  Future<LabReviewEntity?> getMyLabReview({required String labId, required String userId}) {
-    return remoteDataSource.getMyLabReview(labId: labId, userId: userId);
-  }
-
-  @override
-  Future<LabTestReviewEntity?> getMyLabTestReview({
-    required String labTestId,
-    required String userId,
-  }) {
-    return remoteDataSource.getMyLabTestReview(labTestId: labTestId, userId: userId);
-  }
+  Future<LabRatingSummaryEntity> getLabRatingSummary(String labId) =>
+      remoteDataSource.getLabRatingSummary(labId);
 }

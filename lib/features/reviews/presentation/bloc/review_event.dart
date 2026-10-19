@@ -2,40 +2,27 @@ import 'package:checkmate/features/reviews/domain/entities/review_entity.dart';
 
 abstract class ReviewEvent {}
 
-/// Load existing reviews for this booking (lab + each test by testId+labId)
-class LoadReviewsEvent extends ReviewEvent {
+/// Load existing booking review (null if not yet reviewed)
+class LoadBookingReviewEvent extends ReviewEvent {
+  final String bookingId;
+  LoadBookingReviewEvent(this.bookingId);
+}
+
+/// Submit (upsert) a booking review
+class SubmitBookingReviewEvent extends ReviewEvent {
+  final SubmitBookingReviewParams params;
+  SubmitBookingReviewEvent(this.params);
+}
+
+/// Fetch only rating summary (stars + count) for a lab
+class LoadLabRatingSummaryEvent extends ReviewEvent {
   final String labId;
-  final String userId;
-  /// List of (testId, testName) pairs — lab_test_id will be resolved internally
-  final List<Map<String, String>> tests; // [{testId: '', testName: ''}]
-
-  LoadReviewsEvent({
-    required this.labId,
-    required this.userId,
-    required this.tests,
-  });
+  LoadLabRatingSummaryEvent(this.labId);
 }
 
-/// Submit (upsert) a lab review
-class SubmitLabReviewEvent extends ReviewEvent {
-  final SubmitLabReviewParams params;
-  SubmitLabReviewEvent(this.params);
-}
-
-/// Submit (upsert) a lab test review
-/// Carries testId + labId so the bloc can resolve lab_test_id
-class SubmitLabTestReviewEvent extends ReviewEvent {
+/// Fetch all booking reviews for a lab (for public reviews page)
+class LoadAllLabBookingReviewsEvent extends ReviewEvent {
   final String labId;
-  final String testId;
-  final String userId;
-  final int rating;
-  final String? reviewText;
-
-  SubmitLabTestReviewEvent({
-    required this.labId,
-    required this.testId,
-    required this.userId,
-    required this.rating,
-    this.reviewText,
-  });
+  LoadAllLabBookingReviewsEvent(this.labId);
 }
+

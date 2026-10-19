@@ -29,6 +29,7 @@ class BookingAddressEntity {
 class BookingFullDetailsEntity {
   final String id;
   final String status;
+  final String type; // 'Walk-in' | 'Home Collection'
   final double totalAmount;
   final DateTime bookingDate;
 
@@ -52,6 +53,7 @@ class BookingFullDetailsEntity {
   const BookingFullDetailsEntity({
     required this.id,
     required this.status,
+    required this.type,
     required this.totalAmount,
     required this.bookingDate,
     required this.labId,

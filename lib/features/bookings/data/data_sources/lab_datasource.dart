@@ -33,14 +33,18 @@ class LabsRemoteDataSource {
         return []; // Normal users cannot see mock test labs
       }
 
-      // Step 1
+      // Step 1: Only fetch lab IDs for active labs serving this pincode
       final labPincodes = await client
           .from('lab_pincodes')
-          .select('lab_id')
-          .eq('pincode', pincode);
+          .select('lab_id, labs!inner(is_active)')
+          .eq('pincode', pincode)
+          .eq('labs.is_active', true);
       log('pincodes:$labPincodes');
 
       final labIds = labPincodes.map((e) => e['lab_id']).toList();
+      if (labIds.isEmpty) {
+        return [];
+      }
 
       // Step 2
       final result = await client
@@ -93,6 +97,7 @@ class LabsRemoteDataSource {
       ''')
           .eq('test_id', req.testId)
           .eq('is_available', true)
+          .eq('labs.is_active', true)
           .eq('labs.lab_pincodes.pincode', req.pincode);
 
       return result.map<LabModel>((e) {

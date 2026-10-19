@@ -48,7 +48,8 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
   late Razorpay _razorpay;
   bool isDiscountApplied = false;
 
-  double get finalPrice => isDiscountApplied ? widget.labs.price * 0.9 : widget.labs.price;
+  double get finalPrice =>
+      isDiscountApplied ? widget.labs.price * 0.9 : widget.labs.price;
 
   static const Color primaryColor = Color(0xFF006D67);
 
@@ -105,9 +106,7 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
         bookingDate: DateTime.parse(widget.selectedDate),
         totalAmount: finalPrice,
         type: widget.collectionType,
-        tests: [
-          BookingTestItem(testId: widget.test.id, price: finalPrice),
-        ],
+        tests: [BookingTestItem(testId: widget.test.id, price: finalPrice)],
         transactionId: transactionId,
         paymentStatus: transactionId != null ? 'completed' : 'pending',
       );
@@ -146,7 +145,7 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
       }
 
       final phone = s1<LocalStorageService>().phone ?? '';
-      
+
       final payload = WhatsAppNotificationModel(
         customerName: defaultAddress?.fullName ?? 'Customer',
         customerPhone: '91$phone',
@@ -160,7 +159,7 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
         amount: finalPrice,
         bookingId: booking.id,
       );
-      
+
       context.read<LabsBloc>().add(SendWhatsAppNotificationEvent(payload));
       log('WhatsApp notification event dispatched');
     } catch (e) {
@@ -181,7 +180,9 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
             builder: (ctx) => const Center(child: CircularProgressIndicator()),
           );
         } else if (state is OrderPlaced) {
-          _sendWhatsAppNotification(state.booking); // Trigger WhatsApp notification
+          _sendWhatsAppNotification(
+            state.booking,
+          ); // Trigger WhatsApp notification
           Navigator.of(context, rootNavigator: true).pop(); // dismiss dialog
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
@@ -401,10 +402,7 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                       // const SizedBox(height: 16),
                       // _paymentTile("Pay at Lab", Icons.account_balance_outlined),
                       const SizedBox(height: 10),
-                      _paymentTile(
-                        "Pay Online",
-                        Icons.qr_code_outlined,
-                      ),
+                      _paymentTile("Pay Online", Icons.qr_code_outlined),
 
                       const SizedBox(height: 40),
 
@@ -420,33 +418,49 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                           });
                         },
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
                           decoration: BoxDecoration(
-                            color: isDiscountApplied ? Colors.green.shade50 : Colors.white,
+                            color: isDiscountApplied
+                                ? Colors.green.shade50
+                                : Colors.white,
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: isDiscountApplied ? Colors.green : Colors.grey.shade300,
+                              color: isDiscountApplied
+                                  ? Colors.green
+                                  : Colors.grey.shade300,
                             ),
                           ),
                           child: Row(
                             children: [
                               Icon(
                                 Icons.local_offer_outlined,
-                                color: isDiscountApplied ? Colors.green : primaryColor,
+                                color: isDiscountApplied
+                                    ? Colors.green
+                                    : primaryColor,
                               ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  isDiscountApplied ? "10% Discount Applied!" : "Apply 10% Off",
+                                  isDiscountApplied
+                                      ? "10% Discount Applied!"
+                                      : "Apply 10% Off",
                                   style: TextStyle(
                                     fontSize: 16.spMin,
                                     fontWeight: FontWeight.w600,
-                                    color: isDiscountApplied ? Colors.green : Colors.black87,
+                                    color: isDiscountApplied
+                                        ? Colors.green
+                                        : Colors.black87,
                                   ),
                                 ),
                               ),
                               if (isDiscountApplied)
-                                const Icon(Icons.check_circle, color: Colors.green),
+                                const Icon(
+                                  Icons.check_circle,
+                                  color: Colors.green,
+                                ),
                             ],
                           ),
                         ),
@@ -467,10 +481,17 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
 
                       const SizedBox(height: 20),
 
-                      _priceRow(widget.test.name, "₹ ${widget.labs.price.toStringAsFixed(2)}"),
+                      _priceRow(
+                        widget.test.name,
+                        "₹ ${widget.labs.price.toStringAsFixed(2)}",
+                      ),
                       if (isDiscountApplied) ...[
                         const SizedBox(height: 12),
-                        _priceRow("Discount (10%)", "- ₹ ${(widget.labs.price * 0.1).toStringAsFixed(2)}", color: Colors.green),
+                        _priceRow(
+                          "Discount (10%)",
+                          "- ₹ ${(widget.labs.price * 0.1).toStringAsFixed(2)}",
+                          color: Colors.green,
+                        ),
                       ],
                       const SizedBox(height: 12),
                       const Divider(),
@@ -519,16 +540,20 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                                 'dart.vm.product',
                               );
 
-                              final phone = s1<LocalStorageService>().phone ?? '';
+                              final phone =
+                                  s1<LocalStorageService>().phone ?? '';
                               final isReviewer = phone == '9999999999';
 
-                              log('is Production: $isProduction, is Reviewer: $isReviewer');
+                              log(
+                                'is Production: $isProduction, is Reviewer: $isReviewer',
+                              );
                               final razorpayKey = (isProduction && !isReviewer)
                                   ? razorpayKeyIdLive
                                   : razorpayKeyIdTest;
                               // Pay Online via Razorpay
                               var options = {
-                                'key': razorpayKey, // Dynamic Key based on environment and user
+                                'key':
+                                    razorpayKeyIdTest, // Dynamic Key based on environment and user
                                 'amount': (finalPrice * 100).toInt(),
                                 'name': 'CheckMate Diagnostics',
                                 'description': widget.test.name,
@@ -683,7 +708,10 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
         Expanded(
           child: Text(
             title,
-            style: TextStyle(fontSize: 15.spMin, color: color ?? Colors.black87),
+            style: TextStyle(
+              fontSize: 15.spMin,
+              color: color ?? Colors.black87,
+            ),
           ),
         ),
         Text(

@@ -149,6 +149,7 @@ class BookingSuccessScreen extends StatelessWidget {
                           const Divider(height: 28),
 
                           Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
                                 "REFERENCE ID",
@@ -158,12 +159,13 @@ class BookingSuccessScreen extends StatelessWidget {
                                   letterSpacing: 0.5,
                                 ),
                               ),
-                              const Spacer(),
+                              const SizedBox(width: 16),
                               Expanded(
                                 child: Text(
                                   booking.id,
+                                  textAlign: TextAlign.right,
                                   style: TextStyle(
-                                    fontSize: 18.spMin,
+                                    fontSize: 13.spMin,
                                     fontWeight: FontWeight.w600,
                                     color: primaryColor,
                                   ),
@@ -214,6 +216,7 @@ class BookingSuccessScreen extends StatelessWidget {
 
   static Widget _infoRow(String title, String value) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
@@ -223,15 +226,15 @@ class BookingSuccessScreen extends StatelessWidget {
             letterSpacing: 0.5,
           ),
         ),
-        const Spacer(),
-        Flexible(
+        const SizedBox(width: 16),
+        Expanded(
           child: Text(
             value,
             textAlign: TextAlign.right,
             style: TextStyle(
-              fontSize: 16.spMin,
+              fontSize: 15.spMin,
               fontWeight: FontWeight.w600,
-              color: Color(0xFF10243A),
+              color: const Color(0xFF10243A),
             ),
           ),
         ),

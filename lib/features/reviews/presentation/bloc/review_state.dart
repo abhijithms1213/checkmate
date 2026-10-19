@@ -6,43 +6,48 @@ class ReviewInitial extends ReviewState {}
 
 class ReviewLoading extends ReviewState {}
 
-/// Reviews loaded — holds any already-submitted reviews (null = not yet reviewed)
-class ReviewsLoaded extends ReviewState {
-  final LabReviewEntity? labReview;
-  /// Keyed by testId (from tests table), value is the existing review or null
-  final Map<String, LabTestReviewEntity?> testReviews;
-  /// Keyed by testId → resolved lab_test_id
-  final Map<String, String?> labTestIdMap;
+/// Existing booking review loaded (null = not yet reviewed)
+class BookingReviewLoaded extends ReviewState {
+  final BookingReviewEntity? review;
 
-  ReviewsLoaded({
-    this.labReview,
-    required this.testReviews,
-    required this.labTestIdMap,
-  });
+  BookingReviewLoaded(this.review);
 
-  ReviewsLoaded copyWith({
-    LabReviewEntity? labReview,
-    Map<String, LabTestReviewEntity?>? testReviews,
-    Map<String, String?>? labTestIdMap,
-  }) {
-    return ReviewsLoaded(
-      labReview: labReview ?? this.labReview,
-      testReviews: testReviews ?? this.testReviews,
-      labTestIdMap: labTestIdMap ?? this.labTestIdMap,
-    );
-  }
+  BookingReviewLoaded copyWith({BookingReviewEntity? review}) =>
+      BookingReviewLoaded(review ?? this.review);
 }
 
 /// A review submission is in progress
 class ReviewSubmitting extends ReviewState {}
 
-/// A single review was successfully submitted — follow-up state after submit
+/// A review was successfully submitted
 class ReviewSubmitted extends ReviewState {
-  final String message;
-  ReviewSubmitted(this.message);
+  final BookingReviewEntity review;
+  ReviewSubmitted(this.review);
 }
 
 class ReviewError extends ReviewState {
   final String message;
   ReviewError(this.message);
 }
+
+/// State for rating summary (average stars + review count) — used by LabCard
+class LabRatingSummaryLoaded extends ReviewState {
+  final LabRatingSummaryEntity summary;
+  LabRatingSummaryLoaded(this.summary);
+}
+
+/// All reviews for a lab loaded — used by LabReviewsPage
+class AllLabBookingReviewsLoaded extends ReviewState {
+  final List<BookingReviewWithUserEntity> reviews;
+
+  AllLabBookingReviewsLoaded(this.reviews);
+
+  double get averageRating {
+    if (reviews.isEmpty) return 0.0;
+    final total = reviews.fold<double>(0.0, (sum, r) => sum + r.averageRating);
+    return total / reviews.length;
+  }
+
+  int get totalReviewCount => reviews.length;
+}
+

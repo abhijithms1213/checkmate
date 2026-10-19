@@ -4,6 +4,7 @@ class BookingFullDetailsModel extends BookingFullDetailsEntity {
   const BookingFullDetailsModel({
     required super.id,
     required super.status,
+    required super.type,
     required super.totalAmount,
     required super.bookingDate,
     required super.labId,
@@ -45,6 +46,7 @@ class BookingFullDetailsModel extends BookingFullDetailsEntity {
     return BookingFullDetailsModel(
       id: json['id'] as String,
       status: json['status'] as String,
+      type: json['type'] as String? ?? 'Walk-in',
       totalAmount: (json['total_amount'] as num).toDouble(),
       bookingDate: DateTime.parse(json['booking_date'] as String),
       labId: lab['id'] as String,
@@ -55,7 +57,6 @@ class BookingFullDetailsModel extends BookingFullDetailsEntity {
       slotTime: slot['slot_time'] as String,
       address: address,
       tests: tests, createdAt: json['created_at'],
-
     );
   }
 }

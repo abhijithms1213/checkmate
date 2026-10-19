@@ -32,7 +32,6 @@ import 'package:checkmate/features/bookings/domain/usecases/get_labs_by_testid_u
 import 'package:checkmate/features/bookings/domain/usecases/get_slots_by_labid_uc.dart';
 import 'package:checkmate/features/bookings/domain/usecases/place_order_uc.dart';
 import 'package:checkmate/features/bookings/domain/usecases/send_whatsapp_notification_uc.dart';
-import 'package:checkmate/features/bookings/presentation/bloc/collection_type/collection_type_bloc.dart';
 import 'package:checkmate/features/bookings/presentation/bloc/labs/labs_bloc.dart';
 import 'package:checkmate/features/appointments/data/data_sources/appointments_datasource.dart';
 import 'package:checkmate/features/appointments/data/repository/appointments_repository_impl.dart';
@@ -136,7 +135,9 @@ Future<void> initializeDependencies() async {
   // BOOKINGS
   //=====================================================
 
-  s1.registerLazySingleton<LabsRemoteDataSource>(() => LabsRemoteDataSource(s1(), s1()));
+  s1.registerLazySingleton<LabsRemoteDataSource>(
+    () => LabsRemoteDataSource(s1(), s1()),
+  );
   s1.registerLazySingleton<LabsRepository>(() => LabsRepositoryImpl(s1()));
   s1.registerLazySingleton(() => GetTestsByPincodeUseCase(s1()));
   s1.registerLazySingleton(() => GetLabsByTestIdUseCase(s1()));
@@ -145,14 +146,16 @@ Future<void> initializeDependencies() async {
   s1.registerLazySingleton(() => SendWhatsAppNotificationUseCase(s1()));
   s1.registerLazySingleton(() => SearchTestsUseCase(s1()));
 
-  s1.registerFactory(() => LabsBloc(
-        getTestsByPincodeUseCase: s1(),
-        getLabsByTestIdUseCase: s1(),
-        getSlotsByLabIdUseCase: s1(),
-        placeOrderUseCase: s1(),
-        sendWhatsAppNotificationUseCase: s1(),
-        searchTestsUseCase: s1(),
-      ));
+  s1.registerFactory(
+    () => LabsBloc(
+      getTestsByPincodeUseCase: s1(),
+      getLabsByTestIdUseCase: s1(),
+      getSlotsByLabIdUseCase: s1(),
+      placeOrderUseCase: s1(),
+      sendWhatsAppNotificationUseCase: s1(),
+      searchTestsUseCase: s1(),
+    ),
+  );
 
   //=====================================================
   // APPOINTMENTS
@@ -179,20 +182,17 @@ Future<void> initializeDependencies() async {
   s1.registerLazySingleton<ReviewRemoteDataSource>(
     () => ReviewRemoteDataSource(s1()),
   );
-  s1.registerLazySingleton<ReviewRepository>(
-    () => ReviewRepositoryImpl(s1()),
-  );
-  s1.registerLazySingleton(() => SubmitLabReviewUseCase(s1()));
-  s1.registerLazySingleton(() => SubmitLabTestReviewUseCase(s1()));
-  s1.registerLazySingleton(() => GetMyLabReviewUseCase(s1()));
-  s1.registerLazySingleton(() => GetMyLabTestReviewUseCase(s1()));
+  s1.registerLazySingleton<ReviewRepository>(() => ReviewRepositoryImpl(s1()));
+  s1.registerLazySingleton(() => SubmitBookingReviewUseCase(s1()));
+  s1.registerLazySingleton(() => GetBookingReviewUseCase(s1()));
+  s1.registerLazySingleton(() => GetLabRatingSummaryUseCase(s1()));
+  s1.registerLazySingleton(() => GetAllLabBookingReviewsUseCase(s1()));
   s1.registerFactory(
     () => ReviewBloc(
-      reviewRepository: s1(),
-      submitLabReviewUseCase: s1(),
-      submitLabTestReviewUseCase: s1(),
-      getMyLabReviewUseCase: s1(),
-      getMyLabTestReviewUseCase: s1(),
+      submitBookingReviewUseCase: s1(),
+      getBookingReviewUseCase: s1(),
+      getLabRatingSummaryUseCase: s1(),
+      getAllLabBookingReviewsUseCase: s1(),
     ),
   );
 }
