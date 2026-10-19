@@ -1,9 +1,20 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 <uses-permission android:name="android.permission.INTERNET" />
+    <queries>
+    <package android:name="com.whatsapp"/>
+    <package android:name="com.whatsapp.w4b"/>
+</queries>
     <application
         android:label="checkmate"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+  <receiver android:name=".WhatsAppOtpReceiver" android:exported="true">
+            <intent-filter>
+                <action android:name="com.whatsapp.otp.OTP_REQUESTED" />
+                <!-- Match the custom action configuration you set in your Meta console -->
+                <action android:name="${applicationId}.whatsapp.otp.OTP_RECEIVED" />
+            </intent-filter>
+        </receiver>
 <meta-data
     android:name="com.facebook.sdk.ApplicationId"
     android:value="@string/facebook_app_id"/>
