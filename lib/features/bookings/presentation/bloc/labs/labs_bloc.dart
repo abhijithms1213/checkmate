@@ -73,12 +73,16 @@ class LabsBloc extends Bloc<LabsEvent, LabsState> {
         "Atlas Labs & Scans",
         "Anugraha Diagnostic Centre",
         "Rejath Clinical Laboratory",
-        "Med Life Plus"
+        "Med Life Plus",
       ];
 
       labs.sort((a, b) {
-        final aIndex = priorityLabs.indexWhere((p) => a.name.toLowerCase().contains(p.toLowerCase()));
-        final bIndex = priorityLabs.indexWhere((p) => b.name.toLowerCase().contains(p.toLowerCase()));
+        final aIndex = priorityLabs.indexWhere(
+          (p) => a.name.toLowerCase().contains(p.toLowerCase()),
+        );
+        final bIndex = priorityLabs.indexWhere(
+          (p) => b.name.toLowerCase().contains(p.toLowerCase()),
+        );
 
         if (aIndex != -1 && bIndex != -1) {
           return aIndex.compareTo(bIndex);
@@ -163,8 +167,10 @@ class LabsBloc extends Bloc<LabsEvent, LabsState> {
     try {
       log('called bloc');
       emit(LabsLoading());
-      final result = await searchTestsUseCase(params: event.getSearchResultRequestEntity);
-      log('result: $result');
+      final result = await searchTestsUseCase(
+        params: event.getSearchResultRequestEntity,
+      );
+      // log('result: $result');
       emit(LabsLoaded(result));
     } on NetworkException catch (e) {
       emit(LabsError(e.message));
