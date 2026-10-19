@@ -1,11 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/constants/app_assets.dart';
-import 'package:checkmate/core/utils/otp_gen.dart';
 import 'package:checkmate/core/widgets/buttons/elevated_btn.dart';
-import 'package:checkmate/features/auth/domain/entities/otp_verify.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_bloc.dart';
-import 'package:checkmate/features/auth/presentation/bloc/otp/otp_event.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_state.dart';
 import 'package:checkmate/features/auth/presentation/pages/otp.dart';
 import 'package:flutter/material.dart';
@@ -39,17 +36,9 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    final otp = generateOtp();
-
-    context.read<OtpBloc>().add(
-      AddOtpEvent(
-        OtpVerificationEntity(
-          phone: phone,
-          otp: otp,
-          expiresAt: DateTime.now().add(const Duration(minutes: 5)),
-          verified: false,
-        ),
-      ),
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => OtpScreen(phone: phone)),
     );
   }
 
@@ -58,15 +47,6 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocListener<OtpBloc, OtpState>(
       listener: (context, state) {
         if (!context.mounted) return;
-
-        if (state is OtpSuccess) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => OtpScreen(phone: _phoneController.text.trim()),
-            ),
-          );
-        }
 
         if (state is OtpFailure) {
           ScaffoldMessenger.of(
@@ -247,27 +227,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _bottom() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text("Privacy", style: TextStyle(color: Colors.grey.shade700)),
-            const SizedBox(width: 30),
-            Text("Terms", style: TextStyle(color: Colors.grey.shade700)),
-          ],
-        ),
-        const SizedBox(height: 15),
-        Text(
-          "© 2024 CHECKMATE",
-          style: TextStyle(color: Colors.grey.shade400, letterSpacing: 1),
-        ),
-        const SizedBox(height: 30),
-      ],
     );
   }
 }

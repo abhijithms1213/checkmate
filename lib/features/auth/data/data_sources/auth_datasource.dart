@@ -16,27 +16,34 @@ class AuthDatasource {
       final isReviewer = otp.phone == '9999999999';
       final finalOtp = isReviewer ? '123456' : otp.otp;
 
-      await Supabase.instance.client.from('otp_verifications').insert({
-        'phone': otp.phone,
-        'otp': finalOtp,
-        'expires_at': DateTime.now()
-            .add(const Duration(minutes: 5))
-            .toIso8601String(),
-        'verified': false,
-      }).timeout(const Duration(seconds: 10));
+      await Supabase.instance.client
+          .from('otp_verifications')
+          .insert({
+            'phone': otp.phone,
+            'otp': finalOtp,
+            'expires_at': DateTime.now()
+                .add(const Duration(minutes: 5))
+                .toIso8601String(),
+            'verified': false,
+          })
+          .timeout(const Duration(seconds: 10));
 
       // WhatsApp OTP API
       if (!isReviewer) {
-        await client.functions.invoke(
-          'otp_whealthier',
-          body: {'phone': '91${otp.phone}', 'otp': finalOtp},
-        ).timeout(const Duration(seconds: 10));
-        log('WhatsApp OTP sent via otp_whealthier');
+        await client.functions
+            .invoke(
+              'zero_tap_otp_fill',
+              body: {'phone': '91${otp.phone}', 'otp': finalOtp},
+            )
+            .timeout(const Duration(seconds: 10));
+        log('WhatsApp OTP sent via zero_tap_otp_fill');
       } else {
         log('Reviewer account detected. Bypassed WhatsApp OTP, using 123456.');
       }
     } on TimeoutException {
-      throw NetworkException("Connection timed out. Please check your internet connection.");
+      throw NetworkException(
+        "Connection timed out. Please check your internet connection.",
+      );
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } on DioException {
@@ -48,10 +55,15 @@ class AuthDatasource {
 
   Future<void> otpDeleteFromDbDS(String phone) async {
     try {
-      await client.from('otp_verifications').delete().eq('phone', phone)
+      await client
+          .from('otp_verifications')
+          .delete()
+          .eq('phone', phone)
           .timeout(const Duration(seconds: 10));
     } on TimeoutException {
-      throw NetworkException("Connection timed out. Please check your internet connection.");
+      throw NetworkException(
+        "Connection timed out. Please check your internet connection.",
+      );
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } on DioException {
@@ -131,7 +143,9 @@ class AuthDatasource {
         'defaultPincode': defaultPincode,
       };
     } on TimeoutException {
-      throw NetworkException("Connection timed out. Please check your internet connection.");
+      throw NetworkException(
+        "Connection timed out. Please check your internet connection.",
+      );
     } on PostgrestException catch (e) {
       throw ServerException(e.message);
     } on DioException {
@@ -141,4 +155,3 @@ class AuthDatasource {
     }
   }
 }
-
