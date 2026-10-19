@@ -15,9 +15,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final facebookAppEvents = FacebookAppEvents();
 
-await facebookAppEvents.setAutoLogAppEventsEnabled(true);
-// await facebookAppEvents.logact
-  // await facebookAppEvents.setAutoLogAppEventsEnabled(true);
+  await facebookAppEvents.setAutoLogAppEventsEnabled(true);
 
   await Supabase.initialize(
     url: supabaseUrl,
