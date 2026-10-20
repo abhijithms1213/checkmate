@@ -9,6 +9,8 @@ class LabEntity {
   final double? longitude;
   final bool? isActive;
   final double price;
+  final double averageRating;
+  final int reviewCount;
 
   const LabEntity({
     required this.id,
@@ -21,5 +23,7 @@ class LabEntity {
     this.longitude,
     this.isActive,
     required this.price,
+    this.averageRating = 0.0,
+    this.reviewCount = 0,
   });
 }

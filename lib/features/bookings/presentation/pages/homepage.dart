@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Timer? _debounce;
   @override
   void dispose() {
-    _debounce!.cancel();
+    _debounce?.cancel();
 
     super.dispose();
   }

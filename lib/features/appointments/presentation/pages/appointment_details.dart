@@ -481,7 +481,7 @@ class _BookingReviewSection extends StatelessWidget {
                         bookingId: params.bookingId,
                         userId: userId,
                         bookingType: params.bookingType,
-                        labExperienceRating: params.labExperienceRating,
+                        overallExperienceRating: params.overallExperienceRating,
                         resultAccuracyRating: params.resultAccuracyRating,
                         resultTurnaroundRating: params.resultTurnaroundRating,
                         review: params.review,
@@ -491,7 +491,6 @@ class _BookingReviewSection extends StatelessWidget {
                             params.collectorPunctualityRating,
                         sampleCollectionRating: params.sampleCollectionRating,
                         sampleHandlingRating: params.sampleHandlingRating,
-                        overallExperienceRating: params.overallExperienceRating,
                       ),
                     ),
                   );
@@ -534,16 +533,18 @@ class _BookingReviewFormState extends State<_BookingReviewForm> {
   bool _isEditing = false;
   late TextEditingController _reviewController;
 
-  // Lab ratings (Common)
-  int _labExperienceRating = 0; // Lab Overall Rating
+  // Mandatory overall rating (1-5)
+  int _overallExperienceRating = 0; // Lab / Overall Experience Rating
+  int _overallPhlebotomistRating = 0; // Phlebotomist Overall Experience Rating
+
+  // Common optional ratings
   int _resultAccuracyRating = 0; // Result Accuracy
   int _resultTurnaroundRating = 0; // On-Time Results
 
-  // Walk-in
+  // Walk-in optional rating
   int _waitingTimeRating = 0; // Waiting Time
 
-  // Home Collection (Phlebotomist ratings)
-  int _overallExperienceRating = 0; // Phlebotomist Overall Rating
+  // Home Collection optional ratings
   int _collectorPunctualityRating = 0; // Punctuality
   int _sampleCollectionRating = 0; // Sample Collection
   int _sampleHandlingRating = 0; // Sample Handling
@@ -571,14 +572,14 @@ class _BookingReviewFormState extends State<_BookingReviewForm> {
     _isEditing = r == null;
 
     if (r != null) {
-      _labExperienceRating = r.labExperienceRating;
-      _resultAccuracyRating = r.resultAccuracyRating;
-      _resultTurnaroundRating = r.resultTurnaroundRating;
+      _overallExperienceRating = r.overallExperienceRating;
+      _resultAccuracyRating = r.resultAccuracyRating ?? 0;
+      _resultTurnaroundRating = r.resultTurnaroundRating ?? 0;
       _waitingTimeRating = r.waitingTimeRating ?? 0;
-      _overallExperienceRating = r.overallExperienceRating ?? (r.collectorRating ?? 0);
       _collectorPunctualityRating = r.collectorPunctualityRating ?? 0;
       _sampleCollectionRating = r.sampleCollectionRating ?? 0;
       _sampleHandlingRating = r.sampleHandlingRating ?? 0;
+      _overallPhlebotomistRating = r.collectorRating ?? 0;
     }
   }
 
@@ -588,44 +589,40 @@ class _BookingReviewFormState extends State<_BookingReviewForm> {
     super.dispose();
   }
 
-  bool get _canSubmit {
-    if (_labExperienceRating == 0 ||
-        _resultAccuracyRating == 0 ||
-        _resultTurnaroundRating == 0) {
-      return false;
-    }
-    if (_isHomeCollection) {
-      return _overallExperienceRating > 0 &&
-          _collectorPunctualityRating > 0 &&
-          _sampleCollectionRating > 0 &&
-          _sampleHandlingRating > 0;
-    } else {
-      return _waitingTimeRating > 0;
-    }
-  }
+  // Only the overall experience rating (1 to 5) is mandatory now
+  bool get _canSubmit => _overallExperienceRating > 0;
 
   void _submit() {
     widget.onSubmit(
       SubmitBookingReviewParams(
         bookingId: widget.booking.id,
         bookingType: widget.booking.type,
-        labExperienceRating: _labExperienceRating,
-        resultAccuracyRating: _resultAccuracyRating,
-        resultTurnaroundRating: _resultTurnaroundRating,
+        overallExperienceRating: _overallExperienceRating,
+        resultAccuracyRating: _resultAccuracyRating > 0
+            ? _resultAccuracyRating
+            : null,
+        resultTurnaroundRating: _resultTurnaroundRating > 0
+            ? _resultTurnaroundRating
+            : null,
         review: _reviewController.text.trim().isEmpty
             ? null
             : _reviewController.text.trim(),
-        waitingTimeRating: _isHomeCollection ? null : _waitingTimeRating,
-        collectorRating: _isHomeCollection ? _overallExperienceRating : null,
-        collectorPunctualityRating: _isHomeCollection
+        waitingTimeRating: (!_isHomeCollection && _waitingTimeRating > 0)
+            ? _waitingTimeRating
+            : null,
+        collectorRating: _overallPhlebotomistRating > 0
+            ? _overallPhlebotomistRating
+            : null,
+        collectorPunctualityRating:
+            (_isHomeCollection && _collectorPunctualityRating > 0)
             ? _collectorPunctualityRating
             : null,
-        sampleCollectionRating: _isHomeCollection
+        sampleCollectionRating:
+            (_isHomeCollection && _sampleCollectionRating > 0)
             ? _sampleCollectionRating
             : null,
-        sampleHandlingRating: _isHomeCollection ? _sampleHandlingRating : null,
-        overallExperienceRating: _isHomeCollection
-            ? _overallExperienceRating
+        sampleHandlingRating: (_isHomeCollection && _sampleHandlingRating > 0)
+            ? _sampleHandlingRating
             : null,
       ),
     );
@@ -722,7 +719,7 @@ class _BookingReviewFormState extends State<_BookingReviewForm> {
                       ),
                       child: const Center(
                         child: Icon(
-                          Icons.medical_services_rounded,
+                          Icons.science_rounded,
                           color: primaryColor,
                           size: 28,
                         ),
@@ -734,7 +731,7 @@ class _BookingReviewFormState extends State<_BookingReviewForm> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Phlebotomist Overall Rating",
+                            "Lab Overall Rating",
                             style: TextStyle(
                               fontSize: 16.spMin,
                               fontWeight: FontWeight.w700,
@@ -757,26 +754,17 @@ class _BookingReviewFormState extends State<_BookingReviewForm> {
                 ),
                 const SizedBox(height: 18),
                 _RatingRow(
-                  label: 'Punctuality',
-                  icon: Icons.access_time_rounded,
-                  value: _collectorPunctualityRating,
-                  onChanged: (v) =>
-                      setState(() => _collectorPunctualityRating = v),
+                  label: 'Result Accuracy',
+                  icon: Icons.fact_check_outlined,
+                  value: _resultAccuracyRating,
+                  onChanged: (v) => setState(() => _resultAccuracyRating = v),
                 ),
                 _RatingRow(
-                  label: 'Sample Collection',
-                  icon: Icons.vaccines_rounded,
-                  value: _sampleCollectionRating,
-                  onChanged: (v) =>
-                      setState(() => _sampleCollectionRating = v),
-                ),
-                _RatingRow(
-                  label: 'Sample Handling',
-                  icon: Icons.inventory_2_outlined,
-                  value: _sampleHandlingRating,
+                  label: 'On-Time Results',
+                  icon: Icons.timer_outlined,
+                  value: _resultTurnaroundRating,
                   isLast: true,
-                  onChanged: (v) =>
-                      setState(() => _sampleHandlingRating = v),
+                  onChanged: (v) => setState(() => _resultTurnaroundRating = v),
                 ),
               ],
             ),
@@ -784,7 +772,7 @@ class _BookingReviewFormState extends State<_BookingReviewForm> {
 
           const SizedBox(height: 14),
 
-          // ── Card 2: Lab Overall Rating & Sub-criteria ────────────────
+          // ── Card 2: Phlebotomist Overall Rating & Sub-criteria ───────
           _buildCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -801,7 +789,7 @@ class _BookingReviewFormState extends State<_BookingReviewForm> {
                       ),
                       child: const Center(
                         child: Icon(
-                          Icons.science_rounded,
+                          Icons.medical_services_rounded,
                           color: primaryColor,
                           size: 28,
                         ),
@@ -813,7 +801,7 @@ class _BookingReviewFormState extends State<_BookingReviewForm> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Lab Overall Rating",
+                            "Phlebotomist Overall Rating",
                             style: TextStyle(
                               fontSize: 16.spMin,
                               fontWeight: FontWeight.w700,
@@ -822,12 +810,12 @@ class _BookingReviewFormState extends State<_BookingReviewForm> {
                           ),
                           const SizedBox(height: 6),
                           _StarBar(
-                            value: _labExperienceRating,
+                            value: _overallPhlebotomistRating,
                             size: 32,
                             spacing: 4,
                             alignment: MainAxisAlignment.spaceBetween,
                             onChanged: (v) =>
-                                setState(() => _labExperienceRating = v),
+                                setState(() => _overallPhlebotomistRating = v),
                           ),
                         ],
                       ),
@@ -836,19 +824,24 @@ class _BookingReviewFormState extends State<_BookingReviewForm> {
                 ),
                 const SizedBox(height: 18),
                 _RatingRow(
-                  label: 'Result Accuracy',
-                  icon: Icons.fact_check_outlined,
-                  value: _resultAccuracyRating,
+                  label: 'Punctuality',
+                  icon: Icons.access_time_rounded,
+                  value: _collectorPunctualityRating,
                   onChanged: (v) =>
-                      setState(() => _resultAccuracyRating = v),
+                      setState(() => _collectorPunctualityRating = v),
                 ),
                 _RatingRow(
-                  label: 'On-Time Results',
-                  icon: Icons.timer_outlined,
-                  value: _resultTurnaroundRating,
+                  label: 'Sample Collection',
+                  icon: Icons.vaccines_rounded,
+                  value: _sampleCollectionRating,
+                  onChanged: (v) => setState(() => _sampleCollectionRating = v),
+                ),
+                _RatingRow(
+                  label: 'Sample Handling',
+                  icon: Icons.inventory_2_outlined,
+                  value: _sampleHandlingRating,
                   isLast: true,
-                  onChanged: (v) =>
-                      setState(() => _resultTurnaroundRating = v),
+                  onChanged: (v) => setState(() => _sampleHandlingRating = v),
                 ),
               ],
             ),
@@ -921,10 +914,11 @@ class _BookingReviewFormState extends State<_BookingReviewForm> {
                 _RatingRow(
                   label: 'Lab Overall Rating',
                   icon: Icons.star_rate_rounded,
-                  value: _labExperienceRating,
+                  value: _overallExperienceRating,
                   starSize: 26,
                   isProminent: true,
-                  onChanged: (v) => setState(() => _labExperienceRating = v),
+                  onChanged: (v) =>
+                      setState(() => _overallExperienceRating = v),
                 ),
                 _RatingRow(
                   label: 'Waiting Time',
@@ -957,7 +951,7 @@ class _BookingReviewFormState extends State<_BookingReviewForm> {
 
         // ── Review text input ──────────────────────────────────────────
         Text(
-          "Write your review (optional)",
+          "Write your review",
           style: TextStyle(
             fontSize: 13.spMin,
             color: const Color(0xFF4A5568),
@@ -1042,7 +1036,9 @@ class _BookingReviewFormState extends State<_BookingReviewForm> {
                     alreadyReviewed ? "Update Review" : "Submit Review",
                     style: TextStyle(
                       fontSize: 15.spMin,
-                      color: _canSubmit ? Colors.white : const Color(0xFF8F9CA9),
+                      color: _canSubmit
+                          ? Colors.white
+                          : const Color(0xFF8F9CA9),
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -1153,11 +1149,7 @@ class _RatingRow extends StatelessWidget {
       padding: EdgeInsets.only(bottom: isLast ? 0 : 14),
       child: Row(
         children: [
-          Icon(
-            icon,
-            color: primaryColor,
-            size: isProminent ? 22 : 19,
-          ),
+          Icon(icon, color: primaryColor, size: isProminent ? 22 : 19),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
@@ -1246,11 +1238,7 @@ class _ReadOnlyReviewDisplay extends StatelessWidget {
               ),
             ),
           ),
-          _StarBar(
-            value: rating,
-            size: starSize,
-            spacing: 3,
-          ),
+          _StarBar(value: rating, size: starSize, spacing: 3),
         ],
       ),
     );
@@ -1300,9 +1288,7 @@ class _ReadOnlyReviewDisplay extends StatelessWidget {
                           ),
                           const SizedBox(height: 6),
                           _StarBar(
-                            value: review.overallExperienceRating ??
-                                review.collectorRating ??
-                                0,
+                            value: review.overallExperienceRating,
                             size: 32,
                             spacing: 4,
                             alignment: MainAxisAlignment.spaceBetween,
@@ -1371,7 +1357,7 @@ class _ReadOnlyReviewDisplay extends StatelessWidget {
                           ),
                           const SizedBox(height: 6),
                           _StarBar(
-                            value: review.labExperienceRating,
+                            value: review.overallExperienceRating,
                             size: 32,
                             spacing: 4,
                             alignment: MainAxisAlignment.spaceBetween,
@@ -1381,18 +1367,25 @@ class _ReadOnlyReviewDisplay extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 18),
-                _readOnlyRow(
-                  label: 'Result Accuracy',
-                  icon: Icons.fact_check_outlined,
-                  rating: review.resultAccuracyRating,
-                ),
-                _readOnlyRow(
-                  label: 'On-Time Results',
-                  icon: Icons.timer_outlined,
-                  rating: review.resultTurnaroundRating,
-                  isLast: true,
-                ),
+                if (review.resultAccuracyRating != null &&
+                    review.resultAccuracyRating! > 0) ...[
+                  const SizedBox(height: 18),
+                  _readOnlyRow(
+                    label: 'Result Accuracy',
+                    icon: Icons.fact_check_outlined,
+                    rating: review.resultAccuracyRating!,
+                  ),
+                ],
+                if (review.resultTurnaroundRating != null &&
+                    review.resultTurnaroundRating! > 0) ...[
+                  const SizedBox(height: 18),
+                  _readOnlyRow(
+                    label: 'On-Time Results',
+                    icon: Icons.timer_outlined,
+                    rating: review.resultTurnaroundRating!,
+                    isLast: true,
+                  ),
+                ],
               ],
             ),
           ),
@@ -1464,26 +1457,32 @@ class _ReadOnlyReviewDisplay extends StatelessWidget {
                 _readOnlyRow(
                   label: 'Lab Overall Rating',
                   icon: Icons.star_rate_rounded,
-                  rating: review.labExperienceRating,
+                  rating: review.overallExperienceRating,
                   starSize: 26,
                   isProminent: true,
                 ),
-                _readOnlyRow(
-                  label: 'Waiting Time',
-                  icon: Icons.hourglass_empty_rounded,
-                  rating: review.waitingTimeRating ?? 0,
-                ),
-                _readOnlyRow(
-                  label: 'Result Accuracy',
-                  icon: Icons.fact_check_outlined,
-                  rating: review.resultAccuracyRating,
-                ),
-                _readOnlyRow(
-                  label: 'On-Time Results',
-                  icon: Icons.access_time_rounded,
-                  rating: review.resultTurnaroundRating,
-                  isLast: true,
-                ),
+                if (review.waitingTimeRating != null &&
+                    review.waitingTimeRating! > 0)
+                  _readOnlyRow(
+                    label: 'Waiting Time',
+                    icon: Icons.hourglass_empty_rounded,
+                    rating: review.waitingTimeRating ?? 0,
+                  ),
+                if (review.resultAccuracyRating != null &&
+                    review.resultAccuracyRating! > 0)
+                  _readOnlyRow(
+                    label: 'Result Accuracy',
+                    icon: Icons.fact_check_outlined,
+                    rating: review.resultAccuracyRating!,
+                  ),
+                if (review.resultTurnaroundRating != null &&
+                    review.resultTurnaroundRating! > 0)
+                  _readOnlyRow(
+                    label: 'On-Time Results',
+                    icon: Icons.access_time_rounded,
+                    rating: review.resultTurnaroundRating!,
+                    isLast: true,
+                  ),
               ],
             ),
           ),

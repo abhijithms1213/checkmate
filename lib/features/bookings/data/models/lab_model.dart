@@ -12,6 +12,8 @@ class LabModel extends LabEntity {
     super.longitude,
     super.isActive,
     required super.price,
+    super.averageRating,
+    super.reviewCount,
   });
 
   factory LabModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,8 @@ class LabModel extends LabEntity {
       longitude: (json['longitude'] as num?)?.toDouble(),
       isActive: json['is_active'] as bool?,
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      averageRating: (json['average_rating'] as num?)?.toDouble() ?? 0.0,
+      reviewCount: json['review_count'] as int? ?? 0,
     );
   }
 
@@ -41,6 +45,8 @@ class LabModel extends LabEntity {
       'longitude': longitude,
       'is_active': isActive,
       'price': price,
+      'average_rating': averageRating,
+      'review_count': reviewCount,
     };
   }
 }

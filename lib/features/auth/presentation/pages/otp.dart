@@ -8,12 +8,10 @@ import 'package:checkmate/core/constants/app_assets.dart';
 import 'package:checkmate/core/constants/app_colors.dart';
 import 'package:checkmate/core/widgets/buttons/elevated_btn.dart';
 import 'package:checkmate/features/address/presentation/pages/addres_add.dart';
-import 'package:checkmate/features/auth/domain/entities/otp_verify.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_bloc.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_event.dart';
 import 'package:checkmate/features/auth/presentation/bloc/otp/otp_state.dart';
 import 'package:checkmate/features/main/presentation/pages/main_layout.dart';
-import 'package:checkmate/features/auth/presentation/pages/login.dart';
 import 'package:checkmate/core/services/local_storage_service.dart';
 import 'package:checkmate/injection_container.dart';
 import 'package:flutter/material.dart';
@@ -88,20 +86,18 @@ class _OtpScreenState extends State<OtpScreen> {
       if (!mounted) return;
 
       if (receivedOtp != null && RegExp(r'^\d{6}$').hasMatch(receivedOtp)) {
-        log('OTP received: $receivedOtp');
         _otpController.value = TextEditingValue(
           text: receivedOtp,
           selection: TextSelection.collapsed(offset: receivedOtp.length),
         );
 
         setState(() => _otp = receivedOtp);
+        context.read<OtpBloc>().add(
+          VerifyOtpEvent(phone: widget.phone, otp: _otp),
+        );
       } else {
         debugPrint('Zero-Tap returned no valid six-digit OTP.');
-        log('OTP received in else cAse: $otpFuture');
       }
-
-      setState(() => _otp = receivedOtp!);
-      log('after if: $otpFuture');
     } on PlatformException catch (e) {
       debugPrint('Zero-Tap error: ${e.code}');
     } catch (e) {
@@ -193,6 +189,7 @@ class _OtpScreenState extends State<OtpScreen> {
             MaterialPageRoute(builder: (_) => const MainLayout()),
             (route) => false,
           );
+          log('nav');
         }
 
         if (state is NewUser) {
@@ -216,12 +213,6 @@ class _OtpScreenState extends State<OtpScreen> {
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));
         }
-
-        // if (state is OtpSuccess) {
-        //   ScaffoldMessenger.of(context).showSnackBar(
-        //     const SnackBar(content: Text('OTP resent! Check your SMS.')),
-        //   );
-        // }
       },
       child: Scaffold(
         floatingActionButton: FloatingActionButton(

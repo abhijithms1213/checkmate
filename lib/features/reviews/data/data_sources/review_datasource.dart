@@ -19,10 +19,12 @@ class ReviewRemoteDataSource {
     final payload = {
       'booking_id': params.bookingId,
       'user_id': params.userId,
-      'lab_experience_rating': params.labExperienceRating,
-      'result_accuracy_rating': params.resultAccuracyRating,
-      'result_turnaround_rating': params.resultTurnaroundRating,
+      'overall_experience_rating': params.overallExperienceRating,
       'review': params.review,
+      if (params.resultAccuracyRating != null)
+        'result_accuracy_rating': params.resultAccuracyRating,
+      if (params.resultTurnaroundRating != null)
+        'result_turnaround_rating': params.resultTurnaroundRating,
       if (params.waitingTimeRating != null)
         'waiting_time_rating': params.waitingTimeRating,
       if (params.collectorRating != null)
@@ -33,8 +35,6 @@ class ReviewRemoteDataSource {
         'sample_collection_rating': params.sampleCollectionRating,
       if (params.sampleHandlingRating != null)
         'sample_handling_rating': params.sampleHandlingRating,
-      if (params.overallExperienceRating != null)
-        'overall_experience_rating': params.overallExperienceRating,
     };
 
     try {
@@ -130,61 +130,27 @@ class ReviewRemoteDataSource {
     }
   }
 
-  /// Fetch rating summary for a lab from booking_reviews via bookings join
+  /// Fetch rating summary directly from labs table (maintained by DB trigger)
   Future<LabRatingSummaryEntity> getLabRatingSummary(String labId) async {
     try {
-      log('--> Fetching lab rating summary for labId: $labId');
-      // Join booking_reviews -> bookings to get reviews for this lab
+      log('--> Fetching lab rating summary from labs table for labId: $labId');
       final result = await client
-          .from('booking_reviews')
-          .select('''
-            lab_experience_rating,
-            result_accuracy_rating,
-            result_turnaround_rating,
-            waiting_time_rating,
-            collector_rating,
-            collector_punctuality_rating,
-            sample_collection_rating,
-            sample_handling_rating,
-            overall_experience_rating,
-            bookings!inner(lab_id)
-          ''')
-          .eq('bookings.lab_id', labId)
+          .from('labs')
+          .select('average_rating, review_count')
+          .eq('id', labId)
+          .maybeSingle()
           .timeout(const Duration(seconds: 10));
 
-      final list = result as List;
-      log('<-- Lab rating summary count: ${list.length}');
-      if (list.isEmpty) {
+      if (result == null) {
         return const LabRatingSummaryEntity(averageRating: 0.0, reviewCount: 0);
       }
 
-      double totalSum = 0;
-      for (final item in list) {
-        final ratings = <int>[
-          item['lab_experience_rating'] as int? ?? 0,
-          item['result_accuracy_rating'] as int? ?? 0,
-          item['result_turnaround_rating'] as int? ?? 0,
-          if (item['waiting_time_rating'] != null)
-            item['waiting_time_rating'] as int,
-          if (item['collector_rating'] != null) item['collector_rating'] as int,
-          if (item['collector_punctuality_rating'] != null)
-            item['collector_punctuality_rating'] as int,
-          if (item['sample_collection_rating'] != null)
-            item['sample_collection_rating'] as int,
-          if (item['sample_handling_rating'] != null)
-            item['sample_handling_rating'] as int,
-          if (item['overall_experience_rating'] != null)
-            item['overall_experience_rating'] as int,
-        ];
-        if (ratings.isNotEmpty) {
-          totalSum += ratings.fold<int>(0, (s, r) => s + r) / ratings.length;
-        }
-      }
+      final avg = (result['average_rating'] as num?)?.toDouble() ?? 0.0;
+      final count = (result['review_count'] as int?) ?? 0;
 
-      final avg = totalSum / list.length;
       return LabRatingSummaryEntity(
-        averageRating: double.parse(avg.toStringAsFixed(1)),
-        reviewCount: list.length,
+        averageRating: avg,
+        reviewCount: count,
       );
     } catch (e) {
       log('Error getting rating summary for lab $labId: $e');
