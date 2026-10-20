@@ -11,3 +11,4 @@ windows/flutter/generated_plugins.cmake
 build/
 .dart_tool/
 upload-keystore.jks
+meta_cred.txt
