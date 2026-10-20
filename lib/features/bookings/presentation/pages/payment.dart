@@ -553,7 +553,7 @@ class _ReviewPayScreenState extends State<ReviewPayScreen> {
                               // Pay Online via Razorpay
                               var options = {
                                 'key':
-                                    razorpayKeyIdTest, // Dynamic Key based on environment and user
+                                    razorpayKey, // Dynamic Key based on environment and user
                                 'amount': (finalPrice * 100).toInt(),
                                 'name': 'CheckMate Diagnostics',
                                 'description': widget.test.name,
