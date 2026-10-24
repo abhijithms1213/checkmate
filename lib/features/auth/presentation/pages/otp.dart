@@ -215,11 +215,6 @@ class _OtpScreenState extends State<OtpScreen> {
         }
       },
       child: Scaffold(
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            log('message: $_otp');
-          },
-        ),
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
