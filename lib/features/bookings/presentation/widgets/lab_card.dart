@@ -1,4 +1,3 @@
-import 'package:checkmate/core/widgets/google_review_card.dart';
 import 'package:checkmate/features/bookings/presentation/pages/lab_details.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:checkmate/core/constants/app_colors.dart';
@@ -15,18 +14,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class LabCard extends StatelessWidget {
   final LabEntity lab;
   final TestEntity test;
-  final double? googleRating;
-  final int? googleReviewCount;
-  final String? googleMapsUrl;
 
-  const LabCard({
-    super.key,
-    required this.lab,
-    required this.test,
-    this.googleRating,
-    this.googleReviewCount,
-    this.googleMapsUrl,
-  });
+  const LabCard({super.key, required this.lab, required this.test});
 
   Widget _buildRatingBadge(double averageRating, int reviewCount) {
     if (reviewCount == 0) {
@@ -118,13 +107,7 @@ class LabCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => LabReviewsPage(
-              lab: lab,
-              test: test,
-              googleMapsUrl: googleMapsUrl,
-              googleReviewCount: googleReviewCount,
-              googleRating: googleRating,
-            ),
+            builder: (_) => LabReviewsPage(lab: lab, test: test),
           ),
         );
       },
@@ -151,14 +134,8 @@ class LabCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                // _buildRatingBadge(lab.averageRating, lab.reviewCount),
+                _buildRatingBadge(lab.averageRating, lab.reviewCount),
               ],
-            ),
-            SizedBox(height: 4),
-            buildGoogleRating(
-              googleRating: googleRating,
-              googleReviewCount: googleReviewCount,
-              googleMapsUrl: googleMapsUrl ?? '',
             ),
 
             const SizedBox(height: 6),

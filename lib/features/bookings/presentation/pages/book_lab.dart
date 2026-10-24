@@ -32,41 +32,6 @@ class _LabBookingScreenState extends State<LabBookingScreen> {
     );
   }
 
-  final List<Map<String, dynamic>> _googleReviews = [
-    {
-      "name": "Atlas Labs & Scans",
-      "address":
-          "550, 11th Main Rd, Koramangala 4th Block, Bengaluru, Karnataka 560034",
-      "maps_url": "https://maps.app.goo.gl/5qW2jC3c9yY8f4a97",
-      "rating": 4.6,
-      "review_count": 68,
-    },
-    {
-      "name": "Med Life Plus",
-      "address":
-          "21, 80 Feet Rd, KHB Colony, Koramangala, Bengaluru, Karnataka 560047",
-      "maps_url": "https://maps.app.goo.gl/aB3d2X1c7yZ6f4a97",
-      "rating": 4.3,
-      "review_count": 6,
-    },
-    {
-      "name": "Rejath Clinical Laboratory",
-      "address":
-          "10th Block, 3rd Cross Rd, Jayanagar, Bengaluru, Karnataka 560069",
-      "maps_url": "https://maps.app.goo.gl/9qF4jB2c8yX7f4a97",
-      "rating": 4.6,
-      "review_count": 51,
-    },
-    {
-      "name": "Anugraha Diagnostic Centre",
-      "address":
-          "10th Block, 3rd Cross Rd, Jayanagar, Bengaluru, Karnataka 560069",
-      "maps_url": "https://maps.app.goo.gl/9qF4jB2c8yX7f4a97",
-      "rating": 4.3,
-      "review_count": 6,
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -190,25 +155,7 @@ class _LabBookingScreenState extends State<LabBookingScreen> {
                       separatorBuilder: (_, __) => const SizedBox(height: 16),
                       itemBuilder: (_, index) {
                         final lab = state.labs[index];
-                        log(lab.name);
-                        final matchedReview = _googleReviews.cast<Map<String, dynamic>?>().firstWhere(
-                          (review) => lab.name.toLowerCase().contains(
-                            review!['name'].toString().toLowerCase(),
-                          ),
-                          orElse: () => null,
-                        );
-                        if (matchedReview != null) {
-                          return LabCard(
-                            lab: lab,
-                            test: widget.test,
-                            googleRating: matchedReview['rating'] as double,
-                            googleReviewCount:
-                                matchedReview['review_count'] as int,
-                            googleMapsUrl: matchedReview['maps_url'] as String,
-                          );
-                        } else {
-                          return LabCard(lab: lab, test: widget.test);
-                        }
+                        return LabCard(lab: lab, test: widget.test);
                       },
                     );
                   }

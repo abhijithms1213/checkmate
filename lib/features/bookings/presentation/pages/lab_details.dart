@@ -1,4 +1,3 @@
-import 'package:checkmate/core/widgets/google_review_card.dart';
 import 'package:checkmate/features/bookings/domain/entities/lab_entity.dart';
 import 'package:checkmate/features/bookings/domain/entities/test_entity.dart';
 import 'package:checkmate/features/reviews/domain/entities/review_entity.dart';
@@ -14,17 +13,11 @@ import 'package:intl/intl.dart';
 class LabReviewsPage extends StatelessWidget {
   final LabEntity? lab;
   final TestEntity? test;
-  final int? googleReviewCount;
-  final String? googleMapsUrl;
-  final double? googleRating;
 
   const LabReviewsPage({
     super.key,
     this.lab,
     this.test,
-    this.googleReviewCount,
-    this.googleMapsUrl,
-    this.googleRating,
   });
 
   @override
@@ -34,13 +27,7 @@ class LabReviewsPage extends StatelessWidget {
     return BlocProvider(
       create: (_) =>
           s1<ReviewBloc>()..add(LoadAllLabBookingReviewsEvent(labId)),
-      child: _LabReviewsView(
-        lab: lab,
-        test: test,
-        googleMapsUrl: googleMapsUrl,
-        googleReviewCount: googleReviewCount,
-        googleRating: googleRating,
-      ),
+      child: _LabReviewsView(lab: lab, test: test),
     );
   }
 }
@@ -48,17 +35,8 @@ class LabReviewsPage extends StatelessWidget {
 class _LabReviewsView extends StatelessWidget {
   final LabEntity? lab;
   final TestEntity? test;
-  final int? googleReviewCount;
-  final String? googleMapsUrl;
-  final double? googleRating;
 
-  const _LabReviewsView({
-    this.lab,
-    this.test,
-    this.googleReviewCount,
-    this.googleMapsUrl,
-    this.googleRating,
-  });
+  const _LabReviewsView({this.lab, this.test});
 
   static const Color primaryColor = Color(0xFF006D67);
   static const Color textColor = Color(0xFF101438);
@@ -125,11 +103,8 @@ class _LabReviewsView extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.error_outline_rounded,
-                        size: 48,
-                        color: Colors.red.shade300,
-                      ),
+                      Icon(Icons.error_outline_rounded,
+                          size: 48, color: Colors.red.shade300),
                       const SizedBox(height: 12),
                       Text(
                         state.message,
@@ -144,8 +119,8 @@ class _LabReviewsView extends StatelessWidget {
                         onPressed: () {
                           if (lab?.id != null) {
                             context.read<ReviewBloc>().add(
-                              LoadAllLabBookingReviewsEvent(lab!.id),
-                            );
+                                  LoadAllLabBookingReviewsEvent(lab!.id),
+                                );
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -154,10 +129,8 @@ class _LabReviewsView extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        child: const Text(
-                          'Try Again',
-                          style: TextStyle(color: Colors.white),
-                        ),
+                        child: const Text('Try Again',
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ],
                   ),
@@ -189,15 +162,11 @@ class _LabReviewsView extends StatelessWidget {
                       padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
                       sliver: SliverList.separated(
                         itemCount: state.reviews.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        separatorBuilder: (_, __) =>
+                            const SizedBox(height: 12),
                         itemBuilder: (context, index) {
                           final review = state.reviews[index];
-                          return _buildReviewCard(
-                            review,
-                            googleRating,
-                            googleReviewCount,
-                            googleMapsUrl,
-                          );
+                          return _buildReviewCard(review);
                         },
                       ),
                     ),
@@ -247,11 +216,8 @@ class _LabReviewsView extends StatelessWidget {
             const SizedBox(height: 6),
             Row(
               children: [
-                Icon(
-                  Icons.location_on_outlined,
-                  size: 15,
-                  color: Colors.grey.shade600,
-                ),
+                Icon(Icons.location_on_outlined,
+                    size: 15, color: Colors.grey.shade600),
                 const SizedBox(width: 4),
                 Expanded(
                   child: Text(
@@ -267,24 +233,12 @@ class _LabReviewsView extends StatelessWidget {
               ],
             ),
           ],
-          const SizedBox(height: 8),
-          Padding(
-            padding: const EdgeInsets.only(left: 8.0),
-            child: buildGoogleRating(
-              googleRating: googleRating,
-              googleReviewCount: googleReviewCount,
-              googleMapsUrl: googleMapsUrl ?? '',
-              fontSize: 14,
-              googleTextFontSize: 16,
-            ),
-          ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
           Wrap(
             crossAxisAlignment: WrapCrossAlignment.center,
             spacing: 8,
             runSpacing: 8,
             children: [
-              SizedBox(height: 4),
               _buildStars(avg, size: 22),
               Text(
                 avg > 0 ? avg.toStringAsFixed(1) : 'New',
@@ -309,17 +263,12 @@ class _LabReviewsView extends StatelessWidget {
     );
   }
 
-  Widget _buildReviewCard(
-    BookingReviewWithUserEntity review,
-    double? googleRating,
-    int? googleReviewCount,
-    String? googleMapsUrl,
-  ) {
+  Widget _buildReviewCard(BookingReviewWithUserEntity review) {
     final bool isHomeCollection = review.bookingType == 'Home Collection';
-    final Color badgeColor = isHomeCollection
-        ? const Color(0xFF1769E8)
-        : primaryColor;
-    final String badgeText = isHomeCollection ? 'Home Collection' : 'Walk-in';
+    final Color badgeColor =
+        isHomeCollection ? const Color(0xFF1769E8) : primaryColor;
+    final String badgeText =
+        isHomeCollection ? 'Home Collection' : 'Walk-in';
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -407,7 +356,6 @@ class _LabReviewsView extends StatelessWidget {
               ),
             ],
           ),
-
           if (review.review != null && review.review!.isNotEmpty) ...[
             const SizedBox(height: 8),
             Text(
